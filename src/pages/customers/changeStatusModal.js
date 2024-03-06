@@ -27,7 +27,7 @@ const ChangeStatusModal = ({customerId, id, statusId, setStatus, statuses}) => {
 
   return <div>
     <div className="modal modal-blur fade" id={id} tabIndex="-1" role="dialog" aria-hidden="true">
-      <div className="modal-dialog modal-md modal-dialog-centered" role="document">
+      <div className="modal-dialog modal-md" role="document">
         <form className="modal-content" onSubmit={handleSubmit} autoComplete="off">
           <div className="modal-header">
             <h5 className="modal-title">Change Status</h5>

@@ -5,12 +5,14 @@ import { GetScope } from "../../features/authentication/hooks/useToken"
 import PageHeader, { CardHeader } from '../../components/pageHeader';
 import ChangeStatusModal from './changeStatusModal';
 import DataLoading from '../../components/dataLoading';
+import Modal from '../../components/modal';
 import StatusPill from './statusPill';
 import Avatar from '../../components/avatar';
 import LocalDate from "../../util/LocalDate";
 import PeriodPicker from '../../components/periodPicker';
 import DataCard from '../../components/dataCard';
 import RankAdvance from '../../components/rankAdvance';
+import { SendRequest } from '../../hooks/usePost';
 
 var GET_CUSTOMER = gql`query ($nodeIds: [String]!, $periodId: ID!, $period: BigInt!) {
   customers(idList: $nodeIds) {
@@ -109,6 +111,7 @@ const CustomerDetail = () => {
   const periodParam = queryParams.get("periodId") ?? "0";
   const [status, setStatus] = useState({ id: "INIT", name: "INIT" });
   const [periodId, setPeriodId] = useState(periodParam);
+  const [showDelete, setShowDelete] = useState(false);
   const { loading, error, data, refetch } = useQuery(GET_CUSTOMER, {
     variables: { nodeIds: [params.customerId], periodId: periodId, period: parseInt(periodId) },
   });
@@ -122,6 +125,17 @@ const CustomerDetail = () => {
 
   if (loading) return <DataLoading />;
   if (error) return `Error! ${error}`;
+
+  const handleHide = () => setShowDelete(false);
+  const handleShow = () => setShowDelete(true);
+
+  const handleDelete = () => {
+    SendRequest("DELETE", `/api/v1/Customers/${params.customerId}`, {}, () =>{
+      window.location = '/';
+    }, (error) =>{
+      alert(error)
+    })
+  }
 
   let customer = data.customers[0];
   let commissionDetail = data.compensationPlans[0].period;
@@ -168,7 +182,7 @@ const CustomerDetail = () => {
                       <div className="dropdown-menu dropdown-menu-end">
                         <a href={`/Customers/${customer.id}/Edit`} className="dropdown-item">Edit Customer</a>
                         <a href="#" className="dropdown-item" data-bs-toggle="modal" data-bs-target="#modal-status">Update Status</a>
-                        <a href="#" className="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#modal-delete">Delete</a>
+                        <button className="dropdown-item text-danger" onClick={handleShow}>Delete</button>
                       </div>
                     </div>
                   </div>}
@@ -337,25 +351,22 @@ const CustomerDetail = () => {
         </div>
 
         <ChangeStatusModal customerId={customer.id} id="modal-status" statusId={status.id} setStatus={setStatus} statuses={statuses} />
-
-        <div className="modal modal-blur fade" id="modal-delete" tabIndex="-1" role="dialog" aria-hidden="true">
-          <div className="modal-dialog modal-sm modal-dialog-centered" role="document">
-            <form className="modal-content" method="post" autoComplete="off">
-              <div className="modal-body">
-                <input type="hidden" />
-                <input value="@Model.CustomerId" type="hidden" />
-                <div className="modal-title">Are you sure?</div>
-                <div>Are you sure you would like to delete this customer.</div>
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-link link-secondary me-auto" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" className="btn btn-danger" data-bs-dismiss="modal">Delete Customer</button>
-              </div>
-            </form>
-          </div>
-        </div>
       </div>
-    </PageHeader>
+    </PageHeader >
+
+    <Modal showModal={showDelete} size="sm" onHide={handleHide}>
+      <div className="modal-body">
+        <input type="hidden" />
+        <input value="@Model.CustomerId" type="hidden" />
+        <div className="modal-title">Are you sure?</div>
+        <div>Do you wish to delete &apos;<em>{customer.fullName}&apos;</em>?</div>
+      </div>
+      <div className="modal-footer">
+        <button type="button" className="btn btn-link link-secondary me-auto" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" className="btn btn-danger" onClick={handleDelete}>Delete Customer</button>
+      </div>
+    </Modal>
+
   </>
 };
 

@@ -132,6 +132,6 @@ const ChangePassword = ({ userId, username }) => {
 export default ChangePassword;
 
 ChangePassword.propTypes = {
-  userId: PropTypes.string.isRequired,
+  userId: PropTypes.number.isRequired,
   username: PropTypes.string.isRequired
 }

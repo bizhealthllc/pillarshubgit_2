@@ -3,8 +3,8 @@ import { useParams } from "react-router-dom"
 import { useQuery, gql } from "@apollo/client";
 import { SendRequest } from "../../../hooks/usePost";
 import PageHeader from "../../../components/pageHeader";
-import DataLoading from '../../../components/dataLoading';
 import AccountNav from "./accountNav";
+import DataLoading from "../../../components/dataLoading";
 
 var GET_CUSTOMER = gql`query ($nodeIds: [String]!) {
   customers(idList: $nodeIds) {
@@ -18,6 +18,10 @@ var GET_CUSTOMER = gql`query ($nodeIds: [String]!) {
         other
       }
     }
+  }
+  trees {
+    id
+    enableCustomerLegPreference
   }
 }`;
 
@@ -41,7 +45,7 @@ const CustomerMoneyOut = () => {
     }
   }, [loading, data]);
 
-  if (loading) return <DataLoading />;
+  if (loading) return <DataLoading />
   if (error) return `Error! ${error}`;
 
   const handleChange = (name, value) => {
@@ -92,72 +96,62 @@ const CustomerMoneyOut = () => {
   }
 
   return <PageHeader preTitle="Account" title={data?.customers[0].fullName} pageId="account" customerId={params.customerId}>
-    <div className="container-xl">
-      <div className="card">
-        <div className="row g-0">
-          <div className="col-sm-12 col-md-3 border-end border-bottom">
-            <div className="card-body">
-              <AccountNav pageId="moneyout" customerId={params.customerId} />
+    <AccountNav pageId="moneyout" loading={loading} customerId={params.customerId} treeData={data?.trees} >
+
+      <div className="card-body">
+        <div className="row">
+          <div className="col-12">
+            <div id="passwordSuccess" className="alert alert-success d-none" role="alert">
+              Your account has been upated!
             </div>
           </div>
-          <div className="col-sm-12 col-md-9">
-            <div className="card-body">
-              <div className="row">
-                <div className="col-12">
-                  <div id="passwordSuccess" className="alert alert-success d-none" role="alert">
-                    Your account has been upated!
-                  </div>
-                </div>
-                <div className="col-12">
-                  <div className="mb-3">
-                    <label className="form-label">Merchant</label>
-                    <select className="form-select" name="merchantId" value={activeItem.merchantId} onChange={(e) => handleChange(e.target.name, e.target.value)}>
-                      <option value="1">Crypto</option>
-                      <option value="2">MaxiCash</option>
-                      <option value="3">Bank</option>
-                    </select>
-                    <span className="text-danger"></span>
-                  </div>
-                </div>
-                <div className="col-12">
-                  <div className="mb-3">
-                    <label className={`form-label ${nameOnAccountDisplay}`}>{nameOnAccountLabel}</label>
-                    <input className={`form-control ${nameOnAccountDisplay}`} name="nameOnAccount" value={activeItem.nameOnAccount} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete="off" />
-                    <span className="text-danger"></span>
-                  </div>
-                </div>
-                <div className="col-12">
-                  <div className="mb-3">
-                    <label className={`form-label ${routingNumberDisplay}`}>{routingNumberLabel}</label>
-                    <input className={`form-control ${routingNumberDisplay}`} name="routingNumber" value={activeItem.routingNumber} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete="off" />
-                    <span className="text-danger"></span>
-                  </div>
-                </div>
-                <div className="col-12">
-                  <div className="mb-3">
-                    <label className={`form-label ${accountNumberDisplay}`}>{accountNumberLabel}</label>
-                    <input className={`form-control ${accountNumberDisplay}`} name="accountNumber" value={activeItem.accountNumber} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete="off" />
-                    <span className="text-danger"></span>
-                  </div>
-                </div>
-                <div className="col-12">
-                  <div className="mb-3">
-                    <label className={`form-label ${otherDisplay}`}>{otherLabel}</label>
-                    <input className={`form-control ${otherDisplay}`} name="other" value={activeItem.other} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete="off" />
-                    <span className="text-danger"></span>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col d-flex justify-content-end">
-                  <button type="submit" className="btn btn-primary" onClick={handleSubmit} >Update Account</button>
-                </div>
-              </div>
+          <div className="col-12">
+            <div className="mb-3">
+              <label className="form-label">Merchant</label>
+              <select className="form-select" name="merchantId" value={activeItem.merchantId} onChange={(e) => handleChange(e.target.name, e.target.value)}>
+                <option value="1">Crypto</option>
+                <option value="2">MaxiCash</option>
+                <option value="3">Bank</option>
+              </select>
+              <span className="text-danger"></span>
+            </div>
+          </div>
+          <div className="col-12">
+            <div className="mb-3">
+              <label className={`form-label ${nameOnAccountDisplay}`}>{nameOnAccountLabel}</label>
+              <input className={`form-control ${nameOnAccountDisplay}`} name="nameOnAccount" value={activeItem.nameOnAccount} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete="off" />
+              <span className="text-danger"></span>
+            </div>
+          </div>
+          <div className="col-12">
+            <div className="mb-3">
+              <label className={`form-label ${routingNumberDisplay}`}>{routingNumberLabel}</label>
+              <input className={`form-control ${routingNumberDisplay}`} name="routingNumber" value={activeItem.routingNumber} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete="off" />
+              <span className="text-danger"></span>
+            </div>
+          </div>
+          <div className="col-12">
+            <div className="mb-3">
+              <label className={`form-label ${accountNumberDisplay}`}>{accountNumberLabel}</label>
+              <input className={`form-control ${accountNumberDisplay}`} name="accountNumber" value={activeItem.accountNumber} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete="off" />
+              <span className="text-danger"></span>
+            </div>
+          </div>
+          <div className="col-12">
+            <div className="mb-3">
+              <label className={`form-label ${otherDisplay}`}>{otherLabel}</label>
+              <input className={`form-control ${otherDisplay}`} name="other" value={activeItem.other} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete="off" />
+              <span className="text-danger"></span>
             </div>
           </div>
         </div>
+        <div className="row">
+          <div className="col d-flex justify-content-end">
+            <button type="submit" className="btn btn-primary" onClick={handleSubmit} >Update Account</button>
+          </div>
+        </div>
       </div>
-    </div>
+    </AccountNav>
   </PageHeader>
 }
 

@@ -64,6 +64,7 @@ import WidgetSettings from "./pages/settings/widgets";
 import EditWidget from "./pages/settings/editWidget";
 import Dashboard from "./pages/customers/dashboard";
 import PaymentHistoryDetail from "./pages/commissions/paymentHistoryDetail";
+import PlacementRules from "./pages/settings/placementRules";
 
 function App() {
   const { token, setToken, clearToken } = useToken();
@@ -139,6 +140,7 @@ function App() {
             <Route path="settings/salestax" element={<SalesTax />} />
             <Route path="settings/statuses" element={<Statuses />} />
             <Route path="settings/company" element={<Company />} />
+            <Route path="settings/trees" element={<PlacementRules />} />
             <Route path="*" element={<NoPage />} />
           </Route>
         </Routes>
