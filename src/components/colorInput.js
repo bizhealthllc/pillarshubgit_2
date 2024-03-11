@@ -14,15 +14,17 @@ const ColorInput = ({ className, name, value, onChange, disabled, placeholder, d
     onChange(name, defaultValue);
   }
 
+  const correctedValue = value ? value : defaultValue;
+
   return <>
-    <div className="input-group mb-2">
-      <span className="input-group-text">
-        <input type="color" name={name} value={value} onChange={handleChange} />
+    <div className="input-group">
+      <span className="">
+        <input type="color" className="form-control form-control-color" name={name} value={correctedValue} onChange={handleChange} />
       </span>
-      <input className={className ?? 'form-control'} placeholder={placeholder ?? ''} name={name} value={value} disabled={disabled} onChange={handleChange} autoComplete='off' />
-      {defaultValue && <span className="input-group-text">
-        <button className="btn-link input-group-link" onClick={handleReset}>Reset</button>
-      </span>}
+      <input className={className ?? 'form-control'} placeholder={placeholder ?? ''} name={name} value={correctedValue} disabled={disabled} onChange={handleChange} autoComplete='off' />
+      {defaultValue && <button className="btn btn-icon text-muted" onClick={handleReset}>
+      <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-arrow-back-up" width="24" height="24" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 14l-4 -4l4 -4" /><path d="M5 10h11a4 4 0 1 1 0 8h-1" /></svg>
+        </button>}
     </div>
   </>
 }

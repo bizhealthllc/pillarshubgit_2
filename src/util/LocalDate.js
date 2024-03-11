@@ -7,7 +7,7 @@ function LocalDate({ dateString, hideTime }) {
 }
 
 LocalDate.propTypes = {
-  dateString: PropTypes.string.isRequired,
+  dateString: PropTypes.string,
   hideTime: PropTypes.bool
 };
 

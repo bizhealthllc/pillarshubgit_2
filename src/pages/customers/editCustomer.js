@@ -177,14 +177,14 @@ const EditCustomer = () => {
                   <div className="row">
                     <div className="col-md-6">
                       <div className="mb-3">
-                        <label className="form-label required">Legal First Name</label>
+                        <label className="form-label required">First Name</label>
                         <input className="form-control" name="firstName" value={activeItem.firstName} onChange={(event) => handleChange(event.target.name, event.target.value)} />
                         <span className="text-danger"></span>
                       </div>
                     </div>
                     <div className="col-md-6">
                       <div className="mb-3">
-                        <label className="form-label required">Legal Last Name</label>
+                        <label className="form-label required">Last Name</label>
                         <input className="form-control" name="lastName" value={activeItem.lastName} onChange={(event) => handleChange(event.target.name, event.target.value)} />
                         <span className="text-danger"></span>
                       </div>

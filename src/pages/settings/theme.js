@@ -83,7 +83,10 @@ const Theme = () => {
   const inlineStyle = {
     "--tblr-navbar-bg": (item?.headerColor ?? '#1d273b'),
     '--tblr-navbar-border-color': (item?.headerColor ?? '#243049'),
-    '--tblr-icon-color': (theme?.headerTextColor ?? 'argb(255,255,255,.7)')
+    '--tblr-icon-color': (item?.headerTextColor ?? '#ffffff'),
+    '--tblr-nav-link-font-size': "1rem",
+    "--tblr-nav-link-font-weight": "400",
+    "--tblr-theme-body-color": (item?.headerTextColor ?? '#ffffff')
   };
 
   return <PageHeader title="Theme" preTitle="Settings">
@@ -96,7 +99,7 @@ const Theme = () => {
         <div className="mb-3 row">
           <label className="col-3 col-form-label">Logo</label>
           <div className="col">
-            <header className="navbar navbar-expand-md navbar-dark d-print-none" style={inlineStyle}>
+            <header className="navbar navbar-expand-md navbar-dark theme-navbar" style={inlineStyle}>
               <div className="container-xl">
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
                   <span className="navbar-toggler-icon"></span>
@@ -113,7 +116,7 @@ const Theme = () => {
                             <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-users" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><circle cx="9" cy="7" r="4"></circle><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path><path d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path></svg>
                           </span>
                           <span className="nav-link-title">
-                            Example
+                            Customers
                           </span>
                         </a>
                       </li>
@@ -134,9 +137,15 @@ const Theme = () => {
 
         </div>
         <div className="mb-3 row">
-          <label className="col-3 col-form-label">Header color</label>
+          <label className="col-3 col-form-label">Menu Color</label>
           <div className="col">
             <ColorInput name="headerColor" value={item?.headerColor ?? '#1d273b'} defaultValue="#1d273b" onChange={handleChange} />
+          </div>
+        </div>
+        <div className="mb-3 row">
+          <label className="col-3 col-form-label">Menu Text Color</label>
+          <div className="col">
+            <ColorInput name="headerTextColor" value={item?.headerTextColor ?? '#ffffff'} defaultValue="#ffffff" onChange={handleChange} />
           </div>
         </div>
         <div className="mb-3 row">
@@ -147,7 +156,8 @@ const Theme = () => {
               <li className="nav-item" role="presentation">
                 <a href="#tabs-home-9" className="nav-link active" data-bs-toggle="tab" aria-selected="true" role="tab">
                   <img src={faviconUrl} alt="Pillars" className="me-2" style={{ width: '20px', height: '20px' }} />
-                  Commission Period Sum...</a>
+                  {item?.title ? `${item?.title} - Pillars` : `Pillars`}
+                </a>
               </li>
               <li className="ms-auto">
                 <button onClick={() => handleButtonClick("favicon")} className="btn btn-link me-3">
@@ -155,6 +165,13 @@ const Theme = () => {
                 </button>
               </li>
             </ul>
+          </div>
+        </div>
+
+        <div className="mb-3 row">
+          <label className="col-3 col-form-label">Application Title</label>
+          <div className="col">
+            <TextInput placeholder="Pillars" name="title" value={item?.title ?? ''} errorText={item?.titleError} onChange={handleChange} />
           </div>
         </div>
 

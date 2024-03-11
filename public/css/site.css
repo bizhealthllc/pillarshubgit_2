@@ -49,6 +49,11 @@ input[type=number] {
 
 }
 
+.theme-navbar .navbar-nav .nav-item .nav-link{
+  color: var(--tblr-theme-body-color);
+  
+}
+
 .sidebar-header {
   font-size: .625rem;
   font-weight: var(--tblr-font-weight-bold);
@@ -88,4 +93,79 @@ input[type=number] {
 
 .rank-advance-header svg {
   color: var(--tblr-card-title-color)
+}
+
+.btn-twitter {
+  --tblr-btn-border-color: transparent;
+  --tblr-btn-hover-border-color: transparent;
+  --tblr-btn-active-border-color: transparent;
+  --tblr-btn-color: var(--tblr-github-fg);
+  --tblr-btn-bg: var(--tblr-github);
+  --tblr-btn-hover-color: var(--tblr-github-fg);
+  --tblr-btn-hover-bg: rgba(var(--tblr-github-rgb), .8);
+  --tblr-btn-active-color: var(--tblr-github-fg);
+  --tblr-btn-active-bg: rgba(var(--tblr-github-rgb), .8);
+  --tblr-btn-disabled-bg: var(--tblr-github);
+  --tblr-btn-disabled-color: var(--tblr-github-fg);
+  --tblr-btn-box-shadow: var(--tblr-shadow-button),var(--tblr-shadow-button-inset)
+}
+
+.btn-website {
+  --tblr-btn-border-color: transparent;
+  --tblr-btn-hover-border-color: transparent;
+  --tblr-btn-active-border-color: transparent;
+  --tblr-btn-color: var(--tblr-vk-fg);
+  --tblr-btn-bg: var(--tblr-vk);
+  --tblr-btn-hover-color: var(--tblr-vk-fg);
+  --tblr-btn-hover-bg: rgba(var(--tblr-vk-rgb), .8);
+  --tblr-btn-active-color: var(--tblr-vk-fg);
+  --tblr-btn-active-bg: rgba(var(--tblr-vk-rgb), .8);
+  --tblr-btn-disabled-bg: var(--tblr-vk);
+  --tblr-btn-disabled-color: var(--tblr-vk-fg);
+  --tblr-btn-box-shadow: var(--tblr-shadow-button),var(--tblr-shadow-button-inset)
+}
+
+.btn-linkedIn {
+  --tblr-btn-border-color: transparent;
+  --tblr-btn-hover-border-color: transparent;
+  --tblr-btn-active-border-color: transparent;
+  --tblr-btn-color: var(--tblr-tabler-fg);
+  --tblr-btn-bg: var(--tblr-tabler);
+  --tblr-btn-hover-color: var(--tblr-tabler-fg);
+  --tblr-btn-hover-bg: rgba(var(--tblr-tabler-rgb), .8);
+  --tblr-btn-active-color: var(--tblr-tabler-fg);
+  --tblr-btn-active-bg: rgba(var(--tblr-tabler-rgb), .8);
+  --tblr-btn-disabled-bg: var(--tblr-tabler);
+  --tblr-btn-disabled-color: var(--tblr-tabler-fg);
+  --tblr-btn-box-shadow: var(--tblr-shadow-button),var(--tblr-shadow-button-inset)
+}
+
+.btn-whatsApp {
+  --tblr-btn-border-color: transparent;
+  --tblr-btn-hover-border-color: transparent;
+  --tblr-btn-active-border-color: transparent;
+  --tblr-btn-color: var(--tblr-tabler-fg);
+  --tblr-btn-bg: #25d366;
+  --tblr-btn-hover-color: var(--tblr-tabler-fg);
+  --tblr-btn-hover-bg: rgba(37,211,102, .8);
+  --tblr-btn-active-color: var(--tblr-tabler-fg);
+  --tblr-btn-active-bg: rgba(37,211,102, .8);
+  --tblr-btn-disabled-bg: var(--tblr-tabler);
+  --tblr-btn-disabled-color: var(--tblr-tabler-fg);
+  --tblr-btn-box-shadow: var(--tblr-shadow-button),var(--tblr-shadow-button-inset)
+}
+
+.btn-tikTok {
+  --tblr-btn-border-color: transparent;
+  --tblr-btn-hover-border-color: transparent;
+  --tblr-btn-active-border-color: transparent;
+  --tblr-btn-color: var(--tblr-github-fg);
+  --tblr-btn-bg: var(--tblr-github);
+  --tblr-btn-hover-color: var(--tblr-github-fg);
+  --tblr-btn-hover-bg: rgba(var(--tblr-github-rgb), .8);
+  --tblr-btn-active-color: var(--tblr-github-fg);
+  --tblr-btn-active-bg: rgba(var(--tblr-github-rgb), .8);
+  --tblr-btn-disabled-bg: var(--tblr-github);
+  --tblr-btn-disabled-color: var(--tblr-github-fg);
+  --tblr-btn-box-shadow: var(--tblr-shadow-button),var(--tblr-shadow-button-inset)
 }

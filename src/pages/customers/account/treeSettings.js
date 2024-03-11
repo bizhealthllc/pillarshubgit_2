@@ -132,7 +132,7 @@ const CustomerTreeSettings = () => {
         }
       })}
 
-      <div className="card-footer">
+      <div className="card-footer bg-transparent">
         <div id="passwordSuccess" className="alert alert-success d-none" role="alert">
           Your preference has been upated!
         </div>

@@ -21,7 +21,7 @@ const AccountNav = ({ customerId, pageId, loading, children, treeData }) => {
         <div className="row g-0">
           <div className="col-3 d-none d-md-block border-end">
             <div className="card-body">
-              <h4 className="subheader">Business settings</h4>
+              <h4 className="subheader">Account Settings</h4>
               <div className="list-group list-group-transparent">
                 <a href={`/customers/${customerId}/account/profile`} className={`list-group-item list-group-item-action d-flex align-items-center ${activeClass(pageId, 'profile')}`}>My Account</a>
                 {/*<a href="#" className={`list-group-item list-group-item-action d-flex align-items-center`}>My Notifications</a> */}

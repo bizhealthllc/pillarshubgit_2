@@ -4,14 +4,15 @@ import { WidgetTypes } from "../hooks/useWidgets";
 
 import Avatar from '../../../components/avatar';
 import StatusPill from '../../../pages/customers/statusPill';
-import DataCard from '../../../components/dataCard';
 import Calendar from '../../../components/calendar';
 import RankAdvance from '../../../components/rankAdvance';
 
 import "./widget.css";
 import EmptyContent from "../../../components/emptyContent";
+import SocialMediaLink from "../../../components/socialMediaLink";
+import { SocialMediaPlatforms } from "../../../components/socialMediaIcon";
 
-const Widget = ({ widget, customer, commissionDetail, trees }) => {
+const Widget = ({ widget, customer, commissionDetail, trees, isPreview = false }) => {
   const [widgetId] = useState(() => 'wd_' + crypto.randomUUID().replace(/-/g, '_'));
   if (widget == undefined) return <EmptyContent title="Widget not found" text="Please check your widget library to verify it has been configured correctly." />;
   if (!customer) {
@@ -20,11 +21,18 @@ const Widget = ({ widget, customer, commissionDetail, trees }) => {
       cards: [{ values: [{ valueName: 'Example', valueId: 'Ex', value: '22' }] }]
     }
   }
-  if (!trees) {
-    trees = [{ id: 1, name: 'Example Tree', nodes: [{ upline: { fullName: 'Example Customer' } }] }]
-  }
+
   if (!commissionDetail) {
     commissionDetail = { rankAdvance: [{ rankId: 10, rankName: 'Example Rank', requirements: [{ conditions: [{ valueId: "Personal Volume", value: 20, required: 20 }, { valueId: "Group Volume", value: 90, required: 200 }] }] }] }
+  }
+
+  if (isPreview) {
+    trees = trees?.map((tree) => ({
+      ...tree,
+      nodes: [{ upline: { fullName: 'Example Customer' } }]
+    }))
+
+    customer = { ...customer, socialMedia: SocialMediaPlatforms.map((p) => ({ name: p.name, value: 'preview' })) };
   }
 
   const inlineStyle = {
@@ -46,35 +54,69 @@ const Widget = ({ widget, customer, commissionDetail, trees }) => {
     __html: modifiedCss,
   };
 
-  return <div style={{display: "contents"}} className={widgetId}><div className="card" style={inlineStyle}>
+  return <div style={{ display: "contents" }} className={widgetId}><div className="card" style={inlineStyle}>
     {widget.title && <div className="card-header" style={{ backgroundColor: (widget?.headerColor ?? '#ffffff') }}>
       <h3 className={`card-title ${msStyle} ${meStyle}`}>{widget.title}</h3>
     </div>}
     <style dangerouslySetInnerHTML={styleTag} />
-    {Content(widget, customer, commissionDetail, trees)}
+    {Content(widget, customer, commissionDetail, trees, isPreview)}
   </div></div>
 }
 
-function Content(widget, customer, commissionDetail, trees) {
+function Content(widget, customer, commissionDetail, trees, isPreview) {
   const [carouselId] = useState(() => 'carousel_' + crypto.randomUUID().replace(/-/g, '_'));
 
   if (widget?.type == WidgetTypes.Profile) {
-    return <div className="card-body p-4 text-center ">
+    return <div className="card-body py-4 text-center">
       <Avatar name={customer.fullName} url={customer.profileImage} size="xl" block={false} />
       <h3 className="m-0 mb-1"><a href={`/Customers/${customer.id}/Summary`}>{customer.fullName}</a></h3>
       <div className="widget-muted">{customer.customerType?.name}</div>
       <div className="mt-3">
         <StatusPill status={customer.status} />
       </div>
+      {customer.socialMedia && <>
+        <div className="row g-2 justify-content-center">
+          {customer.socialMedia.map((link) => {
+            if (link.value) {
+              return <div key={link.name} className="col-auto py-3">
+                <SocialMediaLink socialMediaId={link.name} link={link.value} />
+              </div>
+            }
+          })}
+        </div>
+      </>}
     </div>
   }
 
   if (widget.type == WidgetTypes.Card) {
-    return <div className="card-body">
-      <div className="datagrid widgetDatagrid">
-        <DataCard data={customer.cards[0]?.values} />
+    var values = customer.cards[0]?.values;
+
+    if (widget.panes) {
+      //const randomNumber = Math.floor(Math.random() * (1000 - 100 + 1)) + 100;
+      return <div className="card-body">
+        <div className="datagrid widgetDatagrid">
+          {widget.panes.map((pane) => {
+            const emptyValue = isPreview ? Math.floor(Math.random() * (5000 - 100 + 1)) + 100 : 0;
+            const stat = values.find((s) => s.valueId == pane.title) ?? { value: emptyValue };
+            return <div key={pane.title} className="datagrid-item" style={{ color: pane.imageUrl }}>
+              <div className="datagrid-title">{pane.text} ({pane.title})</div>
+              <div className="h2 datagrid-content">{stat.value.toLocaleString()}</div>
+            </div>
+          })}
+        </div>
       </div>
-    </div>
+    } else {
+      return <div className="card-body">
+        <div className="datagrid widgetDatagrid">
+          {values && values.map((stat) => {
+            return <div key={stat.valueId} className="datagrid-item">
+              <div className="datagrid-title">{stat.valueName} {stat.valueId == stat.valueName ? `` : `(${stat.valueId})`}</div>
+              <div className="h2 datagrid-content">{stat.value}</div>
+            </div>
+          })}
+        </div>
+      </div>
+    }
   }
 
   if (widget.type == WidgetTypes.Banner) {
@@ -116,27 +158,61 @@ function Content(widget, customer, commissionDetail, trees) {
   }
 
   if (widget.type == WidgetTypes.Upline) {
+    let panes = widget.panes ?? trees?.map((tree) => ({
+      title: tree.name,
+      text: tree.name,
+      imageUrl: "true"
+    }))
+
     return <div className="list-group list-group-flush">
-      {trees && trees.map((tree) => {
-        return tree.nodes.map((node) => {
-          return <div key={tree.id} className="list-group-item widgetListItem">
-            <a className="row align-items-center text-reset" href={`/Customers/${node.uplineId}/Summary`}>
-              <div className="col-auto">
-                <Avatar name={node.upline.fullName} url={node.upline.profileImage} size="sm" />
-              </div>
-              <div className="col text-truncate">
-                <span className='text-reset' >{node.upline?.fullName}</span>
-                <small className="d-block muted text-truncate mt-n1">{tree.name}</small>
-              </div>
-            </a>
-          </div>
-        })
+      {panes && panes?.map((pane) => {
+        if (pane.imageUrl.toLowerCase() == "true") {
+          const node = trees?.find(tree => tree.name == pane.title)?.nodes?.[0];
+          if (node) {
+            return <div key={pane.title} className="list-group-item widgetListItem">
+              <a className="row align-items-center text-reset" href={`/Customers/${node.uplineId}/Summary`}>
+                <div className="col-auto">
+                  <Avatar name={node.upline.fullName} url={node.upline.profileImage} size="sm" />
+                </div>
+                <div className="col text-truncate">
+                  <span className='text-reset' >{node.upline?.fullName}</span>
+                  <small className="d-block muted text-truncate mt-n1">{pane.text}</small>
+                </div>
+              </a>
+            </div>
+          }
+        }
       })}
     </div>
   }
 
   if (widget.type == WidgetTypes.Calendar) {
     return <Calendar />
+  }
+
+  if (widget.type == WidgetTypes.SocialLinks) {
+    return <div className="card-body">
+      <div className="row g-2 align-items-center justify-content-center">
+        {customer.socialMedia && customer.socialMedia.some(item => item.value) && <>
+          <div className="row g-2 justify-content-center">
+            {customer.socialMedia.map((link) => {
+              if (link.value) {
+                return <div key={link.name} className="col-auto py-3">
+                  <SocialMediaLink socialMediaId={link.name} link={link.value} />
+                </div>
+              }
+            })}
+          </div>
+        </>}
+
+        {!customer.socialMedia?.some(item => item.value) && <>
+          <div className="empty">
+            <p className="empty-title">No Social Links Configured</p>
+          </div>
+        </>}
+
+      </div>
+    </div>
   }
 
   return <div id={`wdg_${widget.id}`} className={`card`}>
@@ -151,4 +227,5 @@ Widget.propTypes = {
   customer: PropTypes.any.isRequired,
   commissionDetail: PropTypes.any.isRequired,
   trees: PropTypes.any.isRequired,
+  isPreview: PropTypes.bool
 }

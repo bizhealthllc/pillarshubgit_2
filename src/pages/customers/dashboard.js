@@ -26,6 +26,11 @@ var GET_CUSTOMER = gql`query ($nodeIds: [String]!, $periodId: ID!, $period: BigI
       id
       name
     }
+    socialMedia
+    {
+      name,
+      value
+    }
     language
     customData
     phoneNumbers {

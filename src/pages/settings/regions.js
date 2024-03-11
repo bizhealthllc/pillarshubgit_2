@@ -7,22 +7,22 @@ import { SendRequest } from "../../hooks/usePost";
 import SettingsNav from "./settingsNav";
 
 var GET_REGIONS = gql`query{
-    regions
+  regions
+  {
+    name
+    id
+    locales
     {
-      name
-      id
-      locales
-      {
-        countryCode
-        stateCode
-      }
+      countryCode
+      stateCode
     }
-    countries
-    {
-      iso2
-      name
-    }
-  }`
+  }
+  countries
+  {
+    iso2
+    name
+  }
+}`
 
 function uniqueByCountry(regions, countries) {
   return [...new Set(regions.map(item => countries.find(el => el.iso2 == item.countryCode)?.name))];

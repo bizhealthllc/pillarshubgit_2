@@ -16,10 +16,10 @@ const Layout = () => {
   const inlineStyle = {
     "--tblr-navbar-bg": (theme?.headerColor ?? '#1d273b'),
     '--tblr-navbar-border-color': (theme?.headerColor ?? '#243049'),
-    '--tblr-icon-color': (theme?.headerTextColor ?? 'argb(255,255,255,.7)'),
+    '--tblr-icon-color': (theme?.headerTextColor ?? 'rgba(255,255,255,.7)'),
     '--tblr-nav-link-font-size': "1rem",
     "--tblr-nav-link-font-weight": "400",
-    "--tblr-body-color": 'rgba(255, 255, 255, 0.8)'
+    "--tblr-body-color": (theme?.headerTextColor ?? 'rgba(255, 255, 255, 0.8)')
   };
 
   if (theme?.favicon?.url) {
@@ -34,6 +34,8 @@ const Layout = () => {
       document.head.appendChild(newFavicon);
     }
   }
+
+  document.title = theme?.title ? `${theme.title} - Pillars` : 'Pillars';
 
   return (<>
     <aside className="navbar navbar-vertical navbar-expand-lg" style={inlineStyle}>

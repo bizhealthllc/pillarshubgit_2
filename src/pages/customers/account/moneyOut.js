@@ -145,10 +145,10 @@ const CustomerMoneyOut = () => {
             </div>
           </div>
         </div>
-        <div className="row">
-          <div className="col d-flex justify-content-end">
-            <button type="submit" className="btn btn-primary" onClick={handleSubmit} >Update Account</button>
-          </div>
+      </div>
+      <div className="card-footer bg-transparent">
+        <div className="col d-flex justify-content-end">
+          <button type="submit" className="btn btn-primary" onClick={handleSubmit} >Update Account</button>
         </div>
       </div>
     </AccountNav>
