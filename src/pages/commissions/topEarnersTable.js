@@ -78,11 +78,11 @@ const TopEarnersTable = ({topEarners, periodId}) => {
               <a className="text-reset" href={`/Customers/${customer.id}/commissions?periodId=${periodId}`}>{customer.fullName}</a>
               <div className="small text-muted">{customer.id}</div> 
             </td>
-            <td>{bonus.paidAmount.toLocaleString("en-US", { style: 'currency', currency: bonus?.currency ?? 'USD'})}</td>
+            <td>{bonus?.paidAmount.toLocaleString("en-US", { style: 'currency', currency: bonus?.currency ?? 'USD'})}</td>
             <td>{rank?.name}</td>
             <td><StatusPill status={customer.status} small="true" /></td>
-            <td>{bonus.paidCount}</td>
-            <td>{bonus.totalVolume}</td>
+            <td>{bonus?.paidCount}</td>
+            <td>{bonus?.totalVolume}</td>
         </tr>
         })}
     </tbody>

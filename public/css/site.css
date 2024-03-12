@@ -49,6 +49,11 @@ input[type=number] {
 
 }
 
+.navbar-brand-image {
+  height: auto;
+  width: 11rem;
+}
+
 .theme-navbar .navbar-nav .nav-item .nav-link{
   color: var(--tblr-theme-body-color);
   
