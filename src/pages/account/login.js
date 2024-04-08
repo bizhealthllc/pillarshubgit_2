@@ -53,7 +53,7 @@ export default function Login({ setToken }) {
   return <>
     <div className="page-wrapper page-center" style={{ background: theme?.loginColor ?? '#f1f5f9', position: 'relative' }}>
       <div className="container container-tight py-4">
-        <div className="card card-md">
+        <div className="card card-md box-shadow">
           <div className="card-body">
             <div className="text-center mb-4 d-print-none text-white">
               <img src={theme?.loginLogo?.url ?? `/images/logo-dark.png`} alt="Pillars" style={{ maxWidth: '300px', maxHeight: '65px' }} />

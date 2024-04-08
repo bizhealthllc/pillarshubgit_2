@@ -14,18 +14,16 @@ var GET_REGIONS = gql`query{
     locales
     {
       countryCode
+      country {
+         name 
+      }
       stateCode
     }
   }
-  countries
-  {
-    iso2
-    name
-  }
 }`
 
-function uniqueByCountry(regions, countries) {
-  return [...new Set(regions.map(item => countries.find(el => el.iso2 == item.countryCode)?.name))];
+function uniqueByCountry(regions) {
+  return [...new Set(regions.map(item => item.country?.name ?? item.countryCode))];
 }
 
 const Regions = () => {

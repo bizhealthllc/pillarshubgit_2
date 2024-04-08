@@ -40,7 +40,7 @@ export default function EnvironmentList({ setToken, clearToken }) {
       <div className="container-tight py-4">
         <div className="text-center mb-4">
         </div>
-        <form className="card card-md" onSubmit={handleSubmit} autoComplete="off" noValidate>
+        <form className="card card-md box-shadow" onSubmit={handleSubmit} autoComplete="off" noValidate>
           <div className="card-body">
             <div className="text-center mb-4 d-print-none text-white">
               <img src={`/images/logo-dark.png`} alt="Pillars" style={{ maxWidth: '300px', maxHeight: '65px' }} />

@@ -28,7 +28,7 @@ var GET_COUNTRIES = gql`query{
         taxRate
         addTax
         languages
-        customData
+        active
     }
 }`;
 
@@ -57,9 +57,7 @@ const Countries = () => {
       taxRate: item.taxRate,
       addTax: item.addTax,
       languages: item.languages,
-      requireFIN: item.customData?.requireFIN,
-      allowEnroll: item.customData?.allowEnroll,
-      allowShop: item.customData?.allowShop
+      active: true
     });
     setShow(true);
   }
@@ -69,7 +67,6 @@ const Countries = () => {
     setShow(false);
 
     activeItem.name = data.countries.find(el => el.iso2 == activeItem.iso2)?.name;
-    activeItem.customData = { allowShop: activeItem.allowShop, allowEnroll: activeItem.allowEnroll, requireFIN: activeItem.requireFIN };
 
     var url = `/api/v1/countries/${activeItem.iso2}`;
     SendRequest('PUT', url, activeItem, () => {
@@ -91,27 +88,21 @@ const Countries = () => {
             <tr>
               <th>Country</th>
               <th>Code</th>
-              <th>Shop</th>
-              <th>Enroll</th>
               <th>Currency</th>
               <th>Add Tax</th>
               <th>Tax Rate</th>
-              <th>Require FIN</th>
               <th>Languages</th>
               <th className="w-1"></th>
             </tr>
           </thead>
           <tbody>
             {data && data.countries.map((item) => {
-              return item.customData ? <tr key={item.iso2}>
+              return item.active ? <tr key={item.iso2}>
                 <td>{item.name}</td>
-                <td>{item.iso2}</td>
-                <td>{item.customData.allowShop ? 'Yes' : 'No'}</td>
-                <td>{item.customData.allowEnroll ? 'Yes' : 'No'}</td>
+                <td>{item.iso2?.toUpperCase()}</td>
                 <td>{data.currencies.find(i => i.iso3 == item.currency).name}</td>
                 <td>{item.addTax ? 'Yes' : 'No'}</td>
                 <td>{item.taxRate}</td>
-                <td>{item.customData.requireFIN ? 'Yes' : 'No'}</td>
                 <td>
                   {item.languages.map((language) => {
                     return <span className="badge badge-outline text-blue m-1" key={language} >{data.languages.find(i => i.iso2 == language).name}</span>
@@ -131,17 +122,20 @@ const Countries = () => {
           </tbody>
           <tfoot>
             <tr>
-              <td colSpan="8">
-                <small className="form-hint">
-                  * &quot;Add Tax&quot; will set the price of all items in that country to include tax in the original price rather than showing tax as a separate item.
-                  <br />** Requires a FIN for all non retail accounts in the selected Country.
-                </small>
-              </td>
-              <td colSpan="2" className="text-end">
-                <button className="btn btn-primary" onClick={() => handleShow('')}>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-world-plus" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M20.985 12.518a9 9 0 1 0 -8.45 8.466"></path><path d="M3.6 9h16.8"></path><path d="M3.6 15h11.4"></path><path d="M11.5 3a17 17 0 0 0 0 18"></path><path d="M12.5 3a16.998 16.998 0 0 1 2.283 12.157"></path><path d="M16 19h6"></path><path d="M19 16v6"></path></svg>
-                  Add Country
-                </button>
+              <td colSpan="7">
+                <div className="row">
+                  <div className="col">
+                    <small className="form-hint">
+                      * &quot;Add Tax&quot; will set the price of all items in that country to include tax in the original price rather than showing tax as a separate item.
+                    </small>
+                  </div>
+                  <div className="col-auto">
+                    <button className="btn btn-primary" onClick={() => handleShow('')}>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-world-plus" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M20.985 12.518a9 9 0 1 0 -8.45 8.466"></path><path d="M3.6 9h16.8"></path><path d="M3.6 15h11.4"></path><path d="M11.5 3a17 17 0 0 0 0 18"></path><path d="M12.5 3a16.998 16.998 0 0 1 2.283 12.157"></path><path d="M16 19h6"></path><path d="M19 16v6"></path></svg>
+                      Add Country
+                    </button>
+                  </div>
+                </div>
               </td>
             </tr>
           </tfoot>
@@ -203,7 +197,7 @@ const Countries = () => {
           <div className="col-md-12">
             <div className="mb-3">
               <div className="divide-y">
-                <div>
+                {/* <div>
                   <label className="row">
                     <span className="col">Allow Shop</span>
                     <span className="col-auto">
@@ -211,8 +205,8 @@ const Countries = () => {
                     </span>
                     <span className="text-danger"></span>
                   </label>
-                </div>
-                <div>
+                </div> */}
+                {/* <div>
                   <label className="row">
                     <span className="col">Allow Enroll</span>
                     <span className="col-auto">
@@ -220,7 +214,7 @@ const Countries = () => {
                     </span>
                     <span className="text-danger"></span>
                   </label>
-                </div>
+                </div> */}
                 <div>
                   <label className="row">
                     <span className="col">Add Tax</span>
@@ -230,7 +224,7 @@ const Countries = () => {
                     <span className="text-danger"></span>
                   </label>
                 </div>
-                <div>
+                {/* <div>
                   <label className="row">
                     <span className="col">Require FIN</span>
                     <span className="col-auto">
@@ -238,7 +232,7 @@ const Countries = () => {
                     </span>
                     <span className="text-danger"></span>
                   </label>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
