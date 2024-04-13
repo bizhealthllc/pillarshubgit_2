@@ -15,6 +15,10 @@ const ChangePlacementModal = ({ tree, treeId, placement, refetch }) => {
 
   useEffect(() => {
     if (placement) {
+      if (tree.legNames && !placement.uplineLeg) {
+        placement.uplineLeg = tree.legNames[0].toLowerCase()
+      }
+
       setActiveItem(placement);
       setModalShow(true);
     } else {

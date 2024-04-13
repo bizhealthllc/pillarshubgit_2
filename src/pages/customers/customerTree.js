@@ -9,6 +9,7 @@ import { treeBorad } from './treeComponents/treeView.js';
 import TreeNode from './treeComponents/treeNode';
 import HoldingTank from './treeComponents/holdingTank';
 import ChangePlacementModal from './treeComponents/changePlacementModal';
+import LoadingNode from './treeComponents/loadingNode.js';
 
 var GET_DATA = gql`query ($nodeIds: [String]!, $treeIds: [String]!, $period: BigInt!) {
   customers(idList: $nodeIds) {
@@ -70,7 +71,9 @@ const CustomerTree = () => {
         function (node) {
           return <TreeNode node={node} />
         },
-        function (id) { return <div>Loading {id}</div>}
+        function (id) { 
+          return <LoadingNode node={id} />
+        }
       );
     }
   }, [data]);
@@ -81,7 +84,7 @@ const CustomerTree = () => {
   var tree = data.trees[0];
 
   return <>
-    <PageHeader preTitle={`${data?.trees[0].name} Tree`} title={data?.customers[0].fullName} pageId="tree" customerId={params.customerId}>
+    <PageHeader preTitle={`${data?.trees[0].name} Tree`} title={data?.customers[0].fullName} pageId="tree" customerId={params.customerId} subPage={params.treeId}>
       <CardHeader>
         {/* <AutoComplete /> */}
         <PeriodPicker periodId={periodId} setPeriodId={handlePeriodChange} />

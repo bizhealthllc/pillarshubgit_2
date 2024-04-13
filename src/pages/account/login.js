@@ -56,7 +56,7 @@ export default function Login({ setToken }) {
         <div className="card card-md box-shadow">
           <div className="card-body">
             <div className="text-center mb-4 d-print-none text-white">
-              <img src={theme?.loginLogo?.url ?? `/images/logo-dark.png`} alt="Pillars" style={{ maxWidth: '300px', maxHeight: '65px' }} />
+              <img src={theme?.loginLogo?.url ?? `/images/logo-dark.png`} alt="Pillars" style={{ maxWidth: '300px', maxHeight: '165px' }} />
             </div>
             <h2 className="h2 text-center mb-4">Log into your account</h2>
             <form onSubmit={handleSubmit} autoComplete="off" noValidate>

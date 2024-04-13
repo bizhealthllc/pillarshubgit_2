@@ -197,7 +197,7 @@ const Theme = () => {
           <div className="col">
             <div className="border d-flex align-items-center p-3" style={{ backgroundColor: (item?.loginColor ?? '#f8fafc') }}>
               <div className="d-flex align-items-center border p-4" style={{ backgroundColor: '#fff' }} >
-                <img src={loginLogo} alt="Pillars" style={{ maxWidth: '300px', maxHeight: '65px' }} />
+                <img src={loginLogo} alt="Pillars" style={{ maxWidth: '300px', maxHeight: '165px' }} />
               </div>
               <div className="ms-auto me-3">
                 <button onClick={() => handleButtonClick("loginLogo")} className="btn btn-default">

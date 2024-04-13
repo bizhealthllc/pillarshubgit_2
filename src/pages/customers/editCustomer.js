@@ -219,7 +219,7 @@ const EditCustomer = () => {
                     </div>
                     <div className="col-md-6">
                       <div className="mb-3">
-                        <label className="form-label">Web Alias</label>
+                        <label className="form-label">Handle</label>
                         <input className="form-control" name="webAlias" value={activeItem.webAlias} onChange={(event) => handleChange(event.target.name, event.target.value)} />
                         <span className="text-danger"></span>
                       </div>

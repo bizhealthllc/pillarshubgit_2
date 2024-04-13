@@ -16,6 +16,7 @@ var GET_CUSTOMERS = gql`query($offset: Int!, $first: Int!, $search: String!){
     enrollDate
     profileImage
     webAlias
+    scopeLevel
     status{
       id
       name
@@ -42,12 +43,12 @@ const Customers = () => {
   if (loading) return <DataLoading />;
   if (error) return `Error! ${error}`;
 
-  const handleSubmit = (searchText) => {
+  /* const handleSubmit = (searchText) => {
     refetch({ search: searchText, offset: 0 });
-  }
+  } */
 
   return (
-    <PageHeader title="Customers" onSearch={handleSubmit}>
+    <PageHeader title="Customers" >
       <CardHeader>
         {GetScope() == undefined &&
           <div className="dropdown">
@@ -67,8 +68,8 @@ const Customers = () => {
                   <thead>
                     <tr>
                       <th className="text-center w-1"><i className="icon-people"></i></th>
-                      <th>User</th>
-                      <th>webAlias</th>
+                      <th>Customer</th>
+                      <th>Handle</th>
                       <th>Customer Type</th>
                       <th>Status</th>
                       <th>Phone Number</th>
@@ -78,7 +79,7 @@ const Customers = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {data.customers && data.customers.map((item) => {
+                    {data.customers && data.customers.filter((item) => item.scopeLevel != 'UPLINE').map((item) => {
                       return <tr key={item.id}>
                         <td className="text-center">
                           <Avatar name={item.fullName} url={item.profileImage} />

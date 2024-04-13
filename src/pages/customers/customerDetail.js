@@ -137,7 +137,7 @@ const CustomerDetail = () => {
     })
   }
 
-  let customer = data.customers[0];
+  let customer = data.customers[0] ?? {id: params.customerId, cards: []};
   let commissionDetail = data.compensationPlans[0].period;
   let address = customer.addresses ? customer.addresses[0] : { line1: '' };
   let trees = data.trees;
@@ -197,8 +197,8 @@ const CustomerDetail = () => {
                     <LocalDate dateString={customer.enrollDate} />
                   </dd>
                   <dd className="col-5">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="icon me-2 text-muted" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 10v11l-5 -3l-5 3v-11a3 3 0 0 1 3 -3h4a3 3 0 0 1 3 3z" /><path d="M11 3h5a3 3 0 0 1 3 3v11" /></svg>
-                    Web Alias
+                    <svg  xmlns="http://www.w3.org/2000/svg" className="icon me-2 text-muted" width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  strokeWidth="2"  strokeLinecap="round"  strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7.5 7.5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M3 6v5.172a2 2 0 0 0 .586 1.414l7.71 7.71a2.41 2.41 0 0 0 3.408 0l5.592 -5.592a2.41 2.41 0 0 0 0 -3.408l-7.71 -7.71a2 2 0 0 0 -1.414 -.586h-5.172a3 3 0 0 0 -3 3z" /></svg>
+                    Handle
                   </dd>
                   <dd className="col-7 text-end">{customer.webAlias ?? customer.id}</dd>
                   <dd className="col-5">

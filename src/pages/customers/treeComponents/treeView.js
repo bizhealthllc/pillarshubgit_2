@@ -32,7 +32,7 @@ function treeBorad(id, rootId, treeId, periodId, dataUrl, selectNode, getTemplat
 
   canvasBox.classList.add("genealogy-host");
   tagbox.style.overflow = 'hidden';
-  tagbox.style.minHeight = "1500px";
+  //tagbox.style.minHeight = "1500px";
   tagbox.style.position = "fixed";
 
   var ctx = new Object();
@@ -102,7 +102,7 @@ function treeBorad(id, rootId, treeId, periodId, dataUrl, selectNode, getTemplat
     if (evt.touches.length > 1) {
       // Calculate the distance between the two pointers
       let x1 = evt.touches[0].pageX;
-      let y1 = evt.touches[0].pageY; 
+      let y1 = evt.touches[0].pageY;
       let x2 = evt.touches[1].pageX;
       let y2 = evt.touches[1].pageY;
       let curDiff = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
@@ -124,9 +124,9 @@ function treeBorad(id, rootId, treeId, periodId, dataUrl, selectNode, getTemplat
       lastX = (midX - canvas.offsetLeft);
       lastY = (midY - canvas.offsetTop);
       dragStart = ctx.transformedPoint(lastX, lastY);
-  
+
       // Cache the distance for the next move event
-      prevDiff = curDiff; 
+      prevDiff = curDiff;
     } else {
       var lX = (evt.touches[0].pageX - canvas.offsetLeft);
       var lY = (evt.touches[0].pageY - canvas.offsetTop);
@@ -144,15 +144,15 @@ function treeBorad(id, rootId, treeId, periodId, dataUrl, selectNode, getTemplat
   }, false);
 
   canvasBox.addEventListener("touchend", (evt) => {
-    
-    if (evt.touches.length == 1){
+
+    if (evt.touches.length == 1) {
       lastX = (evt.touches[0].pageX - canvas.offsetLeft);
       lastY = (evt.touches[0].pageY - canvas.offsetTop);
       dragStart = ctx.transformedPoint(lastX, lastY);
     }
 
   }, false);
-  
+
 
   var scaleFactor = 1.1;
   var zoom = function (clicks) {
@@ -243,8 +243,17 @@ function treeBorad(id, rootId, treeId, periodId, dataUrl, selectNode, getTemplat
     Post(dataUrl, data, (nodeData) => {
       parent.removeChild(loading);
       var baseNode = nodeData.data.trees[0];
+      var hasLegs = false
+
+      if (nodeData.data.trees[0].legNames != undefined) {
+        hasLegs = true;
+      }
+
       for (const node of baseNode.nodes) {
-        addChild(parent, { customer: node.customer, nodeId: node.nodeId, card: node.customer?.cards[0], childArr: node.totalChildNodes > 0 ? [] : null });
+        var expander = addChild(parent, { customer: node.customer, nodeId: node.nodeId, card: node.customer?.cards[0], childArr: (node.totalChildNodes > 0 || hasLegs) ? [] : null });
+        if (expander) {
+          handleExpand(expander);
+        }
       }
 
       ctx.translate((canvasBox.clientWidth / 2) - 150, 0);
@@ -351,7 +360,32 @@ function treeBorad(id, rootId, treeId, periodId, dataUrl, selectNode, getTemplat
     });
   }
 
+  function handleExpand(expandDiv) {
+    var target = expandDiv.parentElement.parentElement;
+    var startPos = expandDiv.offsetLeft;
+
+    for (const child of target.children) {
+      if (child.tagName == 'UL') {
+        if (child.style.display === "none") {
+          if (child.children.length == 0) addNodes(child, expandDiv);
+          child.style.display = "block";
+          expandDiv.classList.remove("collaped");
+          expandDiv.classList.add("expanded");
+        } else {
+          child.style.display = "none";
+          expandDiv.classList.remove("expanded");
+          expandDiv.classList.add("collaped");
+        }
+      }
+    }
+
+    var endPos = expandDiv.offsetLeft;
+    ctx.translate(startPos - endPos, 0);
+    redraw();
+  }
+
   function addChild(ul, node) {
+    var result = null;
     if (node.uplineLeg?.toLowerCase() == "holding tank") return;
     var template = renderToStaticMarkup(getTemplate(node));
     var li = document.createElement('li');
@@ -395,28 +429,8 @@ function treeBorad(id, rootId, treeId, periodId, dataUrl, selectNode, getTemplat
       nodeDiv.appendChild(expandDiv);
       expandDiv.addEventListener("click", function (e) {
         if (!dragged) {
-          var target = e.currentTarget.parentElement.parentElement;
-          var startPos = e.currentTarget.offsetLeft;
-
-          for (const child of target.children) {
-            if (child.tagName == 'UL') {
-              if (child.style.display === "none") {
-                if (child.children.length == 0) addNodes(child, e.currentTarget);
-                child.style.display = "block";
-                e.currentTarget.classList.remove("collaped");
-                e.currentTarget.classList.add("expanded");
-              } else {
-                child.style.display = "none";
-                e.currentTarget.classList.remove("expanded");
-                e.currentTarget.classList.add("collaped");
-              }
-            }
-          }
-
-          var endPos = e.currentTarget.offsetLeft;
-          ctx.translate(startPos - endPos, 0);
-          redraw();
-          event.stopPropagation();
+          handleExpand(e.currentTarget);
+          e.stopPropagation();
         }
       });
 
@@ -431,9 +445,11 @@ function treeBorad(id, rootId, treeId, periodId, dataUrl, selectNode, getTemplat
           addChild(ul1, child);
         }
       }
+      result = expandDiv;
     }
 
     ul.appendChild(li);
+    return result;
   }
 
   function trackTransforms() {
@@ -491,7 +507,6 @@ function treeBorad(id, rootId, treeId, periodId, dataUrl, selectNode, getTemplat
       return pt.matrixTransform(xform.inverse());
     }
   }
-
 }
 
 export { treeBorad };

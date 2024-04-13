@@ -4,7 +4,7 @@ import { Get } from '../hooks/useFetch';
 
 import "./autocomplete.css";
 
-const AutoComplete = ({ name, value, placeholder = 'Search...', onChange, disabled, errorText, errored }) => {
+const AutoComplete = ({ name, value, placeholder = 'Search...', showIcon = false, onChange, disabled, errorText, errored }) => {
   const [inputId] = useState(() => 'modal_' + crypto.randomUUID().replace(/-/g, '_'));
   const [loading, setLoading] = useState(false);
   const handleChange = (v) => {
@@ -25,9 +25,9 @@ const AutoComplete = ({ name, value, placeholder = 'Search...', onChange, disabl
   return <>
     <div className="input-icon">
       <input id={inputId} className={inputClass} placeholder={placeholder} name={name} disabled={disabled} autoComplete='off' />
-      {/* <span className="input-icon-addon">
-            <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><circle cx="10" cy="10" r="7" /><line x1="21" y1="21" x2="15" y2="15" /></svg>
-        </span> */}
+      {showIcon && <span className="input-icon-addon">
+        <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><circle cx="10" cy="10" r="7" /><line x1="21" y1="21" x2="15" y2="15" /></svg>
+      </span>}
       {loading && <span className="input-icon-addon">
         <div className="spinner-border spinner-border-sm text-secondary" role="status"></div>
       </span>}
@@ -42,6 +42,7 @@ AutoComplete.propTypes = {
   name: PropTypes.string,
   value: PropTypes.string,
   placeholder: PropTypes.string,
+  showIcon: PropTypes.bool,
   onChange: PropTypes.func,
   disabled: PropTypes.bool,
   errorText: PropTypes.string,
@@ -94,7 +95,7 @@ function autocomplete(inp, onItemSelect, setLoading) {
     setLoading(true);
 
     Get(`/api/v1/Customers/Find?search=${search}&count=10&fullName=true&emailAddress=true&webAlias=true`, (customers) => {
-      var arr = customers.map((customer) => { return { id: customer.id, value: formatText(customer) } });
+      var arr = customers.filter((item) => item.scopeLevel != 'Upline').map((customer) => { return { id: customer.id, value: formatText(customer) } });
       setLoading(false);
       /*for each item in the array...*/
       for (i = 0; i < arr.length; i++) {

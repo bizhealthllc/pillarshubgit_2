@@ -6,6 +6,7 @@ import StatusPill from '../statusPill';
 import Avatar from '../../../components/avatar';
 import LocalDate from '../../../util/LocalDate';
 import { GetScope } from "../../../features/authentication/hooks/useToken"
+import DataLoading from '../../../components/dataLoading';
 
 let GET_CUSTOMER = `query ($nodeIds: [String]!, $period: BigInt!, $treeId: ID!) {
   customers(idList: $nodeIds) {
@@ -13,6 +14,7 @@ let GET_CUSTOMER = `query ($nodeIds: [String]!, $period: BigInt!, $treeId: ID!) 
     fullName
     enrollDate
     profileImage
+    webAlias
     status
     {
       id,
@@ -92,8 +94,8 @@ const TreeSideCard = ({ customerId, periodId, treeId, showModal }) => {
   }, [customerId]);
 
   return <OffCanvas showModal={show} onHide={handleClose} >
-    {loading && <span>loading...</span>}
-    {customer && <>
+    {loading && <span><DataLoading /></span>}
+    {!loading && customer && <>
       <div className="card-header">
         <h2 className="card-title">
           <div className="row g-2 align-items-top">
@@ -102,7 +104,7 @@ const TreeSideCard = ({ customerId, periodId, treeId, showModal }) => {
             </div>
             <div className="col ">
               <h2 className="card-title m-0">{customer?.fullName}</h2>
-              <a className='small text-muted' href={`/customers/${customer.id}/summary`}>{customer.id}</a>
+              <a className='small text-muted' href={`/customers/${customer.id}/summary`}>{customer.webAlias ?? customer.id}</a>
             </div>
           </div>
         </h2>

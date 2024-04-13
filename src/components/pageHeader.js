@@ -22,7 +22,12 @@ const PageHeader = ({ preTitle, title, postTitle, children, breadcrumbs, onSearc
 
   const handleChange = (name, value) => {
     setSearchText(value);
-    location = `/customers/${value}/summary`;
+    if (onSearch == undefined) {
+      location = `/customers/${value}/summary`;
+    } else {
+      onSearch(value);
+      setSearchText();
+    }
   }
 
   const handleSubmit = async e => {
@@ -49,25 +54,25 @@ const PageHeader = ({ preTitle, title, postTitle, children, breadcrumbs, onSearc
             <CustomerNav customerId={customerId} pageId={pageId} />
           </>}
 
-            <div className={(GetScope() == undefined && customerId) ? 'ms-auto me-3 w-25' : 'w-50'}>
-              <form onSubmit={handleSubmit} autoComplete="off">
-                <div className="input-icon">
-                  <span className="input-icon-addon">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><circle cx="10" cy="10" r="7"></circle><line x1="21" y1="21" x2="15" y2="15"></line></svg>
-                  </span>
-                  {/* <input className="form-control" tabIndex="1" placeholder="Enter search term" onChange={e => setSearchText(e.target.value)} /> */}
-                  <AutoComplete name="search" placeholder="Search Team Members" value={searchText} onChange={handleChange} />
-                </div>
-              </form>
+          <div className={(GetScope() == undefined && customerId) ? 'ms-auto me-3 w-50' : 'w-50'}>
+            <form onSubmit={handleSubmit} autoComplete="off">
+              <div className="input-icon">
+                <span className="input-icon-addon">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><circle cx="10" cy="10" r="7"></circle><line x1="21" y1="21" x2="15" y2="15"></line></svg>
+                </span>
+                {/* <input className="form-control" tabIndex="1" placeholder="Enter search term" onChange={e => setSearchText(e.target.value)} /> */}
+                <AutoComplete name="search" placeholder="Search Team Members" value={searchText} showIcon={true} onChange={handleChange} />
+              </div>
+            </form>
 
-              {/* <div className="input-icon">
+            {/* <div className="input-icon">
                   <span className="input-icon-addon">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path><path d="M21 21l-6 -6"></path></svg>
+                    
                   </span>
                   <input type="text" value="" className="form-control" placeholder="Search…" aria-label="Search in website" />
                 </div> */}
 
-            </div>
+          </div>
         </div>
       </div>
     </header>
@@ -130,5 +135,5 @@ PageHeader.propTypes = {
   onSearch: PropTypes.func,
   breadcrumbs: PropTypes.any,
   customerId: PropTypes.string,
-  pageId: PropTypes.string,
+  pageId: PropTypes.string
 }
