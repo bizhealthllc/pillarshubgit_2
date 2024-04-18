@@ -21,7 +21,7 @@ var GET_CUSTOMERS = gql`query($nodeIds: [String]!, $period: BigInt!){
       name
     }
   }
-  compensationPlans(first: 1){
+  compensationPlans {
     periods(at: $period)
     {
       commissionValues(nodeIds: $nodeIds)
@@ -38,8 +38,8 @@ var GET_CUSTOMERS = gql`query($nodeIds: [String]!, $period: BigInt!){
   }
 }`;
 
-const TopEarnersTable = ({topEarners, periodId}) => {
-  var customerIds = topEarners.map((t) => {return t.description});
+const TopEarnersTable = ({ topEarners, periodId }) => {
+  var customerIds = topEarners.map((t) => { return t.description });
 
   const { loading, error, data } = useQuery(GET_CUSTOMERS, {
     variables: { nodeIds: customerIds, period: parseInt(periodId) },
@@ -48,45 +48,46 @@ const TopEarnersTable = ({topEarners, periodId}) => {
   if (loading) return <DataLoading />;
   if (error) return `Error! ${error}`;
 
-  let ranks = data.compensationPlans[0].ranks;
-  let comValues = data.compensationPlans[0].periods[0].commissionValues;
+  let compensationPlan = data.compensationPlans.find((p) => p.periods.length > 0);
+  let ranks = compensationPlan.ranks ?? [];
+  let comValues = compensationPlan.commissionValues ?? [];
 
   return <table className="table card-table table-vcenter text-nowrap datatable">
     <thead>
-        <tr>
-            <th className="text-center w-1"><i className="icon-people"></i></th>
-            <th>Customer</th>
-            <th>Commissions</th>
-            <th>Rank</th>
-            <th>Status</th>
-            <th>Bonuses</th>
-            <th>Volume</th>
-        </tr>
+      <tr>
+        <th className="text-center w-1"><i className="icon-people"></i></th>
+        <th>Customer</th>
+        <th>Commissions</th>
+        <th>Rank</th>
+        <th>Status</th>
+        <th>Bonuses</th>
+        <th>Volume</th>
+      </tr>
     </thead>
     <tbody>
-        {data?.customers && data.customers.map((customer) => {
+      {data?.customers && data.customers.map((customer) => {
 
-          let bonus = topEarners.find(el => el.description == customer.id);
-          let comvalue = comValues.find(el => el.nodeId == customer.id && el.valueId == "Rank");
-          let rank = ranks.find(el => el.id == comvalue?.value) || { id: comvalue?.value, name: comvalue?.value};
+        let bonus = topEarners.find(el => el.description == customer.id);
+        let comvalue = comValues.find(el => el.nodeId == customer.id && el.valueId == "Rank");
+        let rank = ranks.find(el => el.id == comvalue?.value) || { id: comvalue?.value, name: comvalue?.value };
 
-          return <tr key={customer.id}>
-            <td className="text-center">
-              <Avatar name={customer.fullName} url={customer.profileImage} size="sm" />
-            </td>
-            <td>
-              <a className="text-reset" href={`/Customers/${customer.id}/commissions?periodId=${periodId}`}>{customer.fullName}</a>
-              <div className="small text-muted">{customer.id}</div> 
-            </td>
-            <td>{bonus?.paidAmount.toLocaleString("en-US", { style: 'currency', currency: bonus?.currency ?? 'USD'})}</td>
-            <td>{rank?.name}</td>
-            <td><StatusPill status={customer.status} small="true" /></td>
-            <td>{bonus?.paidCount}</td>
-            <td>{bonus?.totalVolume}</td>
+        return <tr key={customer.id}>
+          <td className="text-center">
+            <Avatar name={customer.fullName} url={customer.profileImage} size="sm" />
+          </td>
+          <td>
+            <a className="text-reset" href={`/Customers/${customer.id}/commissions?periodId=${periodId}`}>{customer.fullName}</a>
+            <div className="small text-muted">{customer.id}</div>
+          </td>
+          <td>{bonus?.paidAmount.toLocaleString("en-US", { style: 'currency', currency: bonus?.currency ?? 'USD' })}</td>
+          <td>{rank?.name}</td>
+          <td><StatusPill status={customer.status} small="true" /></td>
+          <td>{bonus?.paidCount}</td>
+          <td>{bonus?.totalVolume}</td>
         </tr>
-        })}
+      })}
     </tbody>
-  </table> 
+  </table>
 }
 
 export default TopEarnersTable;

@@ -20,7 +20,8 @@ const ForgotPassword = () => {
     const browser = getBrowserInfo(userAgent);
     
     var envPart = theme?.environmentId > 0 ? '&environmentId=' + theme?.environmentId : '';
-    var url = `/Authentication/ResetPassword?emailAddress=${emailAddress}&operatingSystem=${os}&browserName=${browser}${envPart}`;
+    const encodedEmail = encodeURIComponent(emailAddress);
+    var url = `/Authentication/ResetPassword?emailAddress=${encodedEmail}&operatingSystem=${os}&browserName=${browser}${envPart}`;
     SendRequest("POST", url, {}, () => {
       var successAlert = document.getElementById('passwordSuccess');
       successAlert.classList.remove('d-none');

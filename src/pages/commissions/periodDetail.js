@@ -9,7 +9,8 @@ import { ToLocalDate } from "../../util/LocalDate";
 import TopEarnersTable from "./topEarnersTable";
 
 var GET_PERIOD_DETAILS = gql`query ($period: BigInt) {
-  compensationPlans(first: 1) {
+  compensationPlans {
+    name
     period: periods(at: $period) {
       id
       begin
@@ -86,7 +87,7 @@ const PeriodDetail = () => {
   if (loading) return <DataLoading />;
   if (error) return `Error! ${error}`;
 
-  let compensationPlan = data.compensationPlans[0];
+  let compensationPlan = data.compensationPlans.find((p) => p.period.length > 0);
   let summaryPeriod = compensationPlan.period[0];
 
   let period = compensationPlan.periods.find(x => x.begin == summaryPeriod.begin);
@@ -98,7 +99,7 @@ const PeriodDetail = () => {
   let totalFtVolumeTrend = calculateTrend(compensationPlan.firstTime.map(x => x.firstTimeBonus.reduce((partialSum, a) => partialSum + a.totalVolume, 0)));
 
   let topEarners = summaryPeriod.topEarners;
-  let ranks = data.compensationPlans[0].ranks;
+  let ranks = compensationPlan.ranks;
 
   const begin = new Date(period.begin);
   //const today = new Date();
@@ -427,7 +428,7 @@ const PeriodDetail = () => {
   let periodBeginText = ToLocalDate(summaryPeriod.begin, false);
   let periodEndText = ToLocalDate(summaryPeriod.end, false);
 
-  return <PageHeader title="Commission Period Summary" postTitle={`${periodBeginText} - ${periodEndText}`} breadcrumbs={[{ title: 'Commission Periods', link: '/commissions/periods' }, { title: breadcrumbText }]} >
+  return <PageHeader title="Commission Period Summary" postTitle={`${periodBeginText} - ${periodEndText}`} breadcrumbs={[{ title: 'Commission Periods', link: `/commissions/periods?p=${compensationPlan.name}` }, { title: breadcrumbText }]} >
     <div className="container-xl">
       <div className="row row-deck row-cards">
         <div className="col-sm-6 col-lg-3">

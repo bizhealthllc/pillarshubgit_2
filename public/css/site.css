@@ -77,6 +77,19 @@ input[type=number] {
   padding: 1.5rem 1.7rem 0.375rem;
 }
 
+.inverted .card-header-tabs {
+  background: var(--tblr-card-bg);
+  flex: 1;
+  margin: calc(var(--tblr-card-cap-padding-y) * -1) calc(var(--tblr-card-cap-padding-x) * -1) calc(var(--tblr-card-cap-padding-y) * -1);
+  padding: calc(var(--tblr-card-cap-padding-y) * .5) calc(var(--tblr-card-cap-padding-x) * .5) 0
+}
+
+
+.inverted .card-header-tabs .nav-link.active {
+  background-color: var(--tblr-bg-surface-secondary);
+  border-bottom-color: var(--tblr-bg-surface-secondary)
+}
+
 .widgetListItem {
   color: var(--tblr-table-color)
 }

@@ -4,8 +4,9 @@ import PropTypes from 'prop-types';
 import { ToLocalDate } from "../util/LocalDate";
 
 var GET_PERIOD_DETAILS = gql`query ($date: Date!) {
-  compensationPlans(first: 1) {
-    periods(date: $date, previous: 12) {
+  compensationPlans {
+    name
+    periods(date: $date, previous: 10) {
       id
       begin
       end
@@ -45,16 +46,28 @@ const PeriodPicker = ({ periodId, setPeriodId }) => {
   if (loading) return <span>-</span>;
   if (error) return `Error! ${error}`;
 
-  let copy = [...data.compensationPlans[0].periods];
-  let periods = copy.reverse();
 
   return <>
     <select className="form-select" value={periodId} onChange={handleChange}>
-      {periods && periods.map((period) => {
-        return <option key={period.id} value={period.id}>{ToLocalDate(period.end, true)}</option>
-      })}
+      {data.compensationPlans.length > 1 ? (
+        data.compensationPlans.map((plan) => {
+          return <optgroup key={plan.id} label={plan.name}>
+            {getOptions(plan)}
+          </optgroup>
+        })
+      ) : (
+        getOptions(data.compensationPlans[0])
+      )}
     </select>
   </>
+}
+
+function getOptions(plan) {
+  let copy = [...plan.periods];
+  let periods = copy.reverse();
+  return (periods && periods.map((period) => {
+    return <option key={period.id} value={period.id}>{ToLocalDate(period.end, true)}</option>
+  }))
 }
 
 export default PeriodPicker;
