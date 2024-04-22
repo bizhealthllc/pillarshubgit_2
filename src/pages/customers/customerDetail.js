@@ -158,8 +158,8 @@ const CustomerDetail = () => {
         <div className="row row-deck row-cards">
           <div className="col-md-5 col-xl-4">
             <div className="card">
-              <div className="card-body">
-                <div className="row g-2 align-items-top">
+              <div className="card-header">
+                <div className="row w-100 g-2 align-items-center">
                   <div className="col-auto">
                     <Avatar className="me-2" name={customer.fullName} url={customer.profileImage} />
                   </div>
@@ -168,7 +168,7 @@ const CustomerDetail = () => {
                       <span>{customer.fullName}</span>
                     </h4>
                     <div className="text-muted">
-                      {customer.customerType?.name}
+                      {customer.customerType?.name ?? 'Unknown'}
                     </div>
                   </div>
                   <div className="col-auto">
