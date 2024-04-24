@@ -8,6 +8,7 @@ import CalendarContent from "./calendarContent";
 import CardContent from "./cardContent";
 import BannerContent from "./bannerContent";
 import SocialLinksContent from "./socialLinksContent";
+import HtmlContent from "./htmlContent";
 
 const WidgetContent = ({ widget, updateWidget, trees }) => {
   
@@ -26,6 +27,8 @@ const WidgetContent = ({ widget, updateWidget, trees }) => {
       return <BannerContent widget={widget} updateWidget={updateWidget} />;
     case WidgetTypes.SocialLinks:
       return <SocialLinksContent widget={widget} updateWidget={updateWidget} />;
+    case WidgetTypes.Html:
+      return <HtmlContent widget={widget} updateWidget={updateWidget} />
   }
 
   return <></>

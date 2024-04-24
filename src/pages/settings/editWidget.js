@@ -73,7 +73,7 @@ const EditWidget = () => {
                     <a href="#tabs-home-7" className="nav-link active" data-bs-toggle="tab" aria-selected="true" role="tab">Content</a>
                   </li>
                   <li className="nav-item" role="presentation">
-                    <a href="#tabs-advanced-7" className="nav-link" data-bs-toggle="tab" aria-selected="false" role="tab" tabIndex="-1">Advanced</a>
+                    <a href="#tabs-advanced-7" className="nav-link" data-bs-toggle="tab" aria-selected="false" role="tab" tabIndex="-1">CSS Overrides</a>
                   </li>
                 </ul>
               </div>
@@ -138,7 +138,6 @@ const EditWidget = () => {
                   </div>
                   <div className="tab-pane" id="tabs-advanced-7" role="tabpanel">
                     <div className="col-12 mb-3">
-                      <label className="form-label">CSS Override</label>
                       <CssEditor name="css" value={item?.css} onChange={handleChange} />
                     </div>
                   </div>

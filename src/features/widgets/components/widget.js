@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from 'prop-types';
+import Mustache from 'mustache';
 import { WidgetTypes } from "../hooks/useWidgets";
 
 import Avatar from '../../../components/avatar';
@@ -17,7 +18,10 @@ const Widget = ({ widget, customer, commissionDetail, trees, isPreview = false }
   if (widget == undefined) return <EmptyContent title="Widget not found" text="Please check your widget library to verify it has been configured correctly." />;
   if (!customer) {
     customer = {
-      fullName: 'Example Customer', profileImage: '', customerType: { name: 'Customer' }, status: { name: 'Active' },
+      id: "EX456", fullName: 'Example Customer', profileImage: '', customerType: { name: 'Customer' }, status: { name: 'Active', statusClass: "Active" }, 
+      emailAddress: 'example@pillarshub.com', language: "en",
+    phoneNumbers: [{type: 'Mobile', number: '(555) 555-5555'}, {type: 'Work', number: '(333) 333-3333'}],
+      addresses: [{type: "Shipping", line1: '', line2: '', line3: '', city: '', stateCode: '', zip: '', countryCode: '' }],
       cards: [{ values: [{ valueName: 'Example', valueId: 'Ex', value: '22' }] }]
     }
   }
@@ -213,6 +217,19 @@ function Content(widget, customer, commissionDetail, trees, isPreview) {
 
       </div>
     </div>
+  }
+
+  if (widget.type == WidgetTypes.Html) {
+    const html = widget.panes ? widget.panes[0]?.text : '';
+    let renderedHTML = '';
+
+    try {
+      renderedHTML = Mustache.render(html, { customer: customer });
+    } catch {
+      //Nothing
+    }
+
+    return <div dangerouslySetInnerHTML={{ __html: renderedHTML }}></div>
   }
 
   return <div id={`wdg_${widget.id}`} className={`card`}>
