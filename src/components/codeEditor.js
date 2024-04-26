@@ -8,7 +8,7 @@ import 'codemirror/mode/css/css';
 import 'codemirror/mode/htmlmixed/htmlmixed';
 
 
-const CodeEditor = ({ name, value, onChange }) => {
+const CodeEditor = ({ name, value, mode = 'htmlmixed', onChange }) => {
 
   const handleChange = (value) => {
     onChange(name, value);
@@ -18,7 +18,7 @@ const CodeEditor = ({ name, value, onChange }) => {
     <CodeMirror
       value={value}
       options={{
-        mode: 'htmlmixed',
+        mode: mode,
         lineNumbers: true,
       }}
       onBeforeChange={(editor, data, value) => {
@@ -33,5 +33,6 @@ export default CodeEditor;
 CodeEditor.propTypes = {
   name: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
+  mode: PropTypes.string,
   onChange: PropTypes.func.isRequired
 }
