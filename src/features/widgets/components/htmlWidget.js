@@ -6,40 +6,52 @@ import { SendRequest } from '../../../hooks/usePost';
 
 const HtmlWidget = ({ html, customer, widget }) => {
   var [data, setData] = useState({});
+  var [query, setQuery] = useState({});
   var [output, setOutput] = useState();
 
   useEffect(() => {
-    if (html) {
+    if (widget) {
       let pane = widget.panes ? widget.panes[0] : {};
+      if ((pane.title?.trim() ?? '') != '') {
+        if (pane.title != query.query) {
+          setQuery({ method: pane.imageUrl?.toLowerCase(), query: pane.title });
+        }
+      }
+    }
+  }, [widget])
 
-      //if ((pane.title?.trim() ?? '') != '') {
-        if (pane.imageUrl?.toLowerCase() == "api") {
-          var url = Mustache.render(pane.title, { customer: customer, data: data });
-          try {
-            SendRequest('GET', url, {}, (data) => {
-              setData(data)
-            }, (error, code) => {
-              setData({ error: `${code} - ${error}` });
-            });
-          } catch (error) {
-            setData({ error: `${error}` });
-          }
-        } else {
-          var ttt = { query: pane.title, variables: { customerId: customer.id } };
-          SendRequest('POST', 'https://api.pillarshub.com/graphql', ttt, (r) => {
-            if (r.errors) {
-              setData({ error: JSON.stringify(r.errors) });
-            } else {
-              setData(r.data)
-            }
+  useEffect(() => {
+    if (query && query.query) {
+      if (query.method == "api") {
+        var url = Mustache.render(query.query, { customer: customer, data: data });
+        try {
+          SendRequest('GET', url, {}, (data) => {
+            setData(data)
           }, (error, code) => {
             setData({ error: `${code} - ${error}` });
           });
+        } catch (error) {
+          setData({ error: `${error}` });
         }
-      //} else {
-      //  setData({});
-      //}
+      } else {
+        var ttt = { query: query.query, variables: { customerId: customer.id } };
+        SendRequest('POST', 'https://api.pillarshub.com/graphql', ttt, (r) => {
+          if (r.errors) {
+            setData({ error: JSON.stringify(r.errors) });
+          } else {
+            setData(r.data)
+          }
+        }, (error, code) => {
+          setData({ error: `${code} - ${error}` });
+        });
+      }
+    } else {
+      setData({});
+    }
+  }, [query])
 
+  useEffect(() => {
+    if (html) {
       try {
         var renderedHTML = Mustache.render(html, { customer: customer, data: data });
         setOutput(renderedHTML);
