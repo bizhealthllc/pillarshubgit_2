@@ -54,7 +54,7 @@ const PageHeader = ({ preTitle, title, postTitle, children, breadcrumbs, onSearc
             <CustomerNav customerId={customerId} pageId={pageId} />
           </>}
 
-          <div className={(GetScope() == undefined && customerId) ? 'ms-auto me-3 w-50' : 'w-50'}>
+          <div className={(GetScope() == undefined && customerId) ? 'ms-auto me-3 w-25' : 'w-50'}>
             <form onSubmit={handleSubmit} autoComplete="off">
               <div className="input-icon">
                 <span className="input-icon-addon">
@@ -79,7 +79,7 @@ const PageHeader = ({ preTitle, title, postTitle, children, breadcrumbs, onSearc
 
 
     <div className="page-wrapper">
-      {title && <div className="container-xl">
+      {<div className="container-xl">
         <div className="page-header d-print-none">
           <div className="row g-3 align-items-center">
             <div className="col me-4">
@@ -96,9 +96,9 @@ const PageHeader = ({ preTitle, title, postTitle, children, breadcrumbs, onSearc
               {preTitle && <div className="page-pretitle">
                 {preTitle}
               </div>}
-              <h2 className="page-title">
+              {title && <h2 className="page-title">
                 <span className="text-truncate">{title}</span>
-              </h2>
+              </h2>}
               {postTitle && <div className="page-pretitle">
                 {postTitle}
               </div>}

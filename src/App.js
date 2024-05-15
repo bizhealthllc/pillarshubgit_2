@@ -65,6 +65,9 @@ import EditWidget from "./pages/settings/editWidget";
 import Dashboard from "./pages/customers/dashboard";
 import PaymentHistoryDetail from "./pages/commissions/paymentHistoryDetail";
 import PlacementRules from "./pages/settings/placementRules";
+import Training from "./pages/tools/training";
+import Course from "./pages/customers/course";
+import EditCourse from "./pages/tools/editCourse";
 
 function App() {
   const { token, setToken, clearToken } = useToken();
@@ -97,6 +100,8 @@ function App() {
             <Route path="customers/:customerId/orders/:orderId" element={<OrderDetail />} />
             <Route path="customers/:customerId/shop" element={<Shop />} />
             <Route path="customers/:customerId/checkout" element={<Checkout />} />
+            <Route path="customers/:customerId/training" element={<Training />} />
+            <Route path="customers/:customerId/training/:courseId" element={<Course />} />
             <Route path="customers/:customerId/account/profile" element={<CustomerProfile />} />
             <Route path="customers/:customerId/account/security" element={<CustomerSecurity />} />
             <Route path="customers/:customerId/account/moneyin" element={<CustomerMoneyIn />} />
@@ -123,6 +128,8 @@ function App() {
             <Route path="commissions/paid/:batchId" element={<PaymentHistoryDetail />} />
             <Route path="media" element={<MediaList />} />
             <Route path="schedule" element={<Schedule />} />
+            <Route path="training" element={<Training />} />
+            <Route path="training/:courseId" element={<EditCourse />} />
             <Route path="reports" element={<Reports />} />
             <Route path="reports/:reportId" element={<Report />} />
             <Route path="tools/adjustments" element={<Adjustments />} />

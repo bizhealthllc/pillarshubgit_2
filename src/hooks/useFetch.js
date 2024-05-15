@@ -23,28 +23,32 @@ function useFetch(url, params) {
 
 
 
-  function get_private(prms) {    
-    const objString = prms ? '?' + Object.entries(prms).map(([key, value]) => {
-      if (Array.isArray(value)) {
-        // If the value is an array, repeat the parameter for each element
-        return value.map((element) => `${key}=${encodeURIComponent(element)}`).join('&');
-      } else {
-        // If the value is not an array, just include the parameter once
-        return `${key}=${encodeURIComponent(value)}`;
-      }
-    }).join('&') : '';
+  function get_private(prms) {
+    if (url) {
+      const objString = prms ? '?' + Object.entries(prms).map(([key, value]) => {
+        if (Array.isArray(value)) {
+          // If the value is an array, repeat the parameter for each element
+          return value.map((element) => `${key}=${encodeURIComponent(element)}`).join('&');
+        } else {
+          // If the value is not an array, just include the parameter once
+          return `${key}=${encodeURIComponent(value)}`;
+        }
+      }).join('&') : '';
 
-    setLoading(true);
-    Get(url + objString, (r) => {
-      setLoading(false);
-      setVariables(prms);
-      setError(null);
-      setData(r);
-    },
-      (error) => {
+      setLoading(true);
+      Get(url + objString, (r) => {
+        setLoading(false);
+        setVariables(prms);
+        setError(null);
+        setData(r);
+      }, (error) => {
         setLoading(false);
         setError(error);
       });
+    } else {
+      setLoading(false);
+      setData();
+    }
   }
 
   return { data, loading, error, variables, refetch: refetch }

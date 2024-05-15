@@ -3,7 +3,7 @@ import { Editor as MCE } from '@tinymce/tinymce-react';
 import PropTypes from 'prop-types';
 
 
-const Editor = ( { name, value, onChange } ) => {
+const Editor = ( { name, value, height = 300, mode = "simple", onChange } ) => {
     const editorRef = useRef(null);
   
     const handleChange = () => {
@@ -11,17 +11,21 @@ const Editor = ( { name, value, onChange } ) => {
         onChange(name, value);
     };
 
+    let simple = mode == 'simple';
+
     return <>
         <MCE
         tinymceScriptSrc={'/lib/tinymce/tinymce.min.js'}
         onInit={(evt, editor) => editorRef.current = editor}
-        onChange={handleChange}
+        onEditorChange={handleChange}
         name={name}
-        initialValue={value}
+        value={value ?? ''}
         init={{
-          height: 300,
-          menubar: false,
-          statusbar: false,
+          height: height,
+          menubar: !simple,
+          statusbar: !simple,
+          promotion: false,
+          branding: false,
           plugins: [
             'advlist', 'autolink', 'lists', 'link', 'image', 'charmap',
             'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
@@ -41,6 +45,8 @@ export default Editor;
 
 Editor.propTypes = {
   name: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
+  value: PropTypes.string,
+  height: PropTypes.number,
+  mode: PropTypes.string,
   onChange: PropTypes.func,
 }

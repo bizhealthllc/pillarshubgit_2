@@ -387,7 +387,7 @@ const PeriodDetail = () => {
       stroke: {
         width: 2,
         lineCap: "round",
-        curve: "straight",
+        curve: "smooth",
       },
       grid: {
         strokeDashArray: 4,
@@ -410,7 +410,7 @@ const PeriodDetail = () => {
         },
       },
       labels: dayArray,
-      colors: ["#206bc4"],
+      colors: ["#bfe399"],
       legend: {
         show: false,
       },
@@ -525,7 +525,7 @@ const PeriodDetail = () => {
                 </div>
                 <div className="card-body">
                   <div className="chart-lg">
-                    <Chart options={chart_volume_byday.options} series={chart_volume_byday.series} type="bar" height="240" />
+                    <Chart options={chart_volume_byday.options} series={chart_volume_byday.series} type={chart_volume_byday.options.chart.type} height="240" />
                   </div>
                 </div>
               </div>
@@ -584,7 +584,7 @@ const PeriodDetail = () => {
                 </div> */}
               </div>
               <div id="chart-commission-earnedbyday">
-                <Chart options={chart_commission_earnedbyday.options} series={chart_commission_earnedbyday.series} type="line" height="152" />
+                <Chart options={chart_commission_earnedbyday.options} series={chart_commission_earnedbyday.series} type={chart_commission_earnedbyday.options.chart.type} height="152" />
               </div>
             </div>
             <div className="card-table table-responsive h-100" >

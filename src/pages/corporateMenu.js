@@ -56,7 +56,7 @@ const CorporateMenu = () => {
       <li className={`nav-item ${location.pathname == '/commissions/periods' ? 'active' : ''}`}>
         <Link className="nav-link" to="/commissions/periods" >
           {icons && <span className="nav-link-icon d-md-none d-lg-inline-block">
-          <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-calendar-dollar" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 21h-7a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v3" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h12.5" /><path d="M21 15h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5" /><path d="M19 21v1m0 -8v1" /></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-calendar-dollar" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M13 21h-7a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v3" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h12.5" /><path d="M21 15h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5" /><path d="M19 21v1m0 -8v1" /></svg>
           </span>}
           Commission Periods
         </Link>
@@ -149,15 +149,6 @@ const CorporateMenu = () => {
 
 
       <li className="sidebar-header">Tools</li>
-      {/*  <li className="nav-item">
-        <a href="#tools-menu" className="nav-link" data-bs-toggle="collapse" aria-expanded={toolsExpanded}>
-          <span className="nav-link-icon d-md-none d-lg-inline-block">
-            <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-tools" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M3 21h4l13 -13a1.5 1.5 0 0 0 -4 -4l-13 13v4"></path><line x1="14.5" y1="5.5" x2="18.5" y2="9.5"></line><polyline points="12 8 7 3 3 7 8 12"></polyline><line x1="7" y1="8" x2="5.5" y2="9.5"></line><polyline points="16 12 21 17 17 21 12 16"></polyline><line x1="16" y1="17" x2="14.5" y2="18.5"></line></svg>
-          </span>
-          <span className="nav-link-title">Tools</span>
-          <span className="nav-link-toggle"></span>
-        </a>
-        <ul className={`dropdown-menu-column collapse ${toolsExpanded ? 'show' : ''}`} id="tools-menu"> */}
       <li className={`nav-item ${location.pathname == '/tools/adjustments' ? 'active' : ''}`}>
         <Link className="nav-link" to="/tools/adjustments" >
           {icons && <span className="nav-link-icon d-md-none d-lg-inline-block">
@@ -182,9 +173,16 @@ const CorporateMenu = () => {
           Documents &amp; Media
         </Link>
       </li>
-      {/*  </ul>
+
+      <li className={`nav-item ${location.pathname == '/training' ? 'active' : ''}`}>
+        <Link className="nav-link" to="/training" >
+          {icons && <span className="nav-link-icon d-md-none d-lg-inline-block">
+            <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icons-tabler-outline icon-tabler-school" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M22 9l-10 -4l-10 4l10 4l10 -4v6" /><path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4" /></svg>
+          </span>}
+          Training Courses
+        </Link>
       </li>
- */}
+
 
       <li className={`nav-item ${location.pathname == '/settings/company' ? 'active' : ''}`}>
         <Link className="nav-link" to="/settings/company" >

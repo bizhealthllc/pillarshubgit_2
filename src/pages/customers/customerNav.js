@@ -62,6 +62,13 @@ const CustomerNav = ({ customerId, pageId }) => {
         </li>
       }
       {GetScope() == null &&
+        <li className={`nav-item ${activeClass(pageId, 'training')}`}>
+          <Link className="nav-link" to={`/customers/${customerId}/training${periodId ? '?periodId=' + periodId : ''}`}>
+            <span className="nav-link-title">Training</span>
+          </Link>
+        </li>
+      }
+      {GetScope() == null &&
         <li className={`nav-item ${activeClass(pageId, 'account')}`}>
           <Link className="nav-link" to={`/customers/${customerId}/account/profile${periodId ? '?periodId=' + periodId : ''}`}>
             <span className="nav-link-title">Account</span>

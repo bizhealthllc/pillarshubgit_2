@@ -41,11 +41,10 @@ const Customers = () => {
   });
 
   if (loading) return <DataLoading />;
-  if (error) return `Error! ${error}`;
-
-  /* const handleSubmit = (searchText) => {
-    refetch({ search: searchText, offset: 0 });
-  } */
+  if (error) return <>
+    <PageHeader title="Customers" >
+      <div className="card"> <div className="card-body"> {JSON.stringify(error)} </div></div>
+    </PageHeader></>;
 
   return (
     <PageHeader title="Customers" >
