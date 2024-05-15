@@ -16,7 +16,6 @@ var GET_COUNTRIES = gql`query ($courseId: BigInt, $customerId: String) {
     introduction
     published
     taskCount
-    completedCount
     progress {
       currentChapter
       currentTask
@@ -28,7 +27,6 @@ var GET_COUNTRIES = gql`query ($courseId: BigInt, $customerId: String) {
       hideInOffset
       offset
       taskCount
-      completedCount
       tasks {
         id
         title
@@ -44,9 +42,9 @@ const Course = () => {
   const customerId = params.customerId;
   const [showInto, setShowIntro] = useState(true);
   const [completing, setCompleting] = useState(false);
-  const [currentStep, setCurrentStep] = useState(true);
+  const [progress, setProgress] = useState(true);
   const [activeStep, setActiveStep] = useState(true);
-  const { data, loading, error, refetch } = useQuery(GET_COUNTRIES, {
+  const { data, loading, error } = useQuery(GET_COUNTRIES, {
     variables: { courseId: Number(courseId), customerId: customerId },
     fetchPolicy: 'no-cache'
   });
@@ -54,7 +52,7 @@ const Course = () => {
   useEffect(() => {
     if (data) {
       if (!data?.courses?.[0].introduction) setShowIntro(false);
-      setCurrentStep(data?.courses?.[0].progress);
+      setProgress(data?.courses?.[0].progress);
       setActiveStep({ chapter: data?.courses?.[0].progress.currentChapter, task: data?.courses?.[0].progress.currentTask, showTask: true });
       setCompleting(false);
     }
@@ -62,7 +60,7 @@ const Course = () => {
 
   if (loading) return <DataLoading />;
   if (error) return `Error loading Documents ${error}`;
-  const defaultImage = 'https://i.ytimg.com/vi/__IOTiZOG_I/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGB8gWShyMA8=&rs=AOn4CLBSiqPHJsPX7znSy8a9pYozU_Dxfg';
+  const defaultImage = '/images/photos/buildings_and_people.png';
 
   const handleStart = () => {
     setShowIntro(false);
@@ -75,14 +73,41 @@ const Course = () => {
   const handleCompleteTask = (chapter, task) => {
     setCompleting(true);
     var progress = { courseId: courseId, chapterId: chapter, taskId: task };
-    SendRequest("PUT", `/api/v1/CourseProgress/${customerId}/CompleteTask`, progress, () => {
-      refetch();
-    }, (error) =>{
+    SendRequest("PUT", `/api/v1/CourseProgress/${customerId}/CompleteTask`, progress, (r) => {
+      setProgress(r);
+      setActiveStep({ chapter: r.currentChapter, task: r.currentTask, showTask: true });
+      setCompleting(false);
+    }, (error) => {
       alert(error);
+      setCompleting(false);
     });
   }
 
+  const calcChapterCompleted = (p, chapterId, count) => {
+    if (p.currentChapter > chapterId) {
+      return count;
+    } else if (p.currentChapter == chapterId) {
+      return p.currentTask;
+    } else {
+      return 0;
+    }
+  }
+
+  const calcTotalCompleted = (progress, chapters) => {
+    return chapters.reduce((completedTasks, chapter) => {
+      if (chapter.id < progress.currentChapter) {
+        return completedTasks + chapter.taskCount;
+      } else if (chapter.id === progress.currentChapter) {
+        return completedTasks + progress.currentTask;
+      } else {
+        return completedTasks;
+      }
+    }, 0);
+  };
+
   const course = data?.courses?.[0] ?? {}
+  const completed = progress.currentChapter == course.chapters.length && activeStep.chapter == course.chapters.length;
+  const started = progress.currentChapter > 0 || progress.currentTask > 0;
 
   return <>
     <PageHeader title={course.title} customerId={customerId} breadcrumbs={[{ title: 'Training Courses', link: `/customers/${customerId}/training` }, { title: course.title }]}>
@@ -98,7 +123,7 @@ const Course = () => {
                 <div className="card-footer">
                   <div className="d-flex">
                     <a href={`/customers/${customerId}/training`} className="btn btn-link">Cancel</a>
-                    <button className="btn btn-primary ms-auto" onClick={handleStart}>{course.completedCount > 0 ? 'Continue' : 'Start'} Course </button>
+                    <button className="btn btn-primary ms-auto" onClick={handleStart}>{started ? 'Continue' : 'Start'} Course </button>
                   </div>
                 </div>
               </div>
@@ -111,14 +136,14 @@ const Course = () => {
                     <div className="steps steps-counter steps-vertical">
 
                       {course?.chapters && course.chapters.map((chapter) => {
-                        const active = chapter.id == currentStep.currentChapter;
-                        const nextChapter = chapter.id > currentStep.currentChapter;
-                        const activeIndex = chapter.id < currentStep.currentChapter ? (chapter.taskCount - 1) : currentStep.currentTask;
+                        const active = chapter.id == progress.currentChapter;
+                        const nextChapter = chapter.id > progress.currentChapter;
+                        const activeIndex = chapter.id < progress.currentChapter ? (chapter.taskCount - 1) : progress.currentTask;
                         return <div key={chapter.id} className={`step-item step-counter-item ${active ? 'active' : ''}`}>
 
                           <a href="#" className="text-body d-block text-decoration-none" data-bs-toggle="collapse" data-bs-target={`#collapse_${chapter.id}`} aria-controls={`collapse_${chapter.id}`} aria-expanded="true">
                             <h3 className="m-0 p-0">{chapter.title}</h3>
-                            <div className="text-muted text-truncate mt-n1">{chapter.completedCount}/{chapter.taskCount} Completed</div>
+                            <div className="text-muted text-truncate mt-n1">{calcChapterCompleted(progress, chapter.id, chapter.taskCount)}/{chapter.taskCount} Completed</div>
                           </a>
 
                           <div id={`collapse_${chapter.id}`} data-bs-parent="#accordion-example" className={`accordion-collapse collapse ${active ? 'show' : ''}`}>
@@ -143,31 +168,42 @@ const Course = () => {
                 </div>
               </div>
             </div>
-            <div className="col">
-              <div className="card">
-                <div className="card-header">
-                  <h3 className="card-title">
-                    <ol className="breadcrumb breadcrumb-bullets" aria-label="breadcrumbs">
-                      {/* <li className="breadcrumb-item">{course.chapters?.[activeStep.chapter]?.title}</li> */}
-                      <li className="breadcrumb-item">{course.chapters?.[activeStep.chapter]?.tasks?.[activeStep.task]?.title}</li>
-                    </ol>
-                  </h3>
-                  <div className="card-actions">
-                    <span>Task {course.completedCount + 1}/{course.taskCount}</span>
-                  </div>
-                </div>
-                <div className="card-body">
-                  {activeStep.showTask && parse(course.chapters?.[activeStep.chapter]?.tasks?.[activeStep.task]?.content ?? '')}
-                  {!activeStep.showTask && <>
-                    <EmptyContent title="Task not available" text="This task is not available until the previouse task has been complted" />
-                  </>}
-                </div>
-                <div className="d-flex">
-                  {completing && <a href="#" className="card-btn" onClick={(e) => { e.preventDefault(); }}><div className="spinner-border spinner-border-sm me-2" role="status"></div> Completing Task</a>}
-                  {!completing && activeStep.showTask && <a href="#" className="card-btn" onClick={(e) => { handleCompleteTask(activeStep.chapter, activeStep.task); e.preventDefault(); }}>Mark Completed</a>}
+            {completed && <>
+              <div className="col-md-4">
+                <div className="card">
+                    <div className="img-responsive img-responsive-21x9 card-img-top" style={{ backgroundImage: `url(${(course.thumbnail ?? '') == '' ? defaultImage : course.thumbnail})` }} ></div>
+                  <EmptyContent title="Congratulations" text={`You have completed ${course.title}`} buttonText="Take Another Courses" href={`/customers/${customerId}/training`} />
                 </div>
               </div>
-            </div>
+            </>}
+            {!completed && <>
+              <div className="col">
+                <div className="card">
+                  <div className="card-header">
+                    <h3 className="card-title">
+                      <ol className="breadcrumb breadcrumb-bullets" aria-label="breadcrumbs">
+                        {/* <li className="breadcrumb-item">{course.chapters?.[activeStep.chapter]?.title}</li> */}
+                        <li className="breadcrumb-item">{course.chapters?.[activeStep.chapter]?.tasks?.[activeStep.task]?.title}</li>
+                      </ol>
+                    </h3>
+                    <div className="card-actions">
+                      <span>Task {calcTotalCompleted(progress, course.chapters)} of {course.taskCount}</span>
+                    </div>
+                  </div>
+                  <div className="card-body">
+
+                    {activeStep.showTask && parse(course.chapters?.[activeStep.chapter]?.tasks?.[activeStep.task]?.content ?? '')}
+                    {!activeStep.showTask && <>
+                      <EmptyContent title="Task not available" text="This task is not available until the previouse task has been complted" />
+                    </>}
+                  </div>
+                  <div className="d-flex">
+                    {completing && <a href="#" className="card-btn" onClick={(e) => { e.preventDefault(); }}><div className="spinner-border spinner-border-sm me-2" role="status"></div> Completing Task</a>}
+                    {!completing && activeStep.showTask && <a href="#" className="card-btn" onClick={(e) => { handleCompleteTask(activeStep.chapter, activeStep.task); e.preventDefault(); }}>Mark Completed</a>}
+                  </div>
+                </div>
+              </div>
+            </>}
           </>}
         </div>
       </div>

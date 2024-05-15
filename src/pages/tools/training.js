@@ -26,12 +26,13 @@ const Training = () => {
   const [searchText, setSearchText] = useState('');
   const { data, loading, error, refetch } = useQuery(GET_COUNTRIES, {
     variables: { customerId: customerId },
+    fetchPolicy: 'no-cache'
   });
 
   if (loading) return <DataLoading />;
   if (error) return `Error loading Documents ${error}`;
 
-  const defaultImage = 'https://i.ytimg.com/vi/__IOTiZOG_I/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGB8gWShyMA8=&rs=AOn4CLBSiqPHJsPX7znSy8a9pYozU_Dxfg';
+  const defaultImage = '/images/photos/buildings_and_people.png';
   const showEdit = (customerId ?? '') == '' ? true : false;
 
   const handleSearchSubmit = async (e) => {
@@ -63,7 +64,7 @@ const Training = () => {
       <div className="container-xl">
         <div className="row row-deck g-4">
           {(data?.courses?.length ?? 0) == 0 && <>
-          <EmptyContent title="No Courses found" text="Try adjusting your search to find what you're looking for." />
+            <EmptyContent title="No Courses found" text="Try adjusting your search to find what you're looking for." />
           </>}
           {data.courses && data.courses.map((course) => {
             return <div key={course.id} className="col-sm-6 col-lg-4">

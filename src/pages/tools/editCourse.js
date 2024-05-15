@@ -33,7 +33,7 @@ const EditCourse = () => {
   if (loading || course == null) return <DataLoading />;
   if (error) return `Error loading Documents ${error}`;
 
-  const defaultImage = 'https://i.ytimg.com/vi/__IOTiZOG_I/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGB8gWShyMA8=&rs=AOn4CLBSiqPHJsPX7znSy8a9pYozU_Dxfg';
+  const defaultImage = '/images/photos/buildings_and_people.png';
 
   const handleChange = (name, value) => {
     setCource(v => ({ ...v, [name]: value }));
