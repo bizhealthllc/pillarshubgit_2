@@ -172,7 +172,7 @@ const Course = () => {
               <div className="col-md-4">
                 <div className="card">
                     <div className="img-responsive img-responsive-21x9 card-img-top" style={{ backgroundImage: `url(${(course.thumbnail ?? '') == '' ? defaultImage : course.thumbnail})` }} ></div>
-                  <EmptyContent title="Congratulations" text={`You have completed ${course.title}`} buttonText="Take Another Courses" href={`/customers/${customerId}/training`} />
+                  <EmptyContent title="Congratulations" text={`You have completed ${course.title}`} buttonText="View more courses" href={`/customers/${customerId}/training`} />
                 </div>
               </div>
             </>}
