@@ -110,7 +110,7 @@ const Course = () => {
   const started = progress.currentChapter > 0 || progress.currentTask > 0;
 
   return <>
-    <PageHeader title={course.title} customerId={customerId} breadcrumbs={[{ title: 'Training Courses', link: `/customers/${customerId}/training` }, { title: course.title }]}>
+    <PageHeader title={course.title} customerId={customerId} pageId="training" breadcrumbs={[{ title: 'Training Courses', link: `/customers/${customerId}/training` }, { title: course.title }]}>
       <div className="container-xl">
         <div className="row row-deck">
           {showInto && course.introduction &&

@@ -59,9 +59,9 @@ input[type=number] {
   width: 11rem;
 }
 
-.theme-navbar .navbar-nav .nav-item .nav-link{
+.theme-navbar .navbar-nav .nav-item .nav-link {
   color: var(--tblr-theme-body-color);
-  
+
 }
 
 .sidebar-header {
@@ -130,7 +130,7 @@ input[type=number] {
   --tblr-btn-active-bg: rgba(var(--tblr-github-rgb), .8);
   --tblr-btn-disabled-bg: var(--tblr-github);
   --tblr-btn-disabled-color: var(--tblr-github-fg);
-  --tblr-btn-box-shadow: var(--tblr-shadow-button),var(--tblr-shadow-button-inset)
+  --tblr-btn-box-shadow: var(--tblr-shadow-button), var(--tblr-shadow-button-inset)
 }
 
 .btn-website {
@@ -145,7 +145,7 @@ input[type=number] {
   --tblr-btn-active-bg: rgba(var(--tblr-vk-rgb), .8);
   --tblr-btn-disabled-bg: var(--tblr-vk);
   --tblr-btn-disabled-color: var(--tblr-vk-fg);
-  --tblr-btn-box-shadow: var(--tblr-shadow-button),var(--tblr-shadow-button-inset)
+  --tblr-btn-box-shadow: var(--tblr-shadow-button), var(--tblr-shadow-button-inset)
 }
 
 .btn-linkedIn {
@@ -160,7 +160,7 @@ input[type=number] {
   --tblr-btn-active-bg: rgba(var(--tblr-tabler-rgb), .8);
   --tblr-btn-disabled-bg: var(--tblr-tabler);
   --tblr-btn-disabled-color: var(--tblr-tabler-fg);
-  --tblr-btn-box-shadow: var(--tblr-shadow-button),var(--tblr-shadow-button-inset)
+  --tblr-btn-box-shadow: var(--tblr-shadow-button), var(--tblr-shadow-button-inset)
 }
 
 .btn-whatsApp {
@@ -170,12 +170,12 @@ input[type=number] {
   --tblr-btn-color: var(--tblr-tabler-fg);
   --tblr-btn-bg: #25d366;
   --tblr-btn-hover-color: var(--tblr-tabler-fg);
-  --tblr-btn-hover-bg: rgba(37,211,102, .8);
+  --tblr-btn-hover-bg: rgba(37, 211, 102, .8);
   --tblr-btn-active-color: var(--tblr-tabler-fg);
-  --tblr-btn-active-bg: rgba(37,211,102, .8);
+  --tblr-btn-active-bg: rgba(37, 211, 102, .8);
   --tblr-btn-disabled-bg: var(--tblr-tabler);
   --tblr-btn-disabled-color: var(--tblr-tabler-fg);
-  --tblr-btn-box-shadow: var(--tblr-shadow-button),var(--tblr-shadow-button-inset)
+  --tblr-btn-box-shadow: var(--tblr-shadow-button), var(--tblr-shadow-button-inset)
 }
 
 .btn-tikTok {
@@ -190,5 +190,35 @@ input[type=number] {
   --tblr-btn-active-bg: rgba(var(--tblr-github-rgb), .8);
   --tblr-btn-disabled-bg: var(--tblr-github);
   --tblr-btn-disabled-color: var(--tblr-github-fg);
-  --tblr-btn-box-shadow: var(--tblr-shadow-button),var(--tblr-shadow-button-inset)
+  --tblr-btn-box-shadow: var(--tblr-shadow-button), var(--tblr-shadow-button-inset)
+}
+
+.drag-devider {
+  border-right: 3px dashed #333;
+  margin-right: -9px;
+  margin-left: 7px;
+  cursor: ew-resize;
+}
+
+
+.drag-handle {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  right: 0;
+  left: 0;
+  top: -4px;
+  z-index: 10;
+}
+
+.drag-handle-dots {
+  margin-top: -10px;
+}
+
+.dropdown-item {
+  z-index: 999;
+}
+
+.card-transparent {
+  background-color: transparent;
 }

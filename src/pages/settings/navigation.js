@@ -1,152 +1,331 @@
-import React from "react-dom/client";
+import React, { useRef, useEffect, useState } from "react";
+import { useFetch } from "../../hooks/useFetch";
+import { SendRequest } from "../../hooks/usePost";
+import parse from 'html-react-parser';
 import PageHeader from "../../components/pageHeader";
+import Modal from "../../components/modal";
+import TextInput from "../../components/textInput";
+import SelectInput from "../../components/selectInput";
 import SettingsNav from "./settingsNav";
+import SortableRow from "./sortableRow";
+
+import { DndContext, closestCenter, useSensor, useSensors, PointerSensor } from '@dnd-kit/core';
+import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
 const Navigation = () => {
+  const { data, loading, error } = useFetch('/api/v1/Menus');
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [menuItems, setMenuItems] = useState();
+  const [activeLink, setActiveLink] = useState(false);
+  const [dialogError, setDialogError] = useState();
+  const [show, setShow] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
 
-  const menuItems = [{
-    name: "Corporate", links: [
-      {
-        svg: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M5 12l5 5l10 -10"></path></svg>,
-        name: "Customers",
-        url: "/customers"
-      },
-      {
-        svg: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M5 12l5 5l10 -10"></path></svg>,
-        name: "Inventory",
-        links: [
-          {
-            svg: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M5 12l5 5l10 -10"></path></svg>,
-            name: "Products",
-            url: "/customers"
-          },
-          {
-            svg: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M5 12l5 5l10 -10"></path></svg>,
-            name: "Categories",
-            url: "/customers"
-          },
-          {
-            svg: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M5 12l5 5l10 -10"></path></svg>,
-            name: "Stores",
-            url: "/customers"
-          }
-        ]
-      },
-      {
-        svg: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M5 12l5 5l10 -10"></path></svg>,
-        name: "Commissions",
-        links: [
-          {
-            name: "Commission Periods",
-            url: "/commissions/periods"
-          },
-          {
-            name: "Payables",
-            url: "/commissions/payables"
-          },
-          {
-            name: "Paid",
-            url: "/commissions/paid"
-          }
-        ]
-      },
-      {
-        svg: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M5 12l5 5l10 -10"></path></svg>,
-        name: "Tools",
-        links: [
-          {
-            name: "Adjustments",
-            url: "/commissions/periods"
-          },
-          {
-            name: "Calendar",
-            url: "/commissions/payables"
-          },
-          {
-            name: "Documents & Media",
-            url: "/commissions/paid"
-          }
-        ]
-      }
-    ]
-  }, {
-    name: "Back Office", links: [
-      {
-        svg: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M5 12l5 5l10 -10"></path></svg>,
-        name: "Dashboard",
-        url: "/"
-      },
-      {
-        svg: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M5 12l5 5l10 -10"></path></svg>,
-        name: "Team",
-        url: "/customers"
-      }
-    ]
-  }]
+  const [loaded, setLoaded] = useState(false);
+  const isFirstRender = useRef(true);
 
-  return <PageHeader title="Settings">
-    <SettingsNav title="Navigation" loading={false} pageId="navigation">
-      <div className="table-responsive">
-        <table className="table table-vcenter table-border table-nowrap card-table">
-          <thead>
-            <tr>
-              <td className="text-center">
-              </td>
-              <td className="text-center">
-              </td>
-              <td className="w-1">
-              </td>
-            </tr>
-          </thead>
-          <tbody>
-            {menuItems && menuItems.map((m) => {
-              return <><tr key={m.name} className="bg-light">
-                <th colSpan="4" className="subheader">{m.name}</th>
-              </tr>
-                {m.links && m.links.map((l) => {
-                  return <>
-                    <tr>
-                      <td>{l.svg} {l.name}</td>
-                      <td>{l.url}</td>
-                      <td>
-                        <button className="btn btn-ghost-secondary btn-icon">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path><path d="M16 5l3 3"></path></svg>
-                        </button>
-                        <button className="btn btn-ghost-secondary btn-icon">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M4 7l16 0"></path><path d="M10 11l0 6"></path><path d="M14 11l0 6"></path><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path></svg>
-                        </button>
-                      </td>
-                    </tr>
-                    {l.links && l.links.map((subLink) => {
-                      return <tr key={subLink.id}>
-                        <td><span className="ms-4" >{subLink.svg} {subLink.name}</span></td>
-                        <td>{subLink.url}</td>
-                        <td>
-                          <button className="btn btn-ghost-secondary btn-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path><path d="M16 5l3 3"></path></svg>
-                          </button>
-                          <button className="btn btn-ghost-secondary btn-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M4 7l16 0"></path><path d="M10 11l0 6"></path><path d="M14 11l0 6"></path><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path></svg>
-                          </button>
-                        </td>
-                      </tr>
-                    })}
-                  </>
-                })}
-              </>
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    })
+  );
+
+  useEffect(() => {
+    if (data) {
+      setMenuItems(data.map((menu) => ({
+        ...menu,
+        items: menu.items.map((item, itemIndex) => ({
+          ...item,
+          id: itemIndex + 1, // Setting the id based on the index
+        })),
+      })));
+      setLoaded(true);
+    }
+  }, [data])
+
+  useEffect(() => {
+    if (loaded) {
+      if (!isFirstRender.current) {
+        handleSave();
+      } else {
+        isFirstRender.current = false;
+      }
+    }
+  }, [menuItems])
+
+  const handleSetTab = (index) => {
+    setActiveIndex(index);
+  }
+
+  const handleHideDelete = () => setShowDelete(false);
+  const handleShowDelete = (id) => {
+    const activeMenu = menuItems[activeIndex];
+    var item = activeMenu.items.find(item => item.id === id)
+    setActiveLink(item);
+    setShowDelete(true);
+  }
+
+  const handleDelete = () => {
+    setMenuItems((prevItems) => {
+      const items = [...prevItems];
+      const activeMenu = items[activeIndex];
+
+      var index = activeMenu.items.findIndex(item => item.id === activeLink.id)
+      if (index > -1) {
+        activeMenu.items.splice(index, 1);
+      }
+
+      return items;
+    })
+    setShowDelete(false);
+  }
+
+  const handleHide = () => setShow(false);
+  const handleShow = (id) => {
+    const activeMenu = menuItems[activeIndex];
+    var item = activeMenu.items.find(item => item.id === id)
+    if (!item) item = { url: internalPages[0].url };
+
+    let type = "Label";
+    if (item.url) {
+      var pageIndex = internalPages.findIndex(p => p.url.toLowerCase() == item.url.toLowerCase())
+      type = pageIndex > -1 ? "Page" : "Url";
+    }
+
+    setActiveLink({ ...item, type: type })
+    setShow(true);
+  }
+
+  const handleChage = (name, value) => {
+    if (name == "type") {
+      setActiveLink(e => ({ ...e, type: value, url: '' }));
+    } else {
+      setActiveLink(e => ({ ...e, [name]: value }));
+    }
+    setDialogError();
+  }
+
+  const handleItemUpdate = () => {
+    if ((activeLink?.title ?? '') == '') {
+      setDialogError({ title: "Title is Required" });
+    } else {
+      setMenuItems((prevItems) => {
+        const items = [...prevItems];
+        const activeMenu = items[activeIndex];
+        var index = activeMenu.items.findIndex(item => item.id === activeLink.id)
+        if (index > -1) {
+          activeMenu.items[index] = activeLink;
+        } else {
+          activeLink.id = crypto.randomUUID();
+          activeMenu.items.push(activeLink);
+        }
+        return items;
+      })
+      setShow(false);
+    }
+  }
+
+  const handleSave = () => {
+    const activeMenu = menuItems[activeIndex];
+    SendRequest("PUT", "/api/v1/Menus", activeMenu, () => {
+    }, (error, code) => {
+      alert(code + ": " + error);
+    });
+  }
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      setMenuItems((prevItems) => {
+        const items = [...prevItems];
+        const activeMenu = items[activeIndex];
+
+        if (!activeMenu || !activeMenu.items) {
+          return prevItems; // Early return if activeIndex or items are invalid
+        }
+
+        const oldIndex = activeMenu.items.findIndex(item => item.id === active.id);
+        const newIndex = activeMenu.items.findIndex(item => item.id === over.id);
+
+        // Check if the indices are valid
+        if (oldIndex === -1 || newIndex === -1) {
+          return prevItems; // Return previous state if indices are invalid
+        }
+
+        activeMenu.items = arrayMove([...activeMenu.items], oldIndex, newIndex);
+
+        return items;
+      });
+    }
+  };
+
+  const items = menuItems ? menuItems[activeIndex].items : [];
+
+
+  const internalPages = [
+    { url: '/customers', title: 'Customer List' },
+    { url: '/reports', title: 'Reports' },
+    { url: '/commissions/periods', title: 'Commission Periods' },
+    { url: '/commissions/payables', title: 'Commission Payables' },
+    { url: '/commissions/paid', title: 'Commissions Paid' },
+    { url: '/inventory/products', title: 'Product List' },
+    { url: '/inventory/categories', title: 'Category List' },
+    { url: '/inventory/stores', title: 'Store List' },
+    { url: '/tools/adjustments', title: 'Commission Adjustments' },
+    { url: '/schedule', title: 'Event Calendar' },
+    { url: '/media', title: 'Media Library' },
+    { url: '/training', title: 'Training Course Admin' },
+    { url: '/customers/{customerId}/summary', title: 'Customer Details' },
+    { url: '/customers/{customerId}/dashboard', title: 'Dashboard' },
+    { url: '/customers/{customerId}/orders', title: 'Customer Orders' },
+    { url: '/customers/{customerId}/commissions', title: 'Customer Commissions' },
+    { url: '/customers/{customerId}/training', title: 'Training Courses' },
+    { url: '/customers/{customerId}/account/profile', title: 'Customer Account' }
+  ]
+
+  return <>
+    <PageHeader title="Pages & Navigation" preTitle="Settings">
+      <SettingsNav title="Navigation" loading={loading} error={error} pageId="navigation">
+        {/* <div className="card-header"><span className="card-title">System Menus</span></div> */}
+        <div className="card-header inverted">
+          <ul className="nav nav-tabs card-header-tabs">
+            {menuItems && menuItems.map((m, index) => {
+              return <li key={m.name} className="nav-item">
+                <a href="#" onClick={(e) => { handleSetTab(index); e.preventDefault(); }} className={`nav-link ${index == activeIndex ? 'active' : ''}`}>{m.name}</a>
+              </li>
             })}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colSpan="4" className="text-end">
-                <a href="#" className="btn btn-primary">Add Navigation</a>
-              </td>
-            </tr>
-          </tfoot>
-        </table>
+          </ul>
+        </div>
+
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd} >
+          <SortableContext items={items} strategy={verticalListSortingStrategy} >
+            <table className="table table-vcenter table-border table-nowrap card-table">
+              <thead>
+                <tr>
+                  <th className="w-1"></th>
+                  <th>Title</th>
+                  <th>Destination</th>
+                  <th>Status</th>
+                  <th className="w-1"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map(item => (
+                  <SortableRow key={item.id} id={item.id} data={item} internalPages={internalPages} onEdit={handleShow} onDelete={handleShowDelete} />
+                ))}
+              </tbody>
+            </table>
+          </SortableContext>
+        </DndContext>
+
+        <div className="card-footer">
+          <div className="row">
+            <div className="col">
+            </div>
+            <div className="col-auto">
+              <button className="btn btn-primary" onClick={handleShow}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon "><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 4m0 1a1 1 0 0 1 1 -1h14a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-14a1 1 0 0 1 -1 -1z" /><path d="M4 12m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" /><path d="M14 12l6 0" /><path d="M14 16l6 0" /><path d="M14 20l6 0" /></svg>
+                Add Link
+              </button>
+            </div>
+          </div>
+        </div>
+      </SettingsNav>
+    </PageHeader>
+
+    <Modal showModal={showDelete} size="sm" onHide={handleHideDelete} >
+      <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div className="modal-body text-center py-4">
+        <h3>Are you sure?</h3>
+        <div className="text-muted">Do you really want to remove <strong>{activeLink.title}</strong></div>
       </div>
-    </SettingsNav>
-  </PageHeader >
+      <div className="modal-footer">
+        <a href="#" className="btn btn-link link-secondary" data-bs-dismiss="modal">
+          Cancel
+        </a>
+        <button type="submit" className="btn btn-danger ms-auto" onClick={handleDelete}>
+          Delete Link
+        </button>
+      </div>
+    </Modal>
+
+    <Modal showModal={show} onHide={handleHide}>
+      <div className="modal-header">
+        <h5 className="modal-title">Navigation Link</h5>
+        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div className="modal-body">
+        <div className="row">
+          <div className="col-md-3">
+            <div className="mb-3">
+              <label className="form-label">Type</label>
+              <SelectInput name="type" value={activeLink?.type} errorText={dialogError?.type} onChange={handleChage}>
+                <option value="Page">Page</option>
+                <option value="Url">Url</option>
+                <option value="Label">Label</option>
+              </SelectInput>
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="mb-3">
+              <label className="form-label">Title</label>
+              <TextInput name="title" value={activeLink?.title} errorText={dialogError?.title} onChange={handleChage} />
+            </div>
+          </div>
+          <div className="col-md-3">
+            <div className="mb-3">
+              <label className="form-label">Status</label>
+              <SelectInput name="status" value={activeLink?.status} errorText={dialogError?.status} onChange={handleChage}>
+                <option value="Enabled">Visible</option>
+                <option value="Corporate">Corporate</option>
+                <option value="Disabled">Hidden</option>
+              </SelectInput>
+            </div>
+          </div>
+          <div className="col-md-12">
+            {activeLink.type == "Url" &&
+              <div className="mb-3">
+                <label className="form-label">Destination Url</label>
+                <TextInput name="url" value={activeLink?.url} errorText={dialogError?.url} onChange={handleChage} />
+              </div>
+            }
+            {activeLink.type == "Page" &&
+              <div className="mb-3">
+                <label className="form-label">Destination Page</label>
+                <SelectInput name="url" value={activeLink?.url} errorText={dialogError?.url} onChange={handleChage}>
+                  <option disabled selected value=""> -- Select a page -- </option>
+                  {internalPages.map((page) => {
+                    return <option key={page} value={page.url}>{page.title}</option>
+                  })}
+                </SelectInput>
+              </div>
+            }
+          </div>
+          {activeLink.type != "Label" && <div className="col-md-12">
+            <div className="mb-3">
+              <label className="form-label">SVG Icon</label>
+              <div className="input-group mb-2">
+                <span className="input-group-text">
+                  {activeLink?.icon && parse(activeLink?.icon)}
+                </span>
+                <TextInput name="icon" value={activeLink?.icon} errorText={dialogError?.icon} onChange={handleChage} />
+              </div>
+              <small className="form-hint">
+                An SVG element representing the icon for the menu item. <a href="https://tabler.io/icons" target="_blank" rel="noreferrer">More Information</a>
+              </small>
+            </div>
+          </div>}
+        </div>
+      </div>
+      <div className="modal-footer">
+        <button type="button" className="btn btn-link link-secondary me-auto" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" className="btn btn-primary" onClick={handleItemUpdate}>Save Link</button>
+      </div>
+    </Modal>
+  </>
 }
 
 export default Navigation;

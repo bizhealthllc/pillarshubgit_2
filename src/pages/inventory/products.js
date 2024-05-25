@@ -87,10 +87,10 @@ const Products = () => {
                         </div>
                       </td>
                       <td>
-                        <div><a className="text-reset" href={`/Inventory/Products/${item.id}/General`}>{item.id}</a></div>
+                        <div><a className="text-reset" href={`/inventory/products/${item.id}/general`}>{item.id}</a></div>
                       </td>
                       <td>
-                        <div><a className="text-reset" href={`/Inventory/Products/${item.id}/General`}>{item.name}</a></div>
+                        <div><a className="text-reset" href={`/inventory/products/${item.id}/general`}>{item.name}</a></div>
                       </td>
                       <td>
                         {item.categories.map((category) => {

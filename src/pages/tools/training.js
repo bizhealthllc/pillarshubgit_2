@@ -41,7 +41,7 @@ const Training = () => {
   }
 
   return <>
-    <PageHeader title="Training Courses" customerId={customerId}>
+    <PageHeader title="Training Courses" pageId="training" customerId={customerId}>
       <CardHeader>
         <div className="d-flex">
           <div className="me-3">

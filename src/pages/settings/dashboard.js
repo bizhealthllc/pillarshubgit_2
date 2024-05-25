@@ -1,36 +1,54 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { useQuery, gql } from "@apollo/client";
 import PageHeader from "../../components/pageHeader";
-import SettingsNav from "./settingsNav";
-import PlaceholderCard from "./components/placeholderCard";
 import Modal from "../../components/modal"
 import useWidgets from "../../features/widgets/hooks/useWidgets";
 import { useFetch } from "../../hooks/useFetch";
 import { SendRequest } from "../../hooks/usePost";
+import DataLoading from "../../components/dataLoading";
+import { closestCenter, DndContext, DragOverlay, PointerSensor, useSensor } from '@dnd-kit/core';
+import { SortableContext, rectSwappingStrategy } from '@dnd-kit/sortable';
+import SortGridItem from './sortGridItem';
+
+var GET_TREES = gql`query {
+  trees
+  {
+    name
+    id
+  }
+}`
 
 const DashboardSettings = () => {
+  const sensors = [useSensor(PointerSensor)];
+  const containerRef = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(null);
+
   const { data, loading, error } = useFetch('/api/v1/dashboards', {});
   const { widgets, loading: wLoading, error: wError } = useWidgets();
   const [dashboardId, setDashboardId] = useState();
-  const [dashboard, setDashboard] = useState();
   const [showDel, setShowDel] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [current, setCurrent] = useState(false);
+  const { data: treeData } = useQuery(GET_TREES, { variables: {} });
 
-
-  if (error) return `Error! ${error}`;
-  if (wError) return `Error! ${wError}`;
+  const [items, setItems] = useState();
 
   useEffect(() => {
     if (data) {
       setDashboardId(data[0].id);
-      setDashboard(data[0].children);
+      setItems(data[0].children)
     }
   }, [data, widgets]);
+
+  if (error) return `Error! ${error}`;
+  if (wError) return `Error! ${wError}`;
+  if (loading) return <DataLoading />
+  if (wLoading) return <DataLoading />
 
   const handleSave = () => {
     const item = {
       id: dashboardId,
-      children: dashboard
+      children: items
     }
     SendRequest("PUT", "/api/v1/dashboards/" + item.id, item, () => {
     }, (error, code) => {
@@ -40,13 +58,13 @@ const DashboardSettings = () => {
 
   const handleDelhide = () => setShowDel(false);
   const handleDelShow = (id) => {
-    setCurrent(findId(dashboard, id).item);
+    setCurrent(findId(items, id).item);
     setShowDel(true)
   }
 
   const handleDelete = () => {
     handleDelhide();
-    setDashboard((prevData) => {
+    setItems((prevData) => {
       const source = findId(prevData, current.id);
       if (source) {
         source.arr.splice(source.index, 1);
@@ -56,9 +74,9 @@ const DashboardSettings = () => {
     });
   }
 
-  const handleEdithide = () => setShowEdit(false);
-  const handleEditShow = (id) => {
-    setCurrent(findId(dashboard, id)?.item ?? { id: crypto.randomUUID(), columns: 4, children: [] });
+  const handleAddhide = () => setShowEdit(false);
+  const handleAddShow = (id) => {
+    setCurrent(findId(items, id)?.item);
     setShowEdit(true)
   }
 
@@ -66,95 +84,139 @@ const DashboardSettings = () => {
     setCurrent(e => ({ ...e, [name]: value }));
   }
 
-  const handleMove = (sourceId, targetId) => {
-    if (sourceId !== targetId) {
-      setDashboard((prevData) => {
-        // Find source and target objects
-        const source = findId(prevData, sourceId);
-        const target = findId(prevData, targetId);
-
-        source.item.columns = 12;
-
-        if (source && target) {
-          source.arr.splice(source.index, 1);
-          target.item.children.push(source.item);
-        }
-
-        return [...prevData]; // Return the original data if source or target not found
-      });
-    }
-  }
-
-  const handleSwap = (sourceId, targetId) => {
-    if (sourceId !== targetId) {
-      setDashboard((prevData) => {
-        // Find source and target objects
-        const source = findId(prevData, sourceId);
-        const target = findId(prevData, targetId);
-
-        /* const sourceCol = source.item.columns;
-        source.item.columns = target.item.columns;
-        target.item.columns = sourceCol; */
-
-        if (source && target) {
-          source.arr[source.index] = target.item;
-          target.arr[target.index] = source.item;
-        }
-
-        return [...prevData]; // Return the original data if source or target not found
-      });
-    }
-  };
-
-  const handleEdit = () => {
-    setShowEdit(false);
-    setDashboard((d) => {
-      const source = findId(d, current.id);
-      if ((current.widgetId ?? '') !== '') {
-        current.children = null;
-      } else {
-        current.children = current.children ?? [];
-      }
+  const handleResize = (id, size) => {
+    setItems((d) => {
+      const source = findId(d, id);
 
       if (source) {
-        source.arr[source.index] = current;
-      } else {
-        d.push(current);
+        source.arr[source.index].columns = size;
       }
 
       return [...d];
     });
   }
 
-  return <PageHeader title="Dashboard" preTitle="Settings">
-    <SettingsNav loading={wLoading || loading} pageId="dashboard">
-      <div className="card-header">
-        <span className="card-title">Dashboard</span>
-      </div>
-      <div className="card-body">
-        <div className="row row-deck">
-          {widgets && dashboard && dashboard.map((c) => {
-            return buildCard(c, [...widgets], handleSwap, handleMove, handleEditShow, handleDelShow);
-          })}
+  const handleAdd = () => {
+    setShowEdit(false);
+    setItems((items) => {
+      const newItems = [...items];
+      const newItem = { id: crypto.randomUUID(), widgetId: current?.widgetId, columns: (current?.id ? 12 : 4), children: [] }
+
+      if (current?.id) {
+        const activeItem = findItemAndParent(newItems, current.id);
+        const { parent: activeParent, index: activeIndex, } = activeItem;
+        activeParent[activeIndex].children.push(newItem);
+      } else {
+        newItems.push(newItem);
+      }
+
+      return newItems;
+    });
+  }
+
+  /* Drag Handlers */
+  const handleDragStart = ({ active }) => {
+    const index = items.findIndex((item) => item.id === active.id);
+    setActiveIndex(index);
+  };
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    setActiveIndex(null);
+
+    if (active.id !== over.id) {
+      setItems((items) => {
+        const newItems = [...items];
+        const activeItem = findItemAndParent(newItems, active.id);
+        const overItem = findItemAndParent(newItems, over.id);
+
+        if (!activeItem || !overItem) {
+          return newItems;
+        }
+
+        const { parent: activeParent, index: activeIndex, path: activePath } = activeItem;
+        const { parent: overParent, index: overIndex } = overItem;
+
+        // Check if the over item is a parent of the active item
+        const isParent = activePath.some((item) => item.id === over.id);
+        if (isParent) {
+          // Prevent swap if the over item is a parent of the active item
+          return newItems;
+        }
+
+        // Extract columns property
+        const activeColumns = activeParent[activeIndex].columns;
+        const overColumns = overParent[overIndex].columns;
+
+        // Swap the items
+        const temp = { ...activeParent[activeIndex], columns: overColumns };
+        activeParent[activeIndex] = { ...overParent[overIndex], columns: activeColumns };
+        overParent[overIndex] = temp;
+        return newItems;
+
+      });
+    }
+  };
+
+  const findItemAndParent = (items, id, path = []) => {
+    for (let i = 0; i < items.length; i++) {
+      const currentPath = [...path, items[i]];
+      if (items[i].id === id) {
+        return { parent: items, index: i, path: currentPath };
+      }
+      if (items[i].children) {
+        const result = findItemAndParent(items[i].children, id, currentPath);
+        if (result) {
+          return result;
+        }
+      }
+    }
+    return null;
+  };
+
+  return <>
+    <PageHeader title="Page Settings" breadcrumbs={[{ title: `Pages & Navigation`, link: `/settings/navigation` }, { title: "Edit Page" }]}>
+      <div className="container-xl">
+
+        {widgets && items && <>
+          <div ref={containerRef}>
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+              <SortableContext items={items.map((item) => item.title)} strategy={rectSwappingStrategy}>
+                <div className="row row-cards row-deck mb-3">
+                  {items && items.map((item, itemIndex) => {
+                    return <SortGridItem key={item.id} id={item.id} col={item.columns} item={item} widgets={widgets} trees={treeData?.trees} onAdd={handleAddShow} onResize={handleResize} onDelete={handleDelShow} styles={activeIndex === itemIndex ? { opacity: 0 } : {}} />
+                  })}
+                </div>
+              </SortableContext>
+
+              <DragOverlay>
+                {activeIndex != null ? (
+                  <div className="col-12" style={{ position: 'absolute', left: 0, top: 0, zIndex: 1000 }}>
+                    <SortGridItem col={12} item={items[activeIndex]} widgets={widgets} trees={treeData?.trees} />
+                  </div>
+                ) : null}
+              </DragOverlay>
+            </DndContext>
+          </div>
+        </>}
+
+        <div className="card-footer">
+          <div className="row">
+            <div className="col">
+              <button type="submit" className="btn btn-primary" onClick={handleSave}>Save</button>
+            </div>
+            <div className="col-auto">
+              <button className="btn btn-default" onClick={handleAddShow}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-layout-grid-add" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M4 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path><path d="M14 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path><path d="M4 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path><path d="M14 17h6m-3 -3v6"></path></svg>
+                Add Widget
+              </button>
+            </div>
+          </div>
         </div>
       </div>
+    </PageHeader>
 
-      <div className="card-footer">
-        <div className="row">
-          <div className="col">
-            <button type="submit" className="btn btn-primary" onClick={handleSave}>Save</button>
-          </div>
-          <div className="col-auto">
-            <button className="btn btn-default" onClick={handleEditShow}>
-              <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-layout-grid-add" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M4 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path><path d="M14 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path><path d="M4 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path><path d="M14 17h6m-3 -3v6"></path></svg>
-              Add Widget
-            </button>
-          </div>
-        </div>
-      </div>
-    </SettingsNav>
-
-    <Modal showModal={showEdit} onHide={handleEdithide}>
+    <Modal showModal={showEdit} onHide={handleAddhide}>
       <div className="modal-header">
         <h5 className="modal-title">Widget Settings</h5>
         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -164,7 +226,7 @@ const DashboardSettings = () => {
           <div className="col-md-12">
             <div className="mb-3">
               <label className="form-label">Widget</label>
-              <select className="form-select" name="widgetId" value={current.widgetId ?? ''} onChange={(e) => handleActiveEdit(e.target.name, e.target.value)}>
+              <select className="form-select" name="widgetId" value={current?.widgetId ?? ''} onChange={(e) => handleActiveEdit(e.target.name, e.target.value)}>
                 <option value="">Container</option>
                 <option disabled>──────────</option>
                 {widgets && widgets.map((w) => {
@@ -173,24 +235,11 @@ const DashboardSettings = () => {
               </select>
             </div>
           </div>
-          <div className="col-md-12">
-            <div className="mb-3">
-              <label className="form-label">Page Span</label>
-              <select className="form-select" name="columns" value={current.columns ?? '4'} onChange={(e) => handleActiveEdit(e.target.name, e.target.value)}>
-                <option value="3">1/4</option>
-                <option value="4">1/3</option>
-                <option value="6">1/2</option>
-                <option value="8">2/3</option>
-                <option value="9">3/4</option>
-                <option value="12">1</option>
-              </select>
-            </div>
-          </div>
         </div>
       </div>
       <div className="modal-footer">
         <button type="button" className="btn btn-link link-secondary me-auto" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" className="btn btn-primary" onClick={handleEdit}>Save Widget</button>
+        <button type="button" className="btn btn-primary" onClick={handleAdd}>Save Widget</button>
       </div>
     </Modal>
 
@@ -204,27 +253,7 @@ const DashboardSettings = () => {
         <button type="button" className="btn btn-danger" onClick={handleDelete}>Delete Widget</button>
       </div>
     </Modal>
-
-  </PageHeader>
-}
-
-function buildCard(card, widgets, handleSwap, handleMove, handleEdit, handleDelete) {
-  if ((card.widgetId || card.children) && widgets !== undefined) {
-    let widget = widgets.find((w) => w.id === card?.widgetId ?? '');
-    return <div key={card.id} className={`col-${card.columns}`}>
-      {card.widgetId && <PlaceholderCard cardId={card.id} widget={widget} onSwap={handleSwap} onMove={handleMove} onEdit={handleEdit} onDelete={handleDelete} />}
-
-      {card.children &&
-        <PlaceholderCard cardId={card.id} widget={widget} onSwap={handleSwap} onMove={handleMove} onEdit={handleEdit} onDelete={handleDelete} >
-          <div className="row row-deck" style={{ gutterX: 0 }}>
-            {card.children.map((c) => {
-              return buildCard(c, widgets, handleSwap, handleMove, handleEdit, handleDelete);
-            })}
-          </div>
-        </PlaceholderCard>
-      }
-    </div>
-  }
+  </>
 }
 
 function findId(arr, targetId) {

@@ -58,7 +58,7 @@ const Widget = ({ widget, customer, commissionDetail, trees, isPreview = false }
     __html: modifiedCss,
   };
 
-  return <div style={{ display: "contents" }} className={widgetId}><div className="card" style={inlineStyle}>
+  return <div style={{ display: "contents" }} className={widgetId}><div className={`card h-100 ${isPreview ? '' : 'mb-3'}`} style={inlineStyle}>
     {widget.title && <div className="card-header" style={{ backgroundColor: (widget?.headerColor ?? '#ffffff') }}>
       <h3 className={`card-title ${msStyle} ${meStyle}`}>{widget.title}</h3>
     </div>}

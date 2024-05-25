@@ -122,7 +122,7 @@ const Dashboard = () => {
   return <>
     <PageHeader title={title} preTitle={preTitle} pageId="dashboard" customerId={params.customerId}>
       <div className="container-xl">
-        <div className="row row-deck row-cards">
+        <div className="row row-cards row-deck mb-3">
 
           {dashboard && dashboard[0]?.children && dashboard[0].children.map((card) => {
             return buildCard(card, widgets, customer, commissionDetail, trees);
@@ -139,14 +139,15 @@ function buildCard(card, widgets, customer, commissionDetail, trees) {
     let widget = widgets.find((w) => w.id === card?.widgetId ?? '');
     return <div key={card?.id} className={`col-sm-12 col-lg-${card?.columns > 6 ? '12' : '6'} col-xl-${card?.columns}`}>
       {card?.widgetId && <Widget widget={widget} customer={customer} commissionDetail={commissionDetail} trees={trees} />}
-      {card.children &&
-        <div className="row row-deck row-cards" style={{ gutterX: 0 }}>
+      {card.children && card.children.length > 0 && <>
+        <div className="card card-borderless card-transparent">
+        <div className="row row-cards row-deck">
           {card.children.map((c) => {
             return buildCard(c, widgets, customer, commissionDetail, trees);
           })}
         </div>
-      }
-
+        </div>
+      </>}
     </div>
   }
 }
