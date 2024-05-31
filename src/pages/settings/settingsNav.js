@@ -1,6 +1,7 @@
 import React, { Children } from 'react';
 import PropTypes from 'prop-types';
 import DataLoading from '../../components/dataLoading';
+import DataError from '../../components/dataError';
 
 
 const SettingsNav = ({ pageId, loading, error, children }) => {
@@ -58,6 +59,17 @@ const SettingsNav = ({ pageId, loading, error, children }) => {
                   Placement Rules
                 </a>
               </div>
+              <h4 className="subheader mt-4">Email</h4>
+              <div className="list-group list-group-transparent">
+              <a href="/settings/email/content" className={`list-group-item list-group-item-action ${pageId == 'emailContent' ? 'active' : ''}`}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="icon dropdown-item-icon" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M7.5 7.5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path><path d="M3 6v5.172a2 2 0 0 0 .586 1.414l7.71 7.71a2.41 2.41 0 0 0 3.408 0l5.592 -5.592a2.41 2.41 0 0 0 0 -3.408l-7.71 -7.71a2 2 0 0 0 -1.414 -.586h-5.172a3 3 0 0 0 -3 3z"></path></svg>
+                  Email Content
+                </a>
+                <a href="/settings/email/providers" className={`list-group-item list-group-item-action ${pageId == 'emailProviders' ? 'active' : ''}`}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="icon dropdown-item-icon" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M4 4h6v8h-6z"></path><path d="M4 16h6v4h-6z"></path><path d="M14 12h6v8h-6z"></path><path d="M14 4h6v4h-6z"></path></svg>
+                  Email Delivery Service
+                </a>
+              </div>
               <h4 className="subheader mt-4">E-Commerce</h4>
               <div className="list-group list-group-transparent">
                 <a href="/settings/payments" className={`list-group-item list-group-item-action ${pageId == 'payments' ? 'active' : ''}`}>
@@ -83,7 +95,7 @@ const SettingsNav = ({ pageId, loading, error, children }) => {
           </div>
           <div className="col d-flex flex-column">
             {loading && <DataLoading />}
-            {error && <span>{error}</span>}
+            {error && <DataError error={error} />}
             {content}
           </div>
         </div>

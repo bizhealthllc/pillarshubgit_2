@@ -68,6 +68,8 @@ import PlacementRules from "./pages/settings/placementRules";
 import Training from "./pages/tools/training";
 import Course from "./pages/customers/course";
 import EditCourse from "./pages/tools/editCourse";
+import EmailSettings from "./pages/settings/emailSettings";
+import EmailContent from "./pages/settings/emailContent";
 
 function App() {
   const { token, setToken, clearToken } = useToken();
@@ -139,6 +141,8 @@ function App() {
             <Route path="settings/dashboard" element={<DashboardSettings />} />
             <Route path="settings/widgets" element={<WidgetSettings />} />
             <Route path="settings/widgets/:widgetId" element={<EditWidget />} />
+            <Route path="settings/email/providers" element={<EmailSettings />} />
+            <Route path="settings/email/content" element={<EmailContent />} />
             <Route path="settings/payments" element={<Payments />} />
             <Route path="settings/regions" element={<Regions />} />
             <Route path="settings/regions/:regionId" element={<RegionDetail />} />
