@@ -49,7 +49,7 @@ const Periods = () => {
               <ul className="nav nav-tabs card-header-tabs" data-bs-toggle="tabs" role="tablist">
                 {data.compensationPlans.map((plan) => {
                   return <li key={plan.name} className="nav-item" role="presentation">
-                    <a href={`#${plan.name}`} className={`nav-link ${tab == plan.name ? 'active' : ''}`} data-bs-toggle="tab" aria-selected="true" role="tab">{plan.name}</a>
+                    <a href={`#T${plan.name}`} className={`nav-link ${tab == plan.name ? 'active' : ''}`} data-bs-toggle="tab" aria-selected="true" role="tab">{plan.name}</a>
                   </li>
                 })}
               </ul>
@@ -59,7 +59,7 @@ const Periods = () => {
               {data.compensationPlans.map((plan) => {
                 let copy = [...plan.periods];
                 let periods = copy.reverse();
-                return <div key={plan.name} className={`tab-pane ${tab == plan.name ? 'active show' : ''}`} id={plan.name} role="tabpanel">
+                return <div key={plan.name} className={`tab-pane ${tab == plan.name ? 'active show' : ''}`} id={`T${plan.name}`} role="tabpanel">
                   <div className="table-responsive">
                     <table className="table card-table table-vcenter text-nowrap datatable">
                       <thead>

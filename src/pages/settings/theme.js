@@ -131,7 +131,7 @@ const Theme = () => {
               </div>
             </header>
             <small className="form-hint mt-1">
-              Image cannot be more than 1MB.  The recommended height is 23px.
+              Image cannot be more than 1MB.
             </small>
           </div>
 
@@ -206,7 +206,7 @@ const Theme = () => {
               </div>
             </div>
             <small className="form-hint mt-1">
-              Image cannot be more than 1MB.  The recommended height is 65px.
+              Image cannot be more than 1MB.
             </small>
           </div>
         </div>
