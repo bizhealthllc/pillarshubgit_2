@@ -181,6 +181,7 @@ const Navigation = () => {
     { url: '/customers/{customerId}/summary', title: 'Customer Details' },
     { url: '/customers/{customerId}/dashboard', title: 'Dashboard' },
     { url: '/customers/{customerId}/orders', title: 'Customer Orders' },
+    { url: '/customers/{customerId}/autoships', title: 'Customer Autoships' },
     { url: '/customers/{customerId}/commissions', title: 'Customer Commissions' },
     { url: '/customers/{customerId}/training', title: 'Training Courses' },
     { url: '/customers/{customerId}/account/profile', title: 'Customer Account' }
@@ -281,6 +282,7 @@ const Navigation = () => {
               <SelectInput name="status" value={activeLink?.status} errorText={dialogError?.status} onChange={handleChage}>
                 <option value="Enabled">Visible</option>
                 <option value="Corporate">Corporate</option>
+                <option value="Customer">Customer</option>
                 <option value="Disabled">Hidden</option>
               </SelectInput>
             </div>

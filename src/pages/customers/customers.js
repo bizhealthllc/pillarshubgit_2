@@ -7,6 +7,7 @@ import StatusPill from "./statusPill";
 import Avatar from "../../components/avatar";
 import LocalDate from "../../util/LocalDate";
 import { GetScope } from "../../features/authentication/hooks/useToken"
+import DataError from '../../components/dataError';
 
 var GET_CUSTOMERS = gql`query($offset: Int!, $first: Int!, $search: String!){
   customers(offset: $offset, first: $first, search: $search) {
@@ -41,10 +42,7 @@ const Customers = () => {
   });
 
   if (loading) return <DataLoading />;
-  if (error) return <>
-    <PageHeader title="Customers" >
-      <div className="card"> <div className="card-body"> {JSON.stringify(error)} </div></div>
-    </PageHeader></>;
+  if (error) return <DataError error={error} />
 
   return (
     <PageHeader title="Customers" >

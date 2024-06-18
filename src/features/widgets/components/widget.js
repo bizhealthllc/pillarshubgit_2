@@ -176,7 +176,7 @@ function Content(widget, customer, commissionDetail, trees, isPreview) {
             return <div key={pane.title} className="list-group-item widgetListItem">
               <a className="row align-items-center text-reset" href={`/Customers/${node.uplineId}/Summary`}>
                 <div className="col-auto">
-                  <Avatar name={node.upline.fullName} url={node.upline.profileImage} size="sm" />
+                  <Avatar name={node.upline?.fullName} url={node.upline?.profileImage} size="sm" />
                 </div>
                 <div className="col text-truncate">
                   <span className='text-reset' >{node.upline?.fullName}</span>

@@ -1,16 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const EmptyContent = ({ title, text, buttonText = '', href = '' }) => {
+const EmptyContent = ({ title, text, buttonText = '', href = '', onClick }) => {
   return <div className="empty">
     <p className="empty-title">{title ?? 'Content not found'}</p>
     <p className="empty-subtitle text-muted">
       {text ?? 'The content request cannot be found.'}
     </p>
-    {buttonText && href && <div className="empty-action">
-      <a href={href} className="btn btn-primary">
+    {buttonText && <div className="empty-action">
+      {href && <a href={href} className="btn btn-primary">
         {buttonText}
-      </a>
+      </a>}
+
+      {!href && <button href={href} className="btn btn-primary" onClick={onClick}>
+        {buttonText}
+      </button>}
     </div>}
   </div>
 }
@@ -21,5 +25,6 @@ EmptyContent.propTypes = {
   title: PropTypes.string.isRequired,
   text: PropTypes.string.isRequired,
   buttonText: PropTypes.string,
-  href: PropTypes.string
+  href: PropTypes.string,
+  onClick: PropTypes.func
 }

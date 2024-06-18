@@ -1,8 +1,8 @@
 import React from 'react';
+import parse from 'html-react-parser';
 import { Link, useLocation } from "react-router-dom";
 import { GetScope } from "../features/authentication/hooks/useToken"
 import { useFetch } from "../hooks/useFetch";
-import parse from 'html-react-parser';
 import DataLoading from '../components/dataLoading';
 import DataError from '../components/dataError';
 
@@ -20,7 +20,7 @@ const BackOfficeMenu = () => {
     <ul className="navbar-nav">
 
       {menu?.items && menu.items.map((menu) => {
-        let visible = menu.status == 'Enabled';
+        let visible = menu.status == 'Enabled' || menu.status == 'Customer';
         var url = menu?.url?.replace('{customerId}', customerId);
         let activeClass = (location.pathname == url) ? 'active' : '';
 

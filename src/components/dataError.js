@@ -8,7 +8,7 @@ const DataError = ({ title, error }) => {
         <div className="mb-3">
           {title ?? 'We encountered an error requesting your data.'}
         </div>
-        <div className="text-secondary mb-3">{error}</div>
+        <div className="text-secondary mb-3">{JSON.stringify(error)}</div>
       </div>
     </div>
   </div>

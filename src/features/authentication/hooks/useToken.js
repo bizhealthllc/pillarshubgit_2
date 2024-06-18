@@ -48,6 +48,7 @@ export default function useToken() {
     const ssoToken = getQueryParam('token');
     if (ssoToken) {
       Get(`/Authentication/refresh/${ssoToken}`, (response) => {
+        response.SSO = true;
         saveToken(response);
       }, () => {
         clearToken();
@@ -117,6 +118,7 @@ function GetUser() {
 
         //Update the new token
         Get(`/Authentication/refresh/${userToken.authToken.token}?environmentId=${userToken.authToken.environmentId}`, (response) => {
+          response.SSO = userToken?.SSO ?? false;
           SaveUser(response);
         }, () => {
           ClearUser();

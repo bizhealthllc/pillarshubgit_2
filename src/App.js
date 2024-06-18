@@ -70,6 +70,7 @@ import Course from "./pages/customers/course";
 import EditCourse from "./pages/tools/editCourse";
 import EmailSettings from "./pages/settings/emailSettings";
 import EmailContent from "./pages/settings/emailContent";
+import Autoships from "./pages/customers/autoships";
 
 function App() {
   const { token, setToken, clearToken } = useToken();
@@ -99,6 +100,7 @@ function App() {
             <Route path="customers/:customerId/summary" element={<CustomerDetail />} />
             <Route path="customers/:customerId/dashboard" element={<Dashboard />} />
             <Route path="customers/:customerId/orders" element={<CustomerOrders />} />
+            <Route path="customers/:customerId/autoships" element={<Autoships />} />
             <Route path="customers/:customerId/orders/:orderId" element={<OrderDetail />} />
             <Route path="customers/:customerId/shop" element={<Shop />} />
             <Route path="customers/:customerId/checkout" element={<Checkout />} />
