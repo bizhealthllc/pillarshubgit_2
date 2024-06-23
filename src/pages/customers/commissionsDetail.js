@@ -40,6 +40,10 @@ var GET_DATA = gql`query ($nodeIds: [String]!, $period: BigInt!) {
         volume
       } 
     }
+    ranks{
+      id
+      name
+    }
   }
 }`;
 
@@ -49,7 +53,7 @@ const CommissionsDetail = () => {
   const periodParam = queryParams.get("periodId") ?? "0";
   const [periodId, setPeriodId] = useState(periodParam);
   const { data, loading, error, refetch } = useQuery(GET_DATA, {
-    variables: { nodeIds: [ params.customerId ], period: parseInt(periodId) },
+    variables: { nodeIds: [params.customerId], period: parseInt(periodId) },
   });
 
   if (loading) return <DataLoading />;
@@ -58,14 +62,14 @@ const CommissionsDetail = () => {
   const handlePeriodChange = (pId, u) => {
     if (u) {
       setPeriodId(pId);
-      refetch({ periodIds: [ pId ], period: parseInt(periodId) });
+      refetch({ periodIds: [pId], period: parseInt(periodId) });
     }
   };
 
+  let ranks = data?.compensationPlans[0]?.ranks;
   let customer = data.customers[0];
   let bonuses = [];
-  if (data?.compensationPlans[0]?.periods[0]?.bonuses)
-  {
+  if (data?.compensationPlans[0]?.periods[0]?.bonuses) {
     bonuses = [...data.compensationPlans[0].periods[0].bonuses];
     bonuses.sort((a, b) => (a.bonusId > b.bonusId) ? 1 : -1);
   }
@@ -102,15 +106,33 @@ const CommissionsDetail = () => {
                       <a className="text-reset" href={`/customers/${params.customerId}/commissions/${bonus.bonusId}?periodId=${periodId}`}>{bonus.bonusTitle}</a>
                     </td>
                     <td>{bonus.level}</td>
-                    <td>{bonus.amount.toLocaleString("en-US", { style: 'currency', currency: bonus?.currency ?? 'USD'})}</td>
+                    <td>{bonus.amount.toLocaleString("en-US", { style: 'currency', currency: bonus?.currency ?? 'USD' })}</td>
                     <td>{bonus.percent}</td>
                     <td>
                       <a className="text-reset" href={`/customers/${params.customerId}/commissions/${bonus.bonusId}?periodId=${periodId}`}>{bonus.volume}</a>
                     </td>
-                    <td>{bonus.released.toLocaleString("en-US", { style: 'currency', currency: bonus?.currency ?? 'USD'})}</td>
-                    <td>{bonus.rank}</td>
+                    <td>{bonus.released.toLocaleString("en-US", { style: 'currency', currency: bonus?.currency ?? 'USD' })}</td>
+                    <td>{ranks.find(r => r.id == bonus.rank)?.name}</td>
                   </tr>
                 })}
+                {(() => {
+                  const totalAmount = bonuses.reduce((acc, bonus) => acc + bonus.amount, 0);
+                  const totalVolume = bonuses.reduce((acc, bonus) => acc + bonus.volume, 0);
+                  const totalReleased = bonuses.reduce((acc, bonus) => acc + bonus.released, 0);
+
+                  return (
+                    <tr className="table-light">
+                      <td className="strong">Total</td>
+                      <td></td>
+                      <td></td>
+                      <td className="strong">{totalAmount.toLocaleString("en-US", { style: 'currency', currency: bonuses[0]?.currency ?? 'USD' })}</td>
+                      <td></td>
+                      <td className="strong">{totalVolume}</td>
+                      <td className="strong">{totalReleased.toLocaleString("en-US", { style: 'currency', currency: bonuses[0]?.currency ?? 'USD' })}</td>
+                      <td></td>
+                    </tr>
+                  );
+                })()}
               </tbody>
             </table>
           </div>

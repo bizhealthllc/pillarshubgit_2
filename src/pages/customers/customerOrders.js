@@ -27,6 +27,10 @@ var GET_DATA = gql`query ($offset: Int!, $first: Int!, $nodeIds: [String]!) {
         description
         quantity
         price
+        volume {
+          volumeId
+          volume
+        }
       }
     }
   }
@@ -35,13 +39,44 @@ var GET_DATA = gql`query ($offset: Int!, $first: Int!, $nodeIds: [String]!) {
 const CustomerOrders = () => {
   let params = useParams()
   const { loading, error, data, variables, refetch } = useQuery(GET_DATA, {
-      variables: { offset: 0, first: 10, nodeIds: [ params.customerId ] },
+    variables: { offset: 0, first: 10, nodeIds: [params.customerId] },
   });
-  
+
   if (loading) return <DataLoading />;
   if (error) return `Error! ${error}`;
 
   let orders = data.customers[0].orders;
+
+  const getUniqueVolumeIds = (orders) => {
+    // Step 1: Flatten the nested arrays
+    const allVolumes = orders.flatMap(order =>
+      order.lineItems.flatMap(lineItem =>
+        lineItem.volume
+      )
+    );
+
+    // Step 2: Extract volumeId from each volume
+    const volumeIds = allVolumes.map(volume => volume.volumeId);
+
+    // Step 3: Get unique volumeIds using Set
+    const uniqueVolumeIds = [...new Set(volumeIds)];
+
+    return uniqueVolumeIds;
+  };
+
+  const getVolumeForVolumeId = (order, volumeId) => {
+    let total = 0;
+    for (const lineItem of order.lineItems) {
+      for (const volume of lineItem.volume) {
+        if (volume.volumeId === volumeId) {
+          total += volume.volume;
+        }
+      }
+    }
+    return total;
+  };
+
+  const uniqueVolumeIds = getUniqueVolumeIds(orders);
 
   return <>
     <PageHeader preTitle="Order History" title={data?.customers[0].fullName} pageId="orders" customerId={params.customerId}>
@@ -52,7 +87,7 @@ const CustomerOrders = () => {
               <div className="card-body border-bottom py-3">
                 <div className="row g-2 align-items-center">
                   <div className="col-auto">
-                    {GetScope() == undefined && 
+                    {GetScope() == undefined &&
                       <div className="dropdown">
                         <a href={`/customers/${params.customerId}/shop`} className="btn btn-default">Add Order</a>
                       </div>
@@ -78,35 +113,44 @@ const CustomerOrders = () => {
                     <tr>
                       <th className="w-1">No.</th>
                       <th>Order Date</th>
+                      <th>Invoice Date</th>
                       <th>Product</th>
                       <th>Order Type</th>
-                      <th>QV</th>
-                      <th>CV</th>
+                      {uniqueVolumeIds.map((v, index) => {
+                        return <th key={index}>{v}</th>
+                      })}
                       <th>Total</th>
                       <th>Status</th>
                       <th>Tracking</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {orders && orders.map((order) =>{
+                    {orders && orders.map((order) => {
                       return <tr key={order.id}>
                         <td>
                           <span className="text-muted">
                             <a className="text-reset" href={`/customers/${params.customerId}/Orders/${order.id}`}>{order.id}</a>
                           </span>
                         </td>
-                        <td><LocalDate dateString={order.orderDate} hideTime="true" /></td>
                         <td>
-                            {order.lineItems && order.lineItems.map((item) =>{
-                                return <span className="me-2" key={item.id}>{item.description}</span>
-                            })}
+                          <LocalDate dateString={order.orderDate} hideTime="true" />
+                        </td>
+                        <td>
+                          <LocalDate dateString={order.invoiceDate} hideTime="true" />
+                        </td>
+                        <td>
+                          {order.lineItems && order.lineItems.map((item) => {
+                            return <span className="me-2" key={item.id}>{item.description}</span>
+                          })}
                         </td>
                         <td>{order.orderType}</td>
-                        <td> - </td>
-                        <td> - </td>
-                        <td>{order.total.toLocaleString("en-US", { style: 'currency', currency: order?.priceCurrency ?? 'USD'})}</td>
+                        {uniqueVolumeIds.map((volumeId, index) => {
+                          const volume = getVolumeForVolumeId(order, volumeId);
+                          return <td key={index}>{volume !== null ? volume : 'N/A'}</td>
+                        })}
+                        <td>{order.total.toLocaleString("en-US", { style: 'currency', currency: order?.priceCurrency ?? 'USD' })}</td>
                         <td>
-                          <span className="badge bg-success me-1"></span> {order.status}
+                          {/* <span className="badge bg-danger me-1"></span> */} {order.status}
                         </td>
                         <td></td>
                       </tr>

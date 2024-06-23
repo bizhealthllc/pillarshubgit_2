@@ -110,6 +110,23 @@ const CommissionsBonusDetail = () => {
                     <td>{bonus.source?.externalId}</td>
                   </tr>
                 })}
+                {(() => {
+                  const totalAmount = bonuses[0].details.reduce((acc, bonus) => acc + bonus.amount, 0);
+                  const totalVolume = bonuses[0].details.reduce((acc, bonus) => acc + bonus.volume, 0);
+                  const totalReleased = bonuses[0].details.reduce((acc, bonus) => acc + bonus.released, 0);
+
+                  return (
+                    <tr className="table-light">
+                      <td className="strong">Total</td>
+                      <td></td>
+                      <td className="strong">{totalAmount.toLocaleString("en-US", { style: 'currency', currency: bonuses[0]?.currency ?? 'USD' })}</td>
+                      <td></td>
+                      <td className="strong">{totalVolume}</td>
+                      <td className="strong">{totalReleased.toLocaleString("en-US", { style: 'currency', currency: bonuses[0]?.currency ?? 'USD' })}</td>
+                      <td></td>
+                    </tr>
+                  );
+                })()}
               </tbody>
             </table>
           </div>

@@ -35,7 +35,7 @@ const Layout = () => {
     }
   }
 
-  document.title = theme?.title ? `${theme.title} - Pillars` : 'Pillars';
+  document.title = theme?.title ? `${theme.title}` : 'Pillars';
 
   return (<>
     <aside className="navbar navbar-vertical navbar-expand-lg" style={inlineStyle}>

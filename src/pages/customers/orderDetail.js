@@ -4,6 +4,7 @@ import { useQuery, gql } from "@apollo/client";
 import PageHeader from "../../components/pageHeader";
 import DataLoading from "../../components/dataLoading";
 import LocalDate from "../../util/LocalDate";
+import DataError from "../../components/dataError";
 
 var GET_DATA = gql`query ($orderids: [String]!, $nodeIds: [String]!) {
     customers(idList: $nodeIds) {
@@ -21,6 +22,15 @@ var GET_DATA = gql`query ($orderids: [String]!, $nodeIds: [String]!) {
         shipping
         tax
         total
+        shipAddress {
+          countryCode
+          stateCode
+          line1
+          line2
+          line3
+          city
+          zip
+        }
         lineItems
         {
           productId
@@ -58,10 +68,10 @@ const OrderDetail = () => {
   });
 
   if (loading) return <DataLoading />;
-  if (error) return `Error! ${error}`;
+  if (error) return <DataError error={error} />;
 
   let order = data?.customers[0].orders[0];
-  let address = data?.shipAddress;
+  let address = order?.shipAddress;
 
   const groupedVolumes = {};
   order.lineItems.forEach((item) => {
@@ -79,6 +89,8 @@ const OrderDetail = () => {
       });
     }
   });
+
+  let totalPaid = order?.payments?.reduce((a, payment) => a + payment?.amount ?? 0, 0) ?? 0;
 
   return <>
     <PageHeader preTitle="Order Detail" title={data?.customers[0].fullName} customerId={params.customerId}>
@@ -113,7 +125,7 @@ const OrderDetail = () => {
                       <dd className="col-6 text-end"><LocalDate dateString={order.orderDate} /></dd>
                       <dd className="col-6">Invoice Date</dd>
                       <dd className="col-6 text-end"><LocalDate dateString={order.invoiceDate} /></dd>
-                      <dd className="col-6">Order Source</dd>
+                      <dd className="col-6">Order Type</dd>
                       <dd className="col-6 text-end">{order?.orderType}</dd>
 
                       {groupedVolumes && Object.entries(groupedVolumes).map(([volumeId, volumeSum]) => {
@@ -133,7 +145,7 @@ const OrderDetail = () => {
                 </div>
               </div>
 
-             {/*  <div className="col-12">
+              {/*  <div className="col-12">
                 <div className="card">
 
                   <div className="card-header">
@@ -188,7 +200,7 @@ const OrderDetail = () => {
                   </div>
                 </div>
               </div>*/}
-            </div> 
+            </div>
           </div>
 
           <div className="col-md-7 col-xl-8">
@@ -207,15 +219,15 @@ const OrderDetail = () => {
 
                     <dl className="row">
                       <dd className="col-7">Invoice Total</dd>
-                      <dd className="col-5 text-end"><strong>{order?.subTotal?.toLocaleString("en-US", { style: 'currency', currency: order?.priceCurrency ?? 'USD' })}</strong></dd>
+                      <dd className="col-5 text-end"><strong>{order?.total?.toLocaleString("en-US", { style: 'currency', currency: order?.priceCurrency ?? 'USD' })}</strong></dd>
 
                       <dd className="col-7">Total Paid</dd>
-                      <dd className="col-5 text-end"><strong>$0.00</strong></dd>
+                      <dd className="col-5 text-end"><strong>{totalPaid?.toLocaleString("en-US", { style: 'currency', currency: order?.priceCurrency ?? 'USD' })}</strong></dd>
 
                       <dd className="col-7">
                         <strong>Total Due</strong>
                       </dd>
-                      <dd className="col-5 text-end"><strong>{order?.subTotal?.toLocaleString("en-US", { style: 'currency', currency: order?.priceCurrency ?? 'USD' })}</strong></dd>
+                      <dd className="col-5 text-end"><strong>{(order?.total - totalPaid)?.toLocaleString("en-US", { style: 'currency', currency: order?.priceCurrency ?? 'USD' })}</strong></dd>
                     </dl>
 
                   </div>
@@ -240,7 +252,7 @@ const OrderDetail = () => {
                         </td>
                         <td className="text-center">{item.quantity}</td>
                         <td className="text-end">{item.price.toLocaleString("en-US", { style: 'currency', currency: item?.priceCurrency ?? 'USD' })}</td>
-                        <td className="text-end">{item.price.toLocaleString("en-US", { style: 'currency', currency: item?.priceCurrency ?? 'USD' })}</td>
+                        <td className="text-end">{(item.price * item.quantity).toLocaleString("en-US", { style: 'currency', currency: item?.priceCurrency ?? 'USD' })}</td>
                       </tr>
                     })}
 

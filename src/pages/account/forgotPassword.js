@@ -30,6 +30,7 @@ const ForgotPassword = () => {
     });
   }
 
+  document.title = theme?.title ? `${theme.title}` : 'Pillars';
   if (theme?.favicon?.url) {
     const favicon = document.querySelector('link[rel="icon"]');
 

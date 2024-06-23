@@ -1,26 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Get } from '../../hooks/useFetch'
-import useSubdomain from "../../hooks/useSubdomain";
+import { Get } from '../../hooks/useFetch';
+import useSubdomain from '../../hooks/useSubdomain';
 import { useTheme } from '../../hooks/useTheme';
 import DataLoading from '../../components/dataLoading';
 
 export default function Login({ setToken }) {
-  const [username, setUserName] = useState();
-  const [password, setPassword] = useState();
+  const [username, setUserName] = useState('');
+  const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState({});
+  const [loginError, setLoginError] = useState('');
   const { subdomain } = useSubdomain();
   const { theme, loading, error } = useTheme({ subdomain: subdomain });
+  const usernameRef = useRef(null);
 
-  if (loading) return <DataLoading title="Loading Theme" />;
-  if (error) return `Error! ${error}`;
+  useEffect(() => {
+    if (!loading && usernameRef.current) {
+      usernameRef.current.focus();
+    }
+  }, [loading]);
 
-  const handleSubmit = async e => {
+  const validate = () => {
+    const errors = {};
+    if (!username) errors.username = 'Email address is required';
+    if (!password) errors.password = 'Password is required';
+    return errors;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationErrors = validate();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
 
-    var errorElement = document.getElementById("loginError");
-    errorElement.innerHTML = '';
+    setLoginError('');
 
-    const envQueryString = (theme?.environmentId) ? '&environmentId=' + theme?.environmentId : '';
+    const envQueryString = theme?.environmentId ? `&environmentId=${theme.environmentId}` : '';
 
     const encodedUsername = encodeURIComponent(username);
     const encodedPassword = encodeURIComponent(password);
@@ -29,28 +44,34 @@ export default function Login({ setToken }) {
     Get(url, (response) => {
       setToken(response);
     }, (text, error) => {
-      if (error == 401) {
-        errorElement.innerHTML = 'Incorrect username or password';
+      if (error === 401) {
+        setLoginError('Incorrect username or password');
       } else {
-        errorElement.innerHTML = text;
+        setLoginError(text);
       }
-    })
-  }
+    });
+  };
 
-  if (theme?.favicon?.url) {
-    const favicon = document.querySelector('link[rel="icon"]');
+  useEffect(() => {
+    document.title = theme?.title ? `${theme.title}` : 'Pillars';
+    if (theme?.favicon?.url) {
+      const favicon = document.querySelector('link[rel="icon"]');
 
-    if (favicon) {
-      favicon.href = theme?.favicon?.url;
-    } else {
-      const newFavicon = document.createElement('link');
-      newFavicon.rel = 'icon';
-      newFavicon.href = theme?.favicon?.url;
-      document.head.appendChild(newFavicon);
+      if (favicon) {
+        favicon.href = theme.favicon.url;
+      } else {
+        const newFavicon = document.createElement('link');
+        newFavicon.rel = 'icon';
+        newFavicon.href = theme.favicon.url;
+        document.head.appendChild(newFavicon);
+      }
     }
-  }
+  }, [theme]);
 
-  return <>
+  if (loading) return <DataLoading title="Loading Theme" />;
+  if (error) return <div>Error! {error}</div>;
+
+  return (
     <div className="page-wrapper page-center" style={{ background: theme?.loginColor ?? '#f1f5f9', position: 'relative' }}>
       <div className="container container-tight py-4">
         <div className="card card-md box-shadow">
@@ -62,13 +83,26 @@ export default function Login({ setToken }) {
             <form onSubmit={handleSubmit} autoComplete="off" noValidate>
               <div className="mb-3">
                 <label className="form-label">Email address</label>
-                <input type="email" className="form-control" placeholder="Email" autoComplete="off" onChange={e => setUserName(e.target.value)} />
+                <input
+                  type="email"
+                  ref={usernameRef}
+                  className={`form-control ${errors.username ? 'is-invalid' : ''}`}
+                  placeholder="Email"
+                  autoComplete="off"
+                  onChange={(e) => setUserName(e.target.value)}
+                />
+                {errors.username && <div className="invalid-feedback">{errors.username}</div>}
               </div>
               <div className="mb-2">
-                <label className="form-label">
-                  Password
-                </label>
-                <input type="password" className="form-control" placeholder="Password" autoComplete="off" onChange={e => setPassword(e.target.value)} />
+                <label className="form-label">Password</label>
+                <input
+                  type="password"
+                  className={`form-control ${errors.password ? 'is-invalid' : ''}`}
+                  placeholder="Password"
+                  autoComplete="off"
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                {errors.password && <div className="invalid-feedback">{errors.password}</div>}
               </div>
               <div className="mb-2">
                 <label className="form-check">
@@ -77,7 +111,7 @@ export default function Login({ setToken }) {
                   </span>
                 </label>
               </div>
-              <span id="loginError" className="text-danger"></span>
+              {loginError && <div className="text-danger mb-2">{loginError}</div>}
               <div className="form-footer">
                 <button type="submit" className="btn btn-primary w-100">Sign in</button>
               </div>
@@ -86,30 +120,9 @@ export default function Login({ setToken }) {
         </div>
       </div>
     </div>
-
-    <footer className="footer footer-transparent d-print-none">
-      <div className="container-xl">
-        <div className="row text-center align-items-center flex-row-reverse">
-          <div className="col-lg-auto ms-lg-auto">
-            <ul className="list-inline list-inline-dots mb-0">
-              <li className="list-inline-item"><a href="https://pillars-hub.readme.io" className="link-secondary" target="blank">Documentation</a></li>
-              <li className="list-inline-item"><a href="https://docs.commissionsportal.com/en/privacy-statement" className="link-secondary" target="blank">Privacy Statement</a></li>
-              <li className="list-inline-item"><a href="https://github.com/commissionsportal/PillarsUI" className="link-secondary" target="blank">Source code</a></li>
-            </ul>
-          </div>
-          <div className="col-12 col-lg-auto mt-3 mt-lg-0">
-            <ul className="list-inline list-inline-dots mb-0">
-              <li className="list-inline-item">
-                © Copyright 2023. All Rights Reserved.
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </footer>
-  </>
+  );
 }
 
 Login.propTypes = {
-  setToken: PropTypes.func.isRequired
-}
+  setToken: PropTypes.func.isRequired,
+};

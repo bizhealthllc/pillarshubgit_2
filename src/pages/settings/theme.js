@@ -156,7 +156,7 @@ const Theme = () => {
               <li className="nav-item" role="presentation">
                 <a href="#tabs-home-9" className="nav-link active" data-bs-toggle="tab" aria-selected="true" role="tab">
                   <img src={faviconUrl} alt="Pillars" className="me-2" style={{ width: '20px', height: '20px' }} />
-                  {item?.title ? `${item?.title} - Pillars` : `Pillars`}
+                  {item?.title ? `${item?.title}` : `Pillars`}
                 </a>
               </li>
               <li className="ms-auto">

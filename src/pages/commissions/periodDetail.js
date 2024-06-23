@@ -7,6 +7,7 @@ import DataLoading from "../../components/dataLoading";
 import TrendArrow from "../../components/trendArrow";
 import { ToLocalDate } from "../../util/LocalDate";
 import TopEarnersTable from "./topEarnersTable";
+import DataError from "../../components/dataError";
 
 var GET_PERIOD_DETAILS = gql`query ($period: BigInt) {
   compensationPlans {
@@ -21,6 +22,7 @@ var GET_PERIOD_DETAILS = gql`query ($period: BigInt) {
         description
         paidAmount
         paidCount
+        customerPaidCount
         totalVolume
       }
       titleBonus: bonusSummary(group: BONUS_TITLE) {
@@ -28,6 +30,7 @@ var GET_PERIOD_DETAILS = gql`query ($period: BigInt) {
         description
         paidAmount
         paidCount
+        customerPaidCount
         totalVolume
       }
       topEarners: bonusSummary(group: NODE_ID, first: 10) {
@@ -42,6 +45,7 @@ var GET_PERIOD_DETAILS = gql`query ($period: BigInt) {
         description
         paidAmount
         paidCount
+        customerPaidCount
         totalVolume
       }
       volumeSummary {
@@ -58,6 +62,7 @@ var GET_PERIOD_DETAILS = gql`query ($period: BigInt) {
         description
         paidAmount
         paidCount
+        customerPaidCount
         totalVolume
       }
     }
@@ -85,7 +90,7 @@ const PeriodDetail = () => {
   });
 
   if (loading) return <DataLoading />;
-  if (error) return `Error! ${error}`;
+  if (error) return <DataError error={error} />;
 
   let compensationPlan = data.compensationPlans.find((p) => p.period.length > 0);
   let summaryPeriod = compensationPlan.period[0];
@@ -602,7 +607,7 @@ const PeriodDetail = () => {
                     let percent = Math.round((bonus.paidAmount / period.totalCommissions) * 100);
                     return <tr key={bonus.description}>
                       <td>{bonus.description}</td>
-                      <td><a href="/">{bonus.paidCount}</a></td>
+                      <td><a href={`/commissions/periods/${params.periodId}/bonusDetail/${bonus.description}`}>{bonus.customerPaidCount}</a></td>
                       <td className="text-end" >{bonus.paidAmount.toLocaleString("en-US", { style: 'currency', currency: 'USD' })}</td>
                       <td className="text-center">
                         <div className="row align-items-center">
@@ -643,7 +648,7 @@ const PeriodDetail = () => {
                   let rank = ranks.find(el => el.id == bonus.description) || { id: bonus?.description, name: bonus?.description };
                   return <tr key={bonus.description}>
                     <td>{rank?.name === '' ? ` - ` : rank?.name}</td>
-                    <td><a href="/">{bonus.paidCount}</a></td>
+                    <td><a href={`/commissions/periods/${params.periodId}/rankDetail/${bonus.description === '' ? '0' : bonus.description}`}>{bonus.customerPaidCount}</a></td>
                     <td className="text-end" >{bonus.paidAmount.toLocaleString("en-US", { style: 'currency', currency: 'USD' })}</td>
                     <td className="text-center">
                       <div className="row align-items-center">

@@ -71,13 +71,15 @@ import EditCourse from "./pages/tools/editCourse";
 import EmailSettings from "./pages/settings/emailSettings";
 import EmailContent from "./pages/settings/emailContent";
 import Autoships from "./pages/customers/autoships";
+import BonusDetail from "./pages/commissions/bonusDetail";
+import RankDetail from "./pages/commissions/rankDetail";
 
 function App() {
   const { token, setToken, clearToken } = useToken();
 
-  if (window.location.pathname == '/account/forgotPassword') { return <ForgotPassword /> }
-  if (window.location.pathname == '/account/resetpassword') { return <ResetPassword /> }
-  if (window.location.pathname == '/account/environments') { return <EnvironmentList setToken={setToken} clearToken={clearToken} /> }
+  if (window.location.pathname.toLowerCase() == '/account/forgotpassword') { return <ForgotPassword /> }
+  if (window.location.pathname.toLowerCase() == '/account/resetpassword') { return <ResetPassword /> }
+  if (window.location.pathname.toLowerCase() == '/account/environments') { return <EnvironmentList setToken={setToken} clearToken={clearToken} /> }
 
   if (!token) {
     return <Login setToken={setToken} />
@@ -127,6 +129,8 @@ function App() {
             <Route path="commissions/periods" element={<Periods />} />
             <Route path="commissions/periods/:periodId/summary" element={<PeriodDetail />} />
             <Route path="commissions/periods/:periodId/volumesummary" element={<VolumeSummary />} />
+            <Route path="commissions/periods/:periodId/bonusDetail/:bonusId" element={<BonusDetail />} />
+            <Route path="commissions/periods/:periodId/rankDetail/:rankId" element={<RankDetail />} />
             <Route path="commissions/payables" element={<Payables />} />
             <Route path="commissions/paid" element={<PaymentHistory />} />
             <Route path="commissions/paid/:batchId" element={<PaymentHistoryDetail />} />
