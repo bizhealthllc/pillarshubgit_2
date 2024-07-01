@@ -20,7 +20,7 @@ var GET_DATA = gql`query ($nodeIds: [String]!, $period: BigInt!) {
       }
     }
   }
-  compensationPlans(first: 1) {
+  compensationPlans {
     periods(at: $period) {
       id
       begin
@@ -62,15 +62,19 @@ const CommissionsDetail = () => {
   const handlePeriodChange = (pId, u) => {
     if (u) {
       setPeriodId(pId);
-      refetch({ periodIds: [pId], period: parseInt(periodId) });
+      refetch({ period: parseInt(pId) });
     }
   };
 
-  let ranks = data?.compensationPlans[0]?.ranks;
+  var plan = data?.compensationPlans.find(item => 
+    item.periods.some(subItem => subItem.bonuses)
+  ) || null;
+
+  let ranks = plan?.ranks;
   let customer = data.customers[0];
   let bonuses = [];
-  if (data?.compensationPlans[0]?.periods[0]?.bonuses) {
-    bonuses = [...data.compensationPlans[0].periods[0].bonuses];
+  if (plan?.periods[0]?.bonuses) {
+    bonuses = [...plan.periods[0].bonuses];
     bonuses.sort((a, b) => (a.bonusId > b.bonusId) ? 1 : -1);
   }
 
