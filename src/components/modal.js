@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-const Modal = ({ showModal, onHide, size, centered, children }) => {
+const Modal = ({ showModal, onHide, size, centered, focus = true, children }) => {
   const [modalId] = useState(() => 'modal_' + crypto.randomUUID().replace(/-/g, '_'));
 
   useEffect(() => {
@@ -22,7 +22,7 @@ const Modal = ({ showModal, onHide, size, centered, children }) => {
         Update Status
       </button>
 
-      <div id={modalId} className={`modal modal-blur modal-${size} fade`} tabIndex="-1">
+      <div id={modalId} className={`modal modal-blur modal-${size} fade`} data-bs-focus={focus} tabIndex="-1">
         <div className={`modal-dialog modal-dialog-${centered ? 'centered' : ''}`} role="document">
           <div className="modal-content">{children}</div>
         </div>
@@ -36,6 +36,7 @@ Modal.propTypes = {
   onHide: PropTypes.func.isRequired,
   size: PropTypes.string,
   centered: PropTypes.string,
+  focus: PropTypes.bool,
   children: PropTypes.any.isRequired,
 };
 

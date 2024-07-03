@@ -11,7 +11,10 @@ const Editor = ({ name, value, height = 300, mode = "simple", onChange }) => {
     onChange(name, value);
   };
 
-  let simple = mode == 'simple';
+  let simple = (mode == 'simple' || mode == 'tiny');
+  let toolbar = mode == 'tiny' ?
+    'undo bold italic | alignleft aligncenter alignright | link image emoticons mergetags | bullist numlist outdent indent | code removeformat' :
+    'undo redo | styles | bold italic forecolor | alignleft aligncenter alignright | link image emoticons mergetags | bullist numlist outdent indent | code removeformat'
 
   return <>
     <MCE
@@ -31,8 +34,7 @@ const Editor = ({ name, value, height = 300, mode = "simple", onChange }) => {
           'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
           'insertdatetime', 'media', 'table', 'preview', 'help', 'wordcount'
         ],
-        toolbar: 'undo redo | styles | ' +
-            'bold italic forecolor | alignleft aligncenter alignright | link image emoticons mergetags | bullist numlist outdent indent | code removeformat',
+        toolbar: toolbar,
         content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
         object_resizing: false,
         formats: {

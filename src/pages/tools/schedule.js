@@ -6,6 +6,7 @@ import Modal from "../../components/modal";
 import LocalDate from '../../util/LocalDate';
 import DateTimeInput from '../../components/dateTimeInput';
 import TextInput from '../../components/textInput';
+import Editor from '../../components/editor';
 
 const Schedule = () => {
   const currentDate = new Date(Date.now());
@@ -102,7 +103,7 @@ const Schedule = () => {
         handleFetch();
         setShow(false);
       }, (error, code) => {
-        if (code == 400){
+        if (code == 400) {
           const errorObject = JSON.parse(error);
           setErrors(v => ({ ...v, name: errorObject.Name, address1: errorObject.Address1, address2: errorObject.Address2 }));
         } else {
@@ -206,7 +207,7 @@ const Schedule = () => {
       </div>
     </Modal>
 
-    <Modal showModal={show} onHide={handleClose}>
+    <Modal showModal={show} size="lg" focus={false} onHide={handleClose}>
       <form className="dropzone" id="dropzone-default" action="./" autoComplete="off" noValidate onSubmit={handleSubmit}>
         <div className="modal-header">
           <h5 className="modal-title">Add Event</h5>
@@ -246,6 +247,11 @@ const Schedule = () => {
                 <label className="form-label">End Time</label>
                 <DateTimeInput name="endTime" errorText={errors.endTime} value={activeItem.endTime} onChange={handleChange} />
                 <span className="text-danger"></span>
+              </div>
+            </div>
+            <div className="col-12">
+              <div className="mb-3">
+                <Editor name="content" mode="tiny" errorText={errors.content} value={activeItem.content} onChange={handleChange}/>
               </div>
             </div>
           </div>
