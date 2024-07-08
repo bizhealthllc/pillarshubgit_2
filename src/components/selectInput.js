@@ -1,7 +1,7 @@
 import React, { Children } from 'react';
 import PropTypes from 'prop-types';
 
-const SelectInput = ({ className, name, value, onChange, disabled, children }) => {
+const SelectInput = ({ className, name, value, onChange, disabled, emptyOption, children }) => {
 
   const handleChange = (event) => {
     var name = event.target.name;
@@ -9,9 +9,10 @@ const SelectInput = ({ className, name, value, onChange, disabled, children }) =
     onChange(name, value);
   };
 
-  return <select className={className ?? 'form-select'} name={name} value={value} disabled={disabled} onChange={handleChange}>
+  return <select className={className ?? 'form-select'} name={name} value={value ?? ""} disabled={disabled} onChange={handleChange}>
+    {emptyOption && !value && <option value="" disabled={true}>{emptyOption}</option>}
     {Children.map(children, child =>
-      <>{child}</>
+      <>{child} - {value}</>
     )}
   </select>;
 }
@@ -25,6 +26,7 @@ SelectInput.propTypes = {
   name: PropTypes.string.isRequired,
   value: PropTypes.array.isRequired,
   onChange: PropTypes.func,
-  disabled: PropTypes.bool.isRequired,
+  disabled: PropTypes.bool,
+  emptyOption: PropTypes.string,
   children: PropTypes.any.isRequired
 }

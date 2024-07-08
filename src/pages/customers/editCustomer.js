@@ -1,10 +1,11 @@
-import React from "react-dom/client";
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom"
 import { useQuery, gql } from "@apollo/client";
 import { SendRequest } from "../../hooks/usePost";
 import PageHeader from "../../components/pageHeader";
 import DataLoading from "../../components/dataLoading";
+import DataError from "../../components/dataError";
+import SelectInput from "../../components/selectInput";
 
 var GET_DATA = gql`query ($nodeId: ID!) {
   customer(id: $nodeId)
@@ -40,7 +41,7 @@ var GET_DATA = gql`query ($nodeId: ID!) {
   {
     iso2
     name
-    customData
+    active
   }
   languages
   {
@@ -70,42 +71,44 @@ const EditCustomer = () => {
     variables: { nodeId: params.customerId },
   });
 
+  useEffect(() => {
+    if (data && activeItem.id != data.customer.id) {
+      var billAddress = data.customer.addresses?.find(i => i.type == "Billing");
+      var shipAddress = data.customer.addresses?.find(i => i.type == "Shipping");
+
+      setActiveItem({
+        id: data.customer.id,
+        firstName: data.customer.firstName,
+        lastName: data.customer.lastName,
+        companyName: data.customer.companyName,
+        customerType: data.customer.customerType,
+        status: data.customer.status.id,
+        emailAddress: data.customer.emailAddress,
+        language: data.customer.language,
+        birthDate: data.customer.birthDate,
+        profileImage: data.customer.profileImage,
+        webAlias: data.customer.webAlias,
+
+        primaryPhone: data.customer.phoneNumbers?.find(i => i.type?.toLowerCase() == "primary")?.number,
+        secondaryPhone: data.customer.phoneNumbers?.find(i => i.type?.toLowerCase() == "secondary")?.number,
+
+        billing_line1: billAddress?.line1,
+        billing_city: billAddress?.city,
+        billing_state: billAddress?.stateCode,
+        billing_zip: billAddress?.zip,
+        billing_country: billAddress?.countryCode,
+
+        shipping_line1: shipAddress?.line1,
+        shipping_city: shipAddress?.city,
+        shipping_state: shipAddress?.stateCode,
+        shipping_zip: shipAddress?.zip,
+        shipping_country: shipAddress?.countryCode
+      });
+    }
+  }, [data]);
+
   if (loading) return <DataLoading />;
-  if (error) return `Error! ${error}`;
-
-  if (activeItem.id != data.customer.id) {
-    var billAddress = data.customer.addresses?.find(i => i.type == "Billing");
-    var shipAddress = data.customer.addresses?.find(i => i.type == "Shipping");
-
-    setActiveItem({
-      id: data.customer.id,
-      firstName: data.customer.firstName,
-      lastName: data.customer.lastName,
-      companyName: data.customer.companyName,
-      customerType: data.customer.customerType,
-      status: data.customer.status.id,
-      emailAddress: data.customer.emailAddress,
-      language: data.customer.language,
-      birthDate: data.customer.birthDate,
-      profileImage: data.customer.profileImage,
-      webAlias: data.customer.webAlias,
-
-      primaryPhone: data.customer.phoneNumbers?.find(i => i.type == "primary")?.number,
-      secondaryPhone: data.customer.phoneNumbers?.find(i => i.type == "secondary")?.number,
-
-      billing_line1: billAddress?.line1,
-      billing_city: billAddress?.city,
-      billing_state: billAddress?.stateCode,
-      billing_zip: billAddress?.zip,
-      billing_country: billAddress?.countryCode,
-
-      shipping_line1: shipAddress?.line1,
-      shipping_city: shipAddress?.city,
-      shipping_state: shipAddress?.stateCode,
-      shipping_zip: shipAddress?.zip,
-      shipping_country: shipAddress?.countryCode
-    });
-  }
+  if (error) return <DataError error={error} />;
 
   const handleChange = (name, value) => {
     setActiveItem(values => ({ ...values, [name]: value }))
@@ -310,11 +313,11 @@ const EditCustomer = () => {
                     <div className="col-md-12">
                       <div className="mb-3">
                         <label className="form-label required">Country</label>
-                        <select className="form-select" name="billing_country" value={activeItem.billing_country} onChange={(event) => handleChange(event.target.name, event.target.value)}>
+                        <SelectInput name="billing_country" value={activeItem.billing_country} emptyOption="No Country Selected" onChange={handleChange}>
                           {data.countries && data.countries.map((country) => {
-                            return country.customData ? <option key={country.iso2} value={country.iso2}>{country.name}</option> : <></>
+                            return country.active ? <option key={country.iso2} value={country.iso2}>{country.name}</option> : <></>
                           })}
-                        </select>
+                        </SelectInput>
                         <span className="text-danger"></span>
                       </div>
                     </div>
@@ -361,11 +364,11 @@ const EditCustomer = () => {
                     <div className="col-md-12">
                       <div className="mb-3">
                         <label className="form-label required">Country</label>
-                        <select className="form-select" name="shipping_country" value={activeItem.shipping_country} onChange={(event) => handleChange(event.target.name, event.target.value)}>
+                        <SelectInput name="shipping_country" value={activeItem.shipping_country} emptyOption="No Country Selected" onChange={handleChange}>
                           {data.countries && data.countries.map((country) => {
-                            return country.customData ? <option key={country.iso2} value={country.iso2}>{country.name}</option> : <></>
+                            return country.active ? <option key={country.iso2} value={country.iso2}>{country.name}</option> : <></>
                           })}
-                        </select>
+                        </SelectInput>
                         <span className="text-danger"></span>
                       </div>
                     </div>
