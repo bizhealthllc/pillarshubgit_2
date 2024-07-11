@@ -8,7 +8,7 @@ import LocalDate from '../../../util/LocalDate';
 import { GetScope } from "../../../features/authentication/hooks/useToken"
 import DataLoading from '../../../components/dataLoading';
 
-let GET_CUSTOMER = `query ($nodeIds: [String]!, $period: BigInt!, $treeId: ID!) {
+let GET_CUSTOMER = `query ($nodeIds: [String]!, $periodDate: Date, $treeId: ID!) {
   customers(idList: $nodeIds) {
     id
     fullName
@@ -42,7 +42,7 @@ let GET_CUSTOMER = `query ($nodeIds: [String]!, $period: BigInt!, $treeId: ID!) 
       zip
       countryCode
     }
-    cards(idList: ["TreeSlideout"], periodId: $period){
+    cards(idList: ["TreeSlideout"], date: $periodDate){
       id
       values{
         value
@@ -66,7 +66,7 @@ let GET_CUSTOMER = `query ($nodeIds: [String]!, $period: BigInt!, $treeId: ID!) 
   }
 }`;
 
-const TreeSideCard = ({ customerId, periodId, treeId, showModal }) => {
+const TreeSideCard = ({ customerId, periodDate, treeId, showModal }) => {
   const [customer, setCustomer] = useState(undefined);
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -81,7 +81,7 @@ const TreeSideCard = ({ customerId, periodId, treeId, showModal }) => {
     if (customerId) {
       setLoading(true);
       setShow(true);
-      Post('/graphql', { query: GET_CUSTOMER, variables: { nodeIds: [customerId], period: parseInt(periodId), treeId: treeId } }, (r) => {
+      Post('/graphql', { query: GET_CUSTOMER, variables: { nodeIds: [customerId], periodDate: periodDate, treeId: treeId } }, (r) => {
         r.data.customers[0].tree = r.data.tree.nodes[0];
         setCustomer(r.data.customers[0]);
         setLoading(false);
@@ -142,7 +142,7 @@ const TreeSideCard = ({ customerId, periodId, treeId, showModal }) => {
         <h3 className="card-title" >Upline</h3>
         <dl className="row">
           <dd className="col-5">Name</dd>
-          <dd className="col-7 text-end">{customer.tree.upline.fullName}</dd>
+          <dd className="col-7 text-end">{customer.tree.upline?.fullName}</dd>
           <dd className="col-5">Leg</dd>
           <dd className="col-7 text-end">{customer.tree.uplineLeg}</dd>
         </dl>
@@ -169,7 +169,7 @@ export default TreeSideCard;
 
 TreeSideCard.propTypes = {
   customerId: PropTypes.string,
-  periodId: PropTypes.string.isRequired,
+  periodDate: PropTypes.string.isRequired,
   treeId: PropTypes.string.isRequired,
   showModal: PropTypes.func.isRequired
 }

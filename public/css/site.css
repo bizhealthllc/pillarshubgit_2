@@ -222,3 +222,71 @@ input[type=number] {
 .card-transparent {
   background-color: transparent;
 }
+
+
+.react-datepicker-wrapper {
+  display: block !important;
+}
+
+
+.tooltip2 {
+  position: relative;
+  display: inline-block;
+}
+
+/* Tooltip text */
+.tooltip2 .tooltiptext {
+  visibility: hidden;
+  width: 320px;
+  background-color: var(--tblr-bg-surface-dark);
+  color: #fff;
+  text-align: center;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  color: var(--tblr-light);
+  font-size: 0.765625rem;
+
+  font-family: var(--tblr-body-font-family);
+  font-size: var(--tblr-body-font-size);
+  font-weight: var(--tblr-body-font-weight);
+  line-height: var(--tblr-body-line-height);
+  text-transform: none;
+
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip2:hover .tooltiptext {
+  visibility: visible;
+}
+
+.tooltip2 .tooltiptext {
+  bottom: 100%;
+  left: 50%;
+  margin-left: -160px;
+  z-index: 1080;
+  /* Use half of the width (120/2 = 60), to center the tooltip */
+}
+
+.tooltip2 .tooltiptext::after {
+  content: " ";
+  position: absolute;
+  top: 100%;
+  /* At the bottom of the tooltip */
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+
+.tooltip2 .tooltiptext {
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+.tooltip2:hover .tooltiptext {
+  opacity: 1;
+}

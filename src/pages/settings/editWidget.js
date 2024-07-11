@@ -9,10 +9,24 @@ import Widget from "../../features/widgets/components/widget"
 import TextInput from '../../components/textInput';
 import ColorInput from '../../components/colorInput';
 import RadioInput from "../../components/radioInput";
-import WidgetContent from "./widgetContent/content";
+import WidgetContent from "./widgetContent/widgetContent";
 import CssEditor from "../../components/cssEditor ";
+import DataLoading from "../../components/dataLoading";
+import DataError from "../../components/dataError";
 
 var GET_DATA = gql`query {
+  compensationPlans {
+    id
+    definitions {
+      name
+      valueId
+      comment
+    }
+    ranks {
+      id
+      name
+    }
+  }  
   trees
   {
     name
@@ -24,8 +38,9 @@ const EditWidget = () => {
   let params = useParams()
   const [previewSize] = useState(12);
   const [item, setItem] = useState();
+  const [date] = useState(new Date().toISOString());
   const { widget, error } = useWidget(params.widgetId);
-  const { data: data } = useQuery(GET_DATA, {
+  const { data, loading, error: dataError } = useQuery(GET_DATA, {
     variables: {},
   });
 
@@ -39,6 +54,8 @@ const EditWidget = () => {
   }, [widget])
 
   if (error) return `Error! ${error}`;
+  if (dataError) return <DataError error={dataError} />
+  if (loading) return <DataLoading />
 
   const handleChange = (name, value) => {
     setItem((v) => ({ ...v, [name]: value }));
@@ -133,7 +150,7 @@ const EditWidget = () => {
                       </div>
                     </div>
 
-                    <WidgetContent widget={item} updateWidget={setItem} trees={data?.trees} />
+                    <WidgetContent widget={item} updateWidget={setItem} trees={data.trees} definitions={data.compensationPlans} />
 
                   </div>
                   <div className="tab-pane" id="tabs-advanced-7" role="tabpanel">
@@ -161,7 +178,7 @@ const EditWidget = () => {
             </div>
             <div className="p-2">
               <div className={`col-${previewSize}`}>
-                {item && <Widget widget={item} trees={data?.trees} isPreview={true} />}
+                {item && <Widget widget={item} trees={data?.trees} isPreview={true} date={date} />}
               </div>
             </div>
           </div>

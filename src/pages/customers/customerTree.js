@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom"
 import { useQuery, gql } from "@apollo/client";
 import PageHeader, { CardHeader } from '../../components/pageHeader';
 import TreeSideCard from './treeComponents/treeSideCard';
-import PeriodPicker from '../../components/periodPicker';
+import PeriodDatePicker from '../../components/periodDatePicker';
 import DataLoading from '../../components/dataLoading';
 import { treeBorad } from './treeComponents/treeView.js';
 import TreeNode from './treeComponents/treeNode';
@@ -11,7 +11,7 @@ import HoldingTank from './treeComponents/holdingTank';
 import ChangePlacementModal from './treeComponents/changePlacementModal';
 import LoadingNode from './treeComponents/loadingNode.js';
 
-var GET_DATA = gql`query ($nodeIds: [String]!, $treeIds: [String]!, $period: BigInt!) {
+var GET_DATA = gql`query ($nodeIds: [String]!, $treeIds: [String]!, $periodDate: Date) {
   customers(idList: $nodeIds) {
     id
     fullName
@@ -22,7 +22,7 @@ var GET_DATA = gql`query ($nodeIds: [String]!, $treeIds: [String]!, $period: Big
     legNames
   },
   compensationPlans {
-    periods(at: $period) {
+    periods(date: $periodDate) {
       id
     }
   }
@@ -31,21 +31,19 @@ var GET_DATA = gql`query ($nodeIds: [String]!, $treeIds: [String]!, $period: Big
 
 const CustomerTree = () => {
   let params = useParams();
-  const queryParams = new URLSearchParams(window.location.search);
-  const periodParam = queryParams.get("periodId") ?? "0";
+  //const queryParams = new URLSearchParams(window.location.search);
+  //const periodParam = queryParams.get("periodId") ?? "0";
   const [placement, setPlacement] = useState();
   const [activeId, setActiveId] = useState();
-  const [periodId, setPeriodId] = useState(periodParam);
+  const [periodDate, setPeriodDate] = useState(new Date().toISOString());
   const [htNode, setHTNode] = useState();
   const { data, loading, error, refetch } = useQuery(GET_DATA, {
-    variables: { nodeIds: [ params.customerId ], treeIds: [ params.treeId ], period: parseInt(periodId) },
+    variables: { nodeIds: [ params.customerId ], treeIds: [ params.treeId ], periodDate: periodDate },
   });
 
-  const handlePeriodChange = (pId, u) => {
-    if (u) {
-      setPeriodId(pId);
-      refetch({ period: parseInt(pId) })
-    }
+  const handlePeriodChange = (name, value) => {
+    setPeriodDate(value);
+    refetch({ nodeIds: [params.customerId], periodDate: value });
   };
   
   const handleShow = (node) => {
@@ -55,7 +53,7 @@ const CustomerTree = () => {
   useEffect(() => {
     if (data)
     {
-      treeBorad('box', params.customerId, params.treeId, periodId, '/graphql',
+      treeBorad('box', params.customerId, params.treeId, periodDate, '/graphql',
         function (node) {
           if (node && node.id != undefined){
             setHTNode();
@@ -87,12 +85,12 @@ const CustomerTree = () => {
     <PageHeader preTitle={`${data?.trees[0].name} Tree`} title={data?.customers[0].fullName} pageId="tree" customerId={params.customerId} subPage={params.treeId}>
       <CardHeader>
         {/* <AutoComplete /> */}
-        <PeriodPicker periodId={periodId} setPeriodId={handlePeriodChange} />
+        <PeriodDatePicker value={periodDate} onChange={handlePeriodChange} />
       </CardHeader>
 
       <div id="box" className="h-100" ></div>
 
-      <TreeSideCard customerId={activeId} periodId={periodId} treeId={params.treeId} showModal={handleShow} />
+      <TreeSideCard customerId={activeId} periodDate={periodDate} treeId={params.treeId} showModal={handleShow} />
       <HoldingTank nodeId={params.customerId} treeId={params.treeId} uplineId={htNode?.uplineId} uplineLeg={htNode?.uplineLeg} showModal={handleShow} />
     </PageHeader>
 

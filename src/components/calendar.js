@@ -246,6 +246,5 @@ function fillWeekArrays(date, events) {
 export default Calendar;
 
 Calendar.propTypes = {
-  name: PropTypes.string.isRequired,
-  events: PropTypes.array.isRequired
+  name: PropTypes.string.isRequired
 }

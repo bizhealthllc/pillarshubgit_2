@@ -10,7 +10,7 @@ import BannerContent from "./bannerContent";
 import SocialLinksContent from "./socialLinksContent";
 import HtmlContent from "./htmlContent";
 
-const WidgetContent = ({ widget, updateWidget, trees }) => {
+const WidgetContent = ({ widget, updateWidget, trees, definitions }) => {
   
   switch (widget?.type) {
     case WidgetTypes.Profile:
@@ -22,7 +22,7 @@ const WidgetContent = ({ widget, updateWidget, trees }) => {
     case WidgetTypes.Calendar:
       return <CalendarContent widget={widget} updateWidget={updateWidget} />;
     case WidgetTypes.Card:
-      return <CardContent widget={widget} updateWidget={updateWidget} />;
+      return <CardContent widget={widget} updateWidget={updateWidget} definitions={definitions} />;
     case WidgetTypes.Banner:
       return <BannerContent widget={widget} updateWidget={updateWidget} />;
     case WidgetTypes.SocialLinks:
@@ -39,5 +39,6 @@ export default WidgetContent;
 WidgetContent.propTypes = {
   widget: PropTypes.any.isRequired,
   updateWidget: PropTypes.func.isRequired,
-  trees: PropTypes.any.isRequired
+  trees: PropTypes.any.isRequired,
+  definitions: PropTypes.any.isRequired
 }

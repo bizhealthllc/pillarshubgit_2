@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import PropTypes from 'prop-types';
 import Modal from "../../../components/modal";
 import TextInput from '../../../components/textInput';
+import SelectInput from '../../../components/selectInput';
 import ColorInput from "../../../components/colorInput";
+import TextArea from "../../../components/textArea";
+import Switch from "../../../components/switch";
 
-const CardContent = ({ widget, updateWidget }) => {
+const CardContent = ({ widget, definitions, updateWidget }) => {
   const [showEdit, setShowEdit] = useState();
   const [showDelete, setShowDelete] = useState();
   const [editItem, setEditItem] = useState();
@@ -46,11 +49,74 @@ const CardContent = ({ widget, updateWidget }) => {
     setShowEdit(false);
   }
 
+  const handleTermChange = (name, value) => {
+    let foundDefinition = null;
+    let rankValues = null;
+    definitions && definitions.some((plan) => {
+      return plan.definitions && plan.definitions.some((definition) => {
+        if (definition.valueId === value) {
+          foundDefinition = definition;
+          return true;
+        }
+        return false;
+      });
+    });
+
+    if (!foundDefinition && value.toLowerCase() == "rank") {
+      foundDefinition = {
+        name: "Current Rank",
+        valueId: "Rank",
+        comment: "Your rank shows your standing in our direct sales organization. It’s based on your sales, team growth, and contributions. A higher rank means better performance and more recognition."
+      }
+      rankValues = definitions.find(item => item.ranks?.length > 0).ranks.map((rank) => { return { value: rank.id, text: rank.name } });
+    }
+
+    setEditItem((v) => ({
+      ...v,
+      title: value,
+      text: `${foundDefinition?.name} (${foundDefinition?.valueId})`,
+      description: foundDefinition?.comment,
+      values: rankValues
+    }));
+  }
+
+  const handleValuesToggle = (name, value) => {
+    setEditItem((prev) => {
+      let newValues = null;
+
+      if (value) {
+        if (prev.title.toLowerCase() === "rank") {
+          const definition = definitions.find(item => item.ranks?.length > 0);
+          newValues = definition
+            ? definition.ranks.map(rank => ({ value: rank.id, text: rank.name }))
+            : [];
+        } else {
+          newValues = [{ value: 0, text: "False" }, { value: 1, text: "True" }];
+        }
+      }
+
+      return {
+        ...prev,
+        values: newValues
+      };
+    });
+  };
+
   const handleSlideChange = (name, value) => {
     setEditItem((v) => ({ ...v, [name]: value }));
   }
 
+  const handleWidgetChange = (name, value) => {
+    updateWidget((v) => ({ ...v, [name]: value }));
+  }
+
   return <>
+    <div className="mb-3 border-bottom">
+      <div className="mt-2">
+        <Switch name="showDatePicker" value={widget?.showDatePicker} title="Enable Date Selector" onChange={handleWidgetChange} />
+      </div>
+    </div>
+
     <div className="row row-deck row-cards">
       {widget?.panes && widget.panes.map((p, index) => {
         return <div key={p.id} className="col-sm-6 col-lg-4">
@@ -86,18 +152,56 @@ const CardContent = ({ widget, updateWidget }) => {
     </div>
     <Modal showModal={showEdit} onHide={handleHideEdit}>
       <div className="modal-header">
-        <h5 className="modal-title">Slide Details</h5>
+        <h5 className="modal-title">Term Details</h5>
         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div className="modal-body">
         <div className="row">
-          <div className="col-4 mb-3">
-            <label className="form-label">Value Key</label>
-            <TextInput name="title" value={editItem?.title} onChange={handleSlideChange} />
+          <div className="col-12 mb-3">
+            <label className="form-label">Source Term</label>
+            <SelectInput name="title" value={editItem?.title} emptyOption="-- Please select --" onChange={handleTermChange}>
+              <option value="Rank">Rank</option>
+              {definitions && definitions.map((plan) => {
+                return (plan.definitions && plan.definitions.map((definition) => {
+                  return <option key={`${plan.id}_${definition.valueId}`} value={definition.valueId}>{definition.name} ({definition.valueId})</option>
+                }))
+              })}
+
+            </SelectInput>
           </div>
-          <div className="col-8 mb-3">
+          <div className="col-12 mb-3">
             <label className="form-label">Title</label>
             <TextInput name="text" value={editItem?.text ?? ''} onChange={handleSlideChange} />
+          </div>
+
+          <div className="col-12 mb-3">
+            <label className="form-label">Description</label>
+            <TextArea name="description" value={editItem?.description ?? ''} onChange={handleSlideChange} />
+          </div>
+
+          <div className="col-12 mb-3">
+            <Switch title="Use value mapping" value={editItem?.values != null} onChange={handleValuesToggle} />
+
+            {editItem?.values != null && <>
+              <table className="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Value</th>
+                    <th>Display Text</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {editItem?.values && editItem.values.map((value) => {
+                    return <tr key={value.value}>
+                      <td>{value.value}</td>
+                      <td>{value.text}</td>
+                    </tr>
+                  })}
+                </tbody>
+              </table>
+
+            </>}
+
           </div>
 
           <div className="col-12 mb-3">
@@ -135,5 +239,6 @@ export default CardContent;
 
 CardContent.propTypes = {
   widget: PropTypes.any.isRequired,
+  definitions: PropTypes.any.isRequired,
   updateWidget: PropTypes.func.isRequired
 }

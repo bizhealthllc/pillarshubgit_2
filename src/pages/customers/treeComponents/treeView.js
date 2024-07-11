@@ -3,7 +3,7 @@ import { Post } from "../../../hooks/usePost"
 
 import "./treeView.css";
 
-function treeBorad(id, rootId, treeId, periodId, dataUrl, selectNode, getTemplate, getLoading) {
+function treeBorad(id, rootId, treeId, periodDate, dataUrl, selectNode, getTemplate, getLoading) {
   var defaults = {
     canvasBox: 'canvasBox',
     canvasBoradIdName: 'tree',
@@ -199,20 +199,19 @@ function treeBorad(id, rootId, treeId, periodId, dataUrl, selectNode, getTemplat
     let loading = BuildLoading(parent);
 
     let data = {
-      query: `query ($nodeIds: [String]!, $treeIds: [String]!, $cardIds: [String]!, $period: BigInt!) {
-        trees(idList: $treeIds){
+      query: `query ($nodeIds: [String]!, $treeIds: [String]!, $cardIds: [String]!, $periodDate: Date) {
+        trees(idList: $treeIds) {
           id
           name
           legNames
-          nodes(nodeIds: $nodeIds, periodId: $period){
+          nodes(nodeIds: $nodeIds, date: $periodDate) {
             nodeId
             totalChildNodes
             customer{
                 fullName
                 enrollDate
                 profileImage
-                status
-                {
+                status {
                   id,
                   name,
                   statusClass
@@ -226,9 +225,9 @@ function treeBorad(id, rootId, treeId, periodId, dataUrl, selectNode, getTemplat
                   id
                   name
                 }
-                cards(idList: $cardIds, periodId: $period){
+                cards(idList: $cardIds, date: $periodDate){
                   name
-                  values{
+                  values {
                     value
                     valueName
                     valueId
@@ -237,7 +236,7 @@ function treeBorad(id, rootId, treeId, periodId, dataUrl, selectNode, getTemplat
             }
           }
         }
-      }`, variables: { nodeIds: [rootId], treeIds: [treeId], cardIds: [`Tree-${treeId}`], period: parseInt(periodId) }
+      }`, variables: { nodeIds: [rootId], treeIds: [treeId], cardIds: [`Tree-${treeId}`], periodDate: periodDate }
     };
 
     Post(dataUrl, data, (nodeData) => {
@@ -272,24 +271,23 @@ function treeBorad(id, rootId, treeId, periodId, dataUrl, selectNode, getTemplat
     let nodeId = parent.getAttribute('data-nodeId') ?? rootId;
 
     let data = {
-      query: `query ($nodeIds: [String]!, $treeIds: [String]!, $cardIds: [String]!, $period: BigInt!) {
-        trees(idList: $treeIds){
+      query: `query ($nodeIds: [String]!, $treeIds: [String]!, $cardIds: [String]!, $periodDate: Date) {
+        trees(idList: $treeIds) {
           id
           name
           legNames
-          nodes(nodeIds: $nodeIds, periodId: $period){
+          nodes(nodeIds: $nodeIds, date: $periodDate) {
             nodeId
             nodes
             {
               nodeId
               uplineLeg
               totalChildNodes
-              customer{
+              customer {
                 fullName
                 enrollDate
                 profileImage
-                status
-                {
+                status {
                   id,
                   name,
                   statusClass
@@ -303,9 +301,9 @@ function treeBorad(id, rootId, treeId, periodId, dataUrl, selectNode, getTemplat
                   id
                   name
                 }
-                cards(idList: $cardIds, periodId: $period){
+                cards(idList: $cardIds, date: $periodDate) {
                   name
-                  values{
+                  values {
                     value
                     valueName
                     valueId
@@ -315,7 +313,7 @@ function treeBorad(id, rootId, treeId, periodId, dataUrl, selectNode, getTemplat
             }
           }
         }
-      }`, variables: { treeIds: [treeId], nodeIds: [nodeId], cardIds: [`Tree-${treeId}`], period: parseInt(periodId) }
+      }`, variables: { treeIds: [treeId], nodeIds: [nodeId], cardIds: [`Tree-${treeId}`], periodDate: periodDate }
     };
 
     Post(dataUrl, data, (nodeData) => {

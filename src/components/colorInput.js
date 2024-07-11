@@ -14,7 +14,7 @@ const ColorInput = ({ className, name, value, onChange, disabled, placeholder, d
     onChange(name, defaultValue);
   }
 
-  const correctedValue = value ? value : defaultValue;
+  const correctedValue = value ? value : defaultValue ?? '';
 
   return <>
     <div className="input-group">
@@ -34,7 +34,7 @@ export default ColorInput;
 ColorInput.propTypes = {
   className: PropTypes.string,
   name: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
+  value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
   placeholder: PropTypes.string,

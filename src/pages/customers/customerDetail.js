@@ -9,22 +9,21 @@ import Modal from '../../components/modal';
 import StatusPill from './statusPill';
 import Avatar from '../../components/avatar';
 import LocalDate from "../../util/LocalDate";
-import PeriodPicker from '../../components/periodPicker';
+import PeriodDatePicker from '../../components/periodDatePicker';
 import DataCard from '../../components/dataCard';
 import RankAdvance from '../../components/rankAdvance';
 import { SendRequest } from '../../hooks/usePost';
 
-var GET_CUSTOMER = gql`query ($nodeIds: [String]!, $periodId: ID!, $period: BigInt!) {
+var GET_CUSTOMER = gql`query ($nodeIds: [String]!, $periodDate: Date) {
   customers(idList: $nodeIds) {
     id
     fullName
     enrollDate
     profileImage
     webAlias
-    status
-    {
-      id,
-      name,
+    status {
+      id
+      name
       statusClass
     }
     emailAddress
@@ -48,9 +47,9 @@ var GET_CUSTOMER = gql`query ($nodeIds: [String]!, $periodId: ID!, $period: BigI
       zip
       countryCode
     }
-    cards(idList: ["Dashboard"], periodId: $period){
+    cards(idList: ["Dashboard"], date: $periodDate) {
       id
-      values{
+      values {
         value
         valueName
         valueId
@@ -60,7 +59,7 @@ var GET_CUSTOMER = gql`query ($nodeIds: [String]!, $periodId: ID!, $period: BigI
   trees {
     id
     name
-    nodes(nodeIds: $nodeIds, periodId: $period) {
+    nodes(nodeIds: $nodeIds, date: $periodDate) {
       nodeId
       uplineId
       uplineLeg
@@ -71,15 +70,14 @@ var GET_CUSTOMER = gql`query ($nodeIds: [String]!, $periodId: ID!, $period: BigI
     }
   }
   compensationPlans {
-    period(id: $periodId) {
+    period(date: $periodDate) {
       rankAdvance(nodeIds: $nodeIds) {
         nodeId
         rankId
         rankName
         requirements {
           maintanance
-          conditions
-          {
+          conditions {
             legCap
             legValue
             required
@@ -90,8 +88,7 @@ var GET_CUSTOMER = gql`query ($nodeIds: [String]!, $periodId: ID!, $period: BigI
       }
     }
   }
-  customerStatuses
-  {
+  customerStatuses {
     id
     name
     statusClass
@@ -107,20 +104,18 @@ Array.prototype.firstOrDefault = function () {
 
 const CustomerDetail = () => {
   let params = useParams()
-  const queryParams = new URLSearchParams(window.location.search)
-  const periodParam = queryParams.get("periodId") ?? "0";
+  //const queryParams = new URLSearchParams(window.location.search)
+  //const periodParam = queryParams.get("periodId") ?? "0";
   const [status, setStatus] = useState({ id: "INIT", name: "INIT" });
-  const [periodId, setPeriodId] = useState(periodParam);
+  const [periodDate, setPeriodDate] = useState(new Date().toISOString());
   const [showDelete, setShowDelete] = useState(false);
   const { loading, error, data, refetch } = useQuery(GET_CUSTOMER, {
-    variables: { nodeIds: [params.customerId], periodId: periodId, period: parseInt(periodId) },
+    variables: { nodeIds: [params.customerId], periodDate: periodDate },
   });
 
-  const handlePeriodChange = (pId, u) => {
-    if (u) {
-      setPeriodId(pId);
-      refetch({ periodId: pId, period: parseInt(pId) })
-    }
+  const handlePeriodChange = (name, value) => {
+    setPeriodDate(value);
+    refetch({ nodeIds: [params.customerId], periodDate: value });
   };
 
   if (loading) return <DataLoading />;
@@ -130,15 +125,15 @@ const CustomerDetail = () => {
   const handleShow = () => setShowDelete(true);
 
   const handleDelete = () => {
-    SendRequest("DELETE", `/api/v1/Customers/${params.customerId}`, {}, () =>{
+    SendRequest("DELETE", `/api/v1/Customers/${params.customerId}`, {}, () => {
       window.location = '/';
-    }, (error) =>{
+    }, (error) => {
       alert(error)
     })
   }
 
-  let customer = data.customers[0] ?? {id: params.customerId, cards: []};
-  let commissionDetail = data.compensationPlans[0].period;
+  let customer = data.customers[0] ?? { id: params.customerId, cards: [] };
+  let rankAdvance = data.compensationPlans.flatMap(plan => plan.period || []).find(period => period.rankAdvance?.length > 0)?.rankAdvance || null;
   let address = customer.addresses ? customer.addresses[0] : { line1: '' };
   let trees = data.trees;
   let statuses = data.customerStatuses;
@@ -197,7 +192,7 @@ const CustomerDetail = () => {
                     <LocalDate dateString={customer.enrollDate} />
                   </dd>
                   <dd className="col-5">
-                    <svg  xmlns="http://www.w3.org/2000/svg" className="icon me-2 text-muted" width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  strokeWidth="2"  strokeLinecap="round"  strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7.5 7.5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M3 6v5.172a2 2 0 0 0 .586 1.414l7.71 7.71a2.41 2.41 0 0 0 3.408 0l5.592 -5.592a2.41 2.41 0 0 0 0 -3.408l-7.71 -7.71a2 2 0 0 0 -1.414 -.586h-5.172a3 3 0 0 0 -3 3z" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="icon me-2 text-muted" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M7.5 7.5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M3 6v5.172a2 2 0 0 0 .586 1.414l7.71 7.71a2.41 2.41 0 0 0 3.408 0l5.592 -5.592a2.41 2.41 0 0 0 0 -3.408l-7.71 -7.71a2 2 0 0 0 -1.414 -.586h-5.172a3 3 0 0 0 -3 3z" /></svg>
                     Handle
                   </dd>
                   <dd className="col-7 text-end">{customer.webAlias ?? customer.id}</dd>
@@ -245,7 +240,7 @@ const CustomerDetail = () => {
               <div className="card-header">
                 <h3 className="card-title">Business Overview</h3>
                 <div className="card-actions">
-                  <PeriodPicker periodId={periodId} setPeriodId={handlePeriodChange} />
+                  <PeriodDatePicker value={periodDate} onChange={handlePeriodChange} />
                 </div>
               </div>
               <div className="card-body">
@@ -259,7 +254,7 @@ const CustomerDetail = () => {
             <div className="row row-cards">
               <div className="col-12">
                 <div className="card">
-                  <RankAdvance ranks={commissionDetail?.rankAdvance} />
+                  <RankAdvance ranks={rankAdvance} />
                 </div>
               </div>
               <div className="col-12">

@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from 'prop-types';
+import { useQuery, gql } from "@apollo/client";
 import { WidgetTypes } from "../hooks/useWidgets";
 
 import Avatar from '../../../components/avatar';
 import StatusPill from '../../../pages/customers/statusPill';
 import Calendar from '../../../components/calendar';
 import RankAdvance from '../../../components/rankAdvance';
+import PeriodDatePicker from "../../../components/periodDatePicker";
 
 import "./widget.css";
 import EmptyContent from "../../../components/emptyContent";
@@ -13,31 +15,66 @@ import SocialMediaLink from "../../../components/socialMediaLink";
 import { SocialMediaPlatforms } from "../../../components/socialMediaIcon";
 import HtmlWidget from "./htmlWidget";
 
-const Widget = ({ widget, customer, commissionDetail, trees, isPreview = false }) => {
-  const [widgetId] = useState(() => 'wd_' + crypto.randomUUID().replace(/-/g, '_'));
-  if (widget == undefined) return <EmptyContent title="Widget not found" text="Please check your widget library to verify it has been configured correctly." />;
-  if (!customer) {
-    customer = {
-      id: "EX456", fullName: 'Example Customer', profileImage: '', customerType: { name: 'Customer' }, status: { name: 'Active', statusClass: "Active" },
-      emailAddress: 'example@pillarshub.com', language: "en",
-      phoneNumbers: [{ type: 'Mobile', number: '(555) 555-5555' }, { type: 'Work', number: '(333) 333-3333' }],
-      addresses: [{ type: "Shipping", line1: '', line2: '', line3: '', city: '', stateCode: '', zip: '', countryCode: '' }],
-      cards: [{ values: [{ valueName: 'Example', valueId: 'Ex', value: '22' }] }]
+var GET_CUSTOMER = gql`query ($nodeIds: [String]!, $periodDate: Date!) {
+  customers(idList: $nodeIds) {
+    id
+    fullName
+    enrollDate
+    profileImage
+    status {
+      id
+      name
+      statusClass
+    }
+    emailAddress
+    customerType {
+      id
+      name
+    }
+    socialMedia {
+      name
+      value
+    }
+    language
+    customData
+    phoneNumbers {
+      type
+      number
+    }
+    addresses {
+      type
+      line1
+      line2
+      line3
+      city
+      stateCode
+      zip
+      countryCode
+    }
+    cards(idList: ["Dashboard"], date: $periodDate) {
+      id
+      values {
+        value
+        valueName
+        valueId
+      }
     }
   }
+}`;
 
-  if (!commissionDetail) {
-    commissionDetail = { rankAdvance: [{ rankId: 10, rankName: 'Example Rank', requirements: [{ conditions: [{ valueId: "Personal Volume", value: 20, required: 20 }, { valueId: "Group Volume", value: 90, required: 200 }] }] }] }
-  }
 
-  if (isPreview) {
-    trees = trees?.map((tree) => ({
-      ...tree,
-      nodes: [{ upline: { fullName: 'Example Customer' } }]
-    }))
+const Widget = ({ widget, customer, compensationPlans, trees, isPreview = false, date }) => {
+  const [wDate, setWDate] = useState(date);
+  const [loading, setLoading] = useState(false);
+  const [sCustomer, setSCustomer] = useState(customer);
 
-    customer = { ...customer, socialMedia: SocialMediaPlatforms.map((p) => ({ name: p.name, value: 'preview' })) };
-  }
+  const [widgetId] = useState(() => 'wd_' + crypto.randomUUID().replace(/-/g, '_'));
+  const { refetch } = useQuery(GET_CUSTOMER, {
+    variables: { nodeIds: [customer?.id], periodDate: date },
+    skip: true, // Initially skip the query
+  });
+
+  if (widget == undefined) return <EmptyContent title="Widget not found" text="Please check your widget library to verify it has been configured correctly." />;
 
   const inlineStyle = {
     "--tblr-bg-surface": (widget?.backgroundColor ?? '#ffffff'),
@@ -53,6 +90,25 @@ const Widget = ({ widget, customer, commissionDetail, trees, isPreview = false }
 
   const modifiedCss = widget?.css?.replace(/([^,{}]+)(?=\s*{)/g, (match) => `.${widgetId} ${match}`) ?? '';
 
+  useEffect(() => {
+    if (wDate != date && !isPreview) {
+      console.log('Loadding');
+      setLoading(true);
+      refetch({ nodeIds: [customer.id], periodDate: wDate })
+        .then((result) => {
+          setLoading(false);
+          setSCustomer(result.data?.customers[0]);
+        })
+        .catch((error) => {
+          setLoading(false);
+          console.error('Refetch error:', error);
+        });
+    }
+  }, [wDate]);
+
+  const handleDateChange = (name, value) => {
+    setWDate(value);
+  }
 
   const styleTag = {
     __html: modifiedCss,
@@ -61,14 +117,44 @@ const Widget = ({ widget, customer, commissionDetail, trees, isPreview = false }
   return <div style={{ display: "contents" }} className={widgetId}><div className={`card h-100 ${isPreview ? '' : 'mb-3'}`} style={inlineStyle}>
     {widget.title && <div className="card-header" style={{ backgroundColor: (widget?.headerColor ?? '#ffffff') }}>
       <h3 className={`card-title ${msStyle} ${meStyle}`}>{widget.title}</h3>
+      {widget.showDatePicker && <>
+        <div className="card-actions">
+          <PeriodDatePicker name="date" value={wDate} onChange={handleDateChange} />
+        </div>
+      </>}
+
     </div>}
     <style dangerouslySetInnerHTML={styleTag} />
-    {Content(widget, customer, commissionDetail, trees, isPreview)}
+    {Content(widget, sCustomer, compensationPlans, trees, isPreview, loading)}
   </div></div>
 }
 
-function Content(widget, customer, commissionDetail, trees, isPreview) {
+function Content(widget, customer, compensationPlans, trees, isPreview, loading) {
   const [carouselId] = useState(() => 'carousel_' + crypto.randomUUID().replace(/-/g, '_'));
+
+  if (!compensationPlans) {
+    compensationPlans = [{ period: { rankAdvance: [{ rankId: 10, rankName: 'Example Rank', requirements: [{ conditions: [{ valueId: "Personal Volume", value: 20, required: 20 }, { valueId: "Group Volume", value: 90, required: 200 }] }] }] } }]
+  }
+
+  if (!customer) {
+    customer = {
+      id: "EX456", fullName: 'Example Customer', profileImage: '', customerType: { name: 'Customer' }, status: { name: 'Active', statusClass: "Active" },
+      emailAddress: 'example@pillarshub.com', language: "en",
+      phoneNumbers: [{ type: 'Mobile', number: '(555) 555-5555' }, { type: 'Work', number: '(333) 333-3333' }],
+      addresses: [{ type: "Shipping", line1: '', line2: '', line3: '', city: '', stateCode: '', zip: '', countryCode: '' }],
+      cards: [{ values: [{ valueName: 'Example', valueId: 'Ex', value: '22' }] }]
+    }
+  }
+
+  if (isPreview) {
+    trees = trees?.map((tree) => ({
+      ...tree,
+      nodes: [{ upline: { fullName: 'Example Customer' } }]
+    }))
+
+    customer = { ...customer, socialMedia: SocialMediaPlatforms.map((p) => ({ name: p.name, value: 'preview' })) };
+  }
+
 
   if (widget?.type == WidgetTypes.Profile) {
     return <div className="card-body py-4 text-center">
@@ -96,15 +182,20 @@ function Content(widget, customer, commissionDetail, trees, isPreview) {
     var values = customer.cards[0]?.values;
 
     if (widget.panes) {
-      //const randomNumber = Math.floor(Math.random() * (1000 - 100 + 1)) + 100;
       return <div className="card-body">
         <div className="datagrid widgetDatagrid">
           {widget.panes.map((pane) => {
-            const emptyValue = isPreview ? Math.floor(Math.random() * (5000 - 100 + 1)) + 100 : 0;
+            const emptyValue = isPreview ? pane.values?.length > 0 ? pane.values[0].value : Math.floor(Math.random() * (5000 - 100 + 1)) + 100 : 0;
             const stat = values.find((s) => s.valueId == pane.title) ?? { value: emptyValue };
+            const value = loading ? '-' : pane.values?.length > 0 ? pane.values.find((m) => m.value == stat.value)?.text ?? '-' : stat.value.toLocaleString();
             return <div key={pane.title} className="datagrid-item" style={{ color: pane.imageUrl }}>
-              <div className="datagrid-title">{pane.text} ({pane.title})</div>
-              <div className="h2 datagrid-content">{stat.value.toLocaleString()}</div>
+              <div className="datagrid-title tooltip2">
+                {pane.text}
+                {pane.description && <span className="tooltiptext">{pane.description}</span>}
+              </div>
+              <div className="h2 datagrid-content">
+                {value}
+              </div>
             </div>
           })}
         </div>
@@ -158,7 +249,8 @@ function Content(widget, customer, commissionDetail, trees, isPreview) {
   }
 
   if (widget.type == WidgetTypes.Rank) {
-    return <RankAdvance ranks={commissionDetail?.rankAdvance} />
+    let rankAdvance = compensationPlans.flatMap(plan => plan.period || []).find(period => period.rankAdvance?.length > 0)?.rankAdvance || null;
+    return <RankAdvance ranks={rankAdvance} />
   }
 
   if (widget.type == WidgetTypes.Upline) {
@@ -191,7 +283,7 @@ function Content(widget, customer, commissionDetail, trees, isPreview) {
   }
 
   if (widget.type == WidgetTypes.Calendar) {
-    return <Calendar />
+    return <Calendar name={widget.id} />
   }
 
   if (widget.type == WidgetTypes.SocialLinks) {
@@ -236,7 +328,8 @@ export default Widget;
 Widget.propTypes = {
   widget: PropTypes.any.isRequired,
   customer: PropTypes.any.isRequired,
-  commissionDetail: PropTypes.any.isRequired,
+  compensationPlans: PropTypes.any.isRequired,
   trees: PropTypes.any.isRequired,
-  isPreview: PropTypes.bool
+  isPreview: PropTypes.bool,
+  date: PropTypes.string.isRequired
 }

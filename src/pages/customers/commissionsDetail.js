@@ -5,20 +5,11 @@ import PageHeader from "../../components/pageHeader";
 import DataLoading from "../../components/dataLoading";
 import PeriodPicker from "../../components/periodPicker";
 import LocalDate from '../../util/LocalDate';
-import DataCard from '../../components/dataCard';
 
 var GET_DATA = gql`query ($nodeIds: [String]!, $period: BigInt!) {
   customers(idList: $nodeIds) {
     id
     fullName
-    cards(idList: ["Earnings"], periodId: $period){
-      id
-      values{
-        value
-        valueName
-        valueId
-      }
-    }
   }
   compensationPlans {
     periods(at: $period) {
@@ -71,7 +62,6 @@ const CommissionsDetail = () => {
   ) || null;
 
   let ranks = plan?.ranks;
-  let customer = data.customers[0];
   let bonuses = [];
   if (plan?.periods[0]?.bonuses) {
     bonuses = [...plan.periods[0].bonuses];
@@ -139,19 +129,6 @@ const CommissionsDetail = () => {
                 })()}
               </tbody>
             </table>
-          </div>
-        </div>
-      </div>
-
-      <div className="col-12">
-        <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">All Commission Values</h3>
-          </div>
-          <div className="card-body">
-            <div className="datagrid">
-              <DataCard data={customer.cards[0]?.values} />
-            </div>
           </div>
         </div>
       </div>
