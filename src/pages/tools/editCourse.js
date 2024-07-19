@@ -11,6 +11,7 @@ import Editor from '../../components/editor';
 import NumericInput from '../../components/numericInput';
 import AvailabilityInput from '../../components/availabilityInput';
 import FileInput from "../../components/fileInput";
+import Modal from '../../components/modal';
 
 const MAX_DOCUMENT_SIZE = 1024 * 1024; // 1 MB (adjust the size as needed)
 
@@ -23,6 +24,7 @@ const EditCourse = () => {
   const [processing, setProcessing] = useState();
   const [sizeError, setSizeError] = useState();
   const [saveState, setSaveState] = useState();
+  const [showDelete, setShowDelete] = useState();
 
   useEffect(() => {
     if (data) {
@@ -112,6 +114,38 @@ const EditCourse = () => {
       }
       return ({ ...v });
     });
+  }
+
+  const handleHideDelete = () => setShowDelete(false);
+  const handleShowDelete = () => {
+    setShowDelete(true);
+  }
+
+  const handleDeleteTask = () => {
+
+    if (activeItem.taskIndex == -1) {
+      setCource(v => {
+        v.chapters.splice(activeItem.chapterId, 1);
+        return ({ ...v });
+      });
+
+      setActiveItem({ chapterId: activeItem.chapterId - 1, taskIndex: -1 })
+    } else {
+      setCource(v => {
+        var chapter = v.chapters[activeItem.chapterId];
+        if (chapter) {
+          if (chapter.tasks) {
+            chapter.tasks.splice(activeItem.taskIndex, 1);
+          }
+        }
+        return ({ ...v });
+      });
+
+      setActiveItem({ chapterId: activeItem.chapterId, taskIndex: activeItem.taskIndex - 1 })
+    }
+
+
+    setShowDelete(false);
   }
 
   const handleSave = () => {
@@ -241,7 +275,7 @@ const EditCourse = () => {
                     <button className="btn btn-default" onClick={handleAddTask}>Add Task</button>
                   </div>
                   <div className="col-auto">
-                    <button className="btn btn-danger">Delete {editLable}</button>
+                    <button className="btn btn-danger" onClick={handleShowDelete}>Delete {editLable}</button>
                   </div>
                 </div>
               </div>}
@@ -260,6 +294,17 @@ const EditCourse = () => {
 
       </div>
     </PageHeader >
+
+    <Modal showModal={showDelete} size="sm" centered={true} onHide={handleHideDelete} >
+      <div className="modal-body">
+        <div className="modal-title">Are you sure?</div>
+        <div>Do you wish to delete &apos;<em>{titleValue}&apos;</em>?</div>
+      </div>
+      <div className="modal-footer">
+        <button type="button" className="btn btn-link link-secondary me-auto" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" className="btn btn-danger" onClick={handleDeleteTask}>Delete Item</button>
+      </div>
+    </Modal>
   </>
 }
 
