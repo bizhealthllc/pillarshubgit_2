@@ -6,8 +6,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 const DateInput = ({ className = 'form-control', name, value, onChange, disabled, placeholder, errorText, errored }) => {
 
   const handleChange = (date) => {
-    //var name = event.target.name;
-    //var value = event.target.value;
     const formattedDate = date.toISOString();
     onChange(name, formattedDate);
   };
@@ -16,13 +14,14 @@ const DateInput = ({ className = 'form-control', name, value, onChange, disabled
 
   return <>
     {/* <input type="date" className={inputClass} placeholder={placeholder ?? ''} name={name} value={value} disabled={disabled} onChange={handleChange} autoComplete='off' /> */}
-    <div className="input-icon mb-3">
+    <div className="input-icon">
       <DatePicker
         selected={value ? new Date(value) : null}
         onChange={handleChange}
         className={inputClass}
         placeholderText={placeholder ?? ''}
         name={name}
+        timezone
         disabled={disabled}
         dateFormat="yyyy-MM-dd"
         popperPlacement="bottom-end"

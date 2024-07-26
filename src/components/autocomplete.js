@@ -4,10 +4,12 @@ import { Get } from '../hooks/useFetch';
 
 import "./autocomplete.css";
 
-const AutoComplete = ({ name, value, placeholder = 'Search...', showIcon = true, onChange, disabled, errorText, errored }) => {
+const AutoComplete = ({ name, value, placeholder = 'Search...', showIcon = true, onChange, allowNull = false, disabled, errorText, errored, showClear = false }) => {
   const [inputId] = useState(() => 'modal_' + crypto.randomUUID().replace(/-/g, '_'));
   const [loading, setLoading] = useState(false);
+
   const handleChange = (v) => {
+    if (!v && !allowNull) return;
     onChange(name, v);
   };
 
@@ -22,10 +24,20 @@ const AutoComplete = ({ name, value, placeholder = 'Search...', showIcon = true,
   const className = "form-control";
   const inputClass = (errorText || errored) ? `${className} is-invalid` : className;
 
+  const showClearIcon = showClear && value != '' && value != null;
+  const groupClass = showClearIcon ? 'input-group input-group-flat' : 'input-icon';
+
   return <>
-    <div className="input-icon">
+    <div className={groupClass}>
       <input id={inputId} className={`${inputClass}`} placeholder={placeholder} name={name} disabled={disabled} autoComplete='off' />
-      {showIcon && !loading && <span className="input-icon-addon">
+      {showClearIcon && <>
+        <span className="input-group-text">
+          <a href="#" className="link-secondary" data-bs-toggle="tooltip" aria-label="Clear search" data-bs-original-title="Clear search" onClick={() => handleChange(null)}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </a>
+        </span>
+      </>}
+      {showIcon && !showClearIcon && !loading && <span className="input-icon-addon">
         <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><circle cx="10" cy="10" r="7" /><line x1="21" y1="21" x2="15" y2="15" /></svg>
       </span>}
       {loading && <span className="input-icon-addon">
@@ -44,9 +56,11 @@ AutoComplete.propTypes = {
   placeholder: PropTypes.string,
   showIcon: PropTypes.bool,
   onChange: PropTypes.func,
+  allowNull: PropTypes.bool,
   disabled: PropTypes.bool,
   errorText: PropTypes.string,
-  errored: PropTypes.bool
+  errored: PropTypes.bool,
+  showClear: PropTypes.bool
 }
 
 function formatText(customer) {
@@ -143,9 +157,11 @@ function autocomplete(inp, onItemSelect, setLoading) {
       /*If the ENTER key is pressed, prevent the form from being submitted,*/
       e.preventDefault();
       if (currentFocus < 0) currentFocus = 0;
-      if (currentFocus > -1) {
+      if (currentFocus > -1 && x) {
         /*and simulate a click on the "active" item:*/
-        if (x) x[currentFocus]?.click();
+        x[currentFocus]?.click();
+      } else {
+        if (e.currentTarget.value == '') onItemSelect(null);
       }
     }
   });
