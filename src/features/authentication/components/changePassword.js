@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Get } from "../../../hooks/useFetch";
 import { SendRequest } from '../../../hooks/usePost';
 import { GetUser } from "../../../features/authentication/hooks/useToken";
 import { useEffect } from 'react';
 
 const ChangePassword = ({ userId, username }) => {
   const [passwordUpdate, setPasswordUpdate] = useState({});
+  const [error, setError] = useState();
 
   useEffect(() => {
     var successAlert = document.getElementById('passwordSuccess');
@@ -22,6 +22,7 @@ const ChangePassword = ({ userId, username }) => {
   let requireCurrent = (loggedInUser.username == username);
 
   const handleChangePassword = () => {
+    setError();
     document.getElementById("newPasswordInput").classList.remove("is-invalid");
     document.getElementById("confirmNewInput").classList.remove("is-invalid");
     document.getElementById("newPasswordLabel").innerText = "";
@@ -55,42 +56,18 @@ const ChangePassword = ({ userId, username }) => {
       return;
     }
 
-    if (requireCurrent) {
-      var updated = {
-        username: username,
-        origionalPassword: passwordUpdate.current,
-        newPassword: passwordUpdate.newPassword
-      };
-      
-      SendRequest("PUT", `/Authentication/ResetPassword`, updated, () => {
-        var successAlert = document.getElementById('passwordSuccess');
-        successAlert.classList.remove('d-none');
-      }, () => {
-        document.getElementById("currentLabel").innerText = "Invalid Password";
-        document.getElementById("currentInput").classList.add("is-invalid");
-      });
-    } else {
-      Get(`/api/v1/Users/${userId}`, (d) => {
-        let updated = {
-          id: d.userId ?? d.id,
-          userName: d.username,
-          password: passwordUpdate.newPassword,
-          roleId: d.roleId,
-          firstName: d.firstName,
-          lastName: d.lastName,
-          scope: d.scope
-        };
+    var updated = {
+      username: username,
+      origionalPassword: passwordUpdate.current,
+      newPassword: passwordUpdate.newPassword
+    };
 
-        SendRequest("PUT", `/api/v1/Users/${updated.id}`, updated, () => {
-          var successAlert = document.getElementById('passwordSuccess');
-          successAlert.classList.remove('d-none');
-        }, (error, code) => {
-          alert(`${code}: ${error}`);
-        })
-      }, (error, code) => {
-        alert(`${code}: ${error}`);
-      })
-    }
+    SendRequest("PUT", `/Authentication/ResetPassword`, updated, () => {
+      var successAlert = document.getElementById('passwordSuccess');
+      successAlert.classList.remove('d-none');
+    }, (error, code) => {
+      setError({code: code, message: error});
+    });
   };
 
   return <>
@@ -122,6 +99,10 @@ const ChangePassword = ({ userId, username }) => {
       </div>
     </div>
     <div className="row">
+      {error && <>
+        {error.code == 404 && <span className="text-danger" id="newPasswordLabel">The user {error.message} could not be found.</span>}
+        {error.code != 404 && <span className="text-danger" id="newPasswordLabel">{JSON.stringify(error)}</span>}
+      </>}
       <div className="col d-flex justify-content-end">
         <button type="submit" className="btn btn-primary" onClick={handleChangePassword} >Update password</button>
       </div>
