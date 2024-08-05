@@ -37,6 +37,17 @@ const Layout = () => {
 
   document.title = theme?.title ? `${theme.title}` : 'Pillars';
 
+  const handleNavItemClick = () => {
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    if (navbarCollapse.classList.contains('show')) {
+      // Use Bootstrap's collapse methods to handle the animation
+      const collapseInstance = new window.bootstrap.Collapse(navbarCollapse, {
+        toggle: false,
+      });
+      collapseInstance.hide();
+    }
+  };
+
   return (<>
     <aside className="navbar navbar-vertical navbar-expand-lg" style={inlineStyle}>
       <div className="container-fluid">
@@ -55,7 +66,7 @@ const Layout = () => {
         </div>
         <div className="collapse navbar-collapse" id="sidebar-menu">
           {GetScope() == undefined && <CorporateMenu />}
-          {GetScope() != undefined && <BackOfficeMenu />}
+          {GetScope() != undefined && <BackOfficeMenu itemClick={handleNavItemClick} />}
         </div>
       </div>
     </aside>

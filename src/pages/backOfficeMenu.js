@@ -1,12 +1,13 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import parse from 'html-react-parser';
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { GetScope } from "../features/authentication/hooks/useToken"
 import { useFetch } from "../hooks/useFetch";
 import DataLoading from '../components/dataLoading';
 import DataError from '../components/dataError';
 
-const BackOfficeMenu = () => {
+const BackOfficeMenu = ({ itemClick }) => {
   const location = useLocation();
   const { data, loading, error } = useFetch('/api/v1/Menus');
 
@@ -27,14 +28,14 @@ const BackOfficeMenu = () => {
         if (visible) {
           if (url) {
             return <li key={menu.title} className={`nav-item ${activeClass}`}>
-              <Link className="nav-link" to={url} >
+              <a className="nav-link" href={url} onClick={itemClick} >
                 <span className="nav-link-icon d-md-none d-lg-inline-block">
                   {menu.icon && parse(menu.icon)}
                 </span>
                 <span className="nav-link-title">
                   {menu.title}
                 </span>
-              </Link>
+              </a>
             </li>
           } else {
             return <li key={menu.title} className="sidebar-header">{menu.title}</li>
@@ -47,3 +48,7 @@ const BackOfficeMenu = () => {
 };
 
 export default BackOfficeMenu;
+
+BackOfficeMenu.propTypes = {
+  itemClick: PropTypes.func
+}

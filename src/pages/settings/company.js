@@ -44,7 +44,7 @@ const Company = () => {
           </div>
           <div className="col-12">
             <div className="row row-cards">
-              <div className="col-6">
+              <div className="col-md-6">
                 <fieldset className="fo">
                   <div className="row row-cards">
                     <div className="col-12">
@@ -58,7 +58,7 @@ const Company = () => {
                   </div>
                 </fieldset>
               </div>
-              <div className="col-6">
+              <div className="col-md-6">
                 <fieldset className="fo">
                   <div className="row row-cards">
                     <div className="col-12">

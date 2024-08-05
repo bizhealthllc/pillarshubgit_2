@@ -44,7 +44,7 @@ const CustomerNav = ({ customerId }) => {
   const menu = data?.find(items => items.id == "BO");
 
   return <>
-    <ul className="navbar-nav">
+    <ul className="navbar-nav justify-content-evenly me-auto">
       {menu?.items && organizeItems(menu.items).map((menu) => {
         let visible = menu.status != 'Disabled';
         var url = menu?.url?.replace('{customerId}', customerId);
@@ -53,8 +53,11 @@ const CustomerNav = ({ customerId }) => {
         if (visible) {
           if (url) {
             return <li key={menu.title} className={`nav-item ${activeClass}`}>
-              <Link className="nav-link" to={`${url}${periodId ? '?periodId=' + periodId : ''}`} >
-                <span className="nav-link-title">
+              <Link className="nav-link p-0 m-0 p-md-2" to={`${url}${periodId ? '?periodId=' + periodId : ''}`} >
+                <span className="nav-link-icon d-md-none m-0">
+                  {menu.icon && parse(menu.icon)}
+                </span>
+                <span className="nav-link-title d-none d-md-block">
                   {menu.title}
                 </span>
               </Link>
@@ -64,7 +67,7 @@ const CustomerNav = ({ customerId }) => {
               <a className="nav-link dropdown-toggle" href="#trees" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
                 <span className="nav-link-title">{menu.title}</span>
               </a>
-              <div className="dropdown-menu">
+              <div className="dropdown-menu dropdown-menu-end">
                 {menu?.subItems && menu?.subItems.map((child) => {
                   var childUrl = child?.url?.replace('{customerId}', customerId);
                   return <a key={child.title} className="dropdown-item" href={`${childUrl}${periodId ? '?periodId=' + periodId : ''}`} >

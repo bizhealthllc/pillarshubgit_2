@@ -38,23 +38,19 @@ const PageHeader = ({ preTitle, title, postTitle, children, breadcrumbs, onSearc
 
   return <>
 
-    <header className="navbar navbar-expand-md navbar-light d-none d-lg-flex d-print-none">
+    <header className="navbar navbar-expand navbar-light d-print-none">
       <div className="container-xl">
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu">
-          <span className="navbar-toggler-icon"></span>
-        </button>
-
-        <div className="navbar-nav flex-row order-md-last">
+        <div className="navbar-nav flex-row order-md-last d-none d-lg-flex">
           <div className="nav-item dropdown ">
             <AccountMenu />
           </div>
         </div>
-        <div className={`collapse navbar-collapse ${(GetScope() == undefined && customerId) ? '' : 'justify-content-center'}`} id="navbar-menu">
+        <div className={`${(GetScope() == undefined && customerId) ? 'flex-row d-lg-flex align-items-center justify-content-center w-100' : 'flex-row justify-content-center w-100'}`} id="navbar-menu">
           {GetScope() == undefined && customerId && <>
             <CustomerNav customerId={customerId} pageId={pageId} />
           </>}
 
-          <div className={(GetScope() == undefined && customerId) ? 'ms-auto me-3 w-25' : 'w-50'}>
+          <div className={(GetScope() == undefined && customerId) ? 'ms-auto me-auto ms-lg-0 me-lg-0 pe-lg-3' : 'ms-auto me-auto'} style={{maxWidth: '600px'}}>
             <form onSubmit={handleSubmit} autoComplete="off">
               <AutoComplete name="search" placeholder="Search Team Members" value={searchText} showIcon={true} onChange={handleChange} />
             </form>
@@ -65,7 +61,7 @@ const PageHeader = ({ preTitle, title, postTitle, children, breadcrumbs, onSearc
 
 
     <div className="page-wrapper">
-      {<div className="container-xl">
+      {title && <div className="container-xl">
         <div className="page-header d-print-none">
           <div className="row g-3 align-items-center">
             <div className="col me-4">

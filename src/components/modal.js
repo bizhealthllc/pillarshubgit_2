@@ -1,8 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { v4 as uuidv4 } from 'uuid'; // Using uuid library for fallback
+
+const generateUUID = () => {
+  try {
+    return crypto.randomUUID().replace(/-/g, '_');
+  } catch (e) {
+    return uuidv4().replace(/-/g, '_');
+  }
+};
 
 const Modal = ({ showModal, onHide, size, centered, focus = true, children }) => {
-  const [modalId] = useState(() => 'modal_' + crypto.randomUUID().replace(/-/g, '_'));
+  const [modalId] = useState(() => 'modal_' + generateUUID());
 
   useEffect(() => {
     let mdl = document.getElementById(modalId);

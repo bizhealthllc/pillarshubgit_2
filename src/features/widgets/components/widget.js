@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from 'prop-types';
+import { v4 as uuidv4 } from 'uuid'; // Using uuid library for fallback
 import { useQuery, gql } from "@apollo/client";
 import { WidgetTypes } from "../hooks/useWidgets";
 
@@ -62,13 +63,20 @@ var GET_CUSTOMER = gql`query ($nodeIds: [String]!, $periodDate: Date!) {
   }
 }`;
 
+const generateUUID = () => {
+  try {
+    return crypto.randomUUID().replace(/-/g, '_');
+  } catch (e) {
+    return uuidv4().replace(/-/g, '_');
+  }
+};
 
 const Widget = ({ widget, customer, compensationPlans, trees, isPreview = false, date }) => {
   const [wDate, setWDate] = useState(date);
   const [loading, setLoading] = useState(false);
   const [sCustomer, setSCustomer] = useState(customer);
 
-  const [widgetId] = useState(() => 'wd_' + crypto.randomUUID().replace(/-/g, '_'));
+  const [widgetId] = useState(() => 'wd_' + generateUUID());
   const { refetch } = useQuery(GET_CUSTOMER, {
     variables: { nodeIds: [customer?.id], periodDate: date },
     skip: true, // Initially skip the query
@@ -130,7 +138,7 @@ const Widget = ({ widget, customer, compensationPlans, trees, isPreview = false,
 }
 
 function Content(widget, customer, compensationPlans, trees, isPreview, loading) {
-  const [carouselId] = useState(() => 'carousel_' + crypto.randomUUID().replace(/-/g, '_'));
+  const [carouselId] = useState(() => 'carousel_' +  + generateUUID());
 
   if (!compensationPlans) {
     compensationPlans = [{ period: { rankAdvance: [{ rankId: 10, rankName: 'Example Rank', requirements: [{ conditions: [{ valueId: "Personal Volume", value: 20, required: 20 }, { valueId: "Group Volume", value: 90, required: 200 }] }] }] } }]
@@ -226,7 +234,7 @@ function Content(widget, customer, compensationPlans, trees, isPreview, loading)
                   <img className="img-fluid" alt="" src={p.imageUrl} />
                 </div>
                 {p.title && <> <div className="carousel-caption-background d-none d-md-block"></div>
-                  <div className="carousel-caption d-none d-md-block">
+                  <div className="carousel-caption">
                     <h1>{p.title}</h1>
                     <p>{p.text}</p>
                   </div></>}

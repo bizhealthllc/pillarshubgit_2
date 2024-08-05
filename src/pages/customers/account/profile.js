@@ -155,7 +155,7 @@ const CustomerProfile = () => {
                 </div>
               </div>
               <div className="text-center text-sm-right">
-                <span className="badge badge-secondary">{customer?.customerType?.name}</span>
+                <span className="badge badge-secondary d-none">{customer?.customerType?.name}</span>
               </div>
             </div>
           </div>
@@ -163,13 +163,13 @@ const CustomerProfile = () => {
 
 
           <div className="row">
-            <div className="col">
+            <div className="col-md-6">
               <div className="mb-3">
                 <label className="form-label">First Name</label>
                 <TextInput name="firstName" value={customer?.firstName} onChange={handleCustomerChange} />
               </div>
             </div>
-            <div className="col">
+            <div className="col-md-6">
               <div className="mb-3">
                 <label className="form-label">Last Name</label>
                 <TextInput name="lastName" value={customer?.lastName} onChange={handleCustomerChange} />

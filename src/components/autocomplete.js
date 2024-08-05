@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { v4 as uuidv4 } from 'uuid'; // Using uuid library for fallback
 import { Get } from '../hooks/useFetch';
 
 import "./autocomplete.css";
 
+const generateUUID = () => {
+  try {
+    return crypto.randomUUID().replace(/-/g, '_');
+  } catch (e) {
+    return uuidv4().replace(/-/g, '_');
+  }
+};
+
 const AutoComplete = ({ name, value, placeholder = 'Search...', showIcon = true, onChange, allowNull = false, disabled, errorText, errored, showClear = false }) => {
-  const [inputId] = useState(() => 'modal_' + crypto.randomUUID().replace(/-/g, '_'));
+  const [inputId] = useState(() => 'modal_' + generateUUID());
   const [loading, setLoading] = useState(false);
 
   const handleChange = (v) => {
