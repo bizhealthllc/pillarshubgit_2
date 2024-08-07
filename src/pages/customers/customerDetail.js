@@ -25,6 +25,7 @@ var GET_CUSTOMER = gql`query ($nodeIds: [String]!, $periodDate: Date) {
       id
       name
       statusClass
+      earningsClass
     }
     emailAddress
     customerType {
@@ -132,6 +133,8 @@ const CustomerDetail = () => {
     })
   }
 
+  const hasScope = GetScope() != undefined;
+
   let customer = data.customers[0] ?? { id: params.customerId, cards: [] };
   let rankAdvance = data.compensationPlans.flatMap(plan => plan.period || []).find(period => period.rankAdvance?.length > 0)?.rankAdvance || null;
   let address = customer.addresses ? customer.addresses[0] : { line1: '' };
@@ -169,7 +172,7 @@ const CustomerDetail = () => {
                   <div className="col-auto">
                     <StatusPill status={status} />
                   </div>
-                  {GetScope() == undefined && <div className="col-auto">
+                  {!hasScope && <div className="col-auto">
                     <div className="dropdown">
                       <a href="#" className="btn-action" data-bs-toggle="dropdown" aria-expanded="false">
                         <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="19" r="1"></circle><circle cx="12" cy="5" r="1"></circle></svg>
@@ -196,41 +199,44 @@ const CustomerDetail = () => {
                     Handle
                   </dd>
                   <dd className="col-7 text-end">{customer.webAlias ?? customer.id}</dd>
-                  <dd className="col-5">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="icon me-2 text-muted" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M3 5m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z"></path><path d="M3 7l9 6l9 -6"></path></svg>
-                    Email</dd>
-                  <dd className="col-7 text-end">{customer.emailAddress}</dd>
+                  {!hasScope && <>
+                    <dd className="col-5">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="icon me-2 text-muted" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M3 5m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z"></path><path d="M3 7l9 6l9 -6"></path></svg>
+                      Email</dd>
+                    <dd className="col-7 text-end">{customer.emailAddress}</dd>
 
-                  <dd className="col-5">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="icon me-2 text-muted" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2"></path><path d="M15 7a2 2 0 0 1 2 2"></path><path d="M15 3a6 6 0 0 1 6 6"></path></svg>
-                    Phone</dd>
-                  <dd className="col-7 text-end">{customer.phoneNumbers && customer.phoneNumbers.length > 0 && customer.phoneNumbers[0].number}</dd>
 
-                  <dd className="col-5">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="icon me-2 text-muted" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 20l-3 -3h-2a3 3 0 0 1 -3 -3v-6a3 3 0 0 1 3 -3h10a3 3 0 0 1 3 3v6a3 3 0 0 1 -3 3h-2l-3 3"></path><path d="M8 9l8 0"></path><path d="M8 13l6 0"></path></svg>
-                    Language</dd>
-                  <dd className="col-7 text-end">{customer.language}</dd>
+                    <dd className="col-5">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="icon me-2 text-muted" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2"></path><path d="M15 7a2 2 0 0 1 2 2"></path><path d="M15 3a6 6 0 0 1 6 6"></path></svg>
+                      Phone</dd>
+                    <dd className="col-7 text-end">{customer.phoneNumbers && customer.phoneNumbers.length > 0 && customer.phoneNumbers[0].number}</dd>
 
-                  <dd className="col-5">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="icon me-2 text-muted" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M8 7v-2a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v2"></path><line x1="12" y1="12" x2="12" y2="12.01"></line><path d="M3 13a20 20 0 0 0 18 0"></path></svg>
-                    Merchant</dd>
-                  <dd className="col-7 text-end">{customer.merchantId}</dd>
+                    <dd className="col-5">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="icon me-2 text-muted" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 20l-3 -3h-2a3 3 0 0 1 -3 -3v-6a3 3 0 0 1 3 -3h10a3 3 0 0 1 3 3v6a3 3 0 0 1 -3 3h-2l-3 3"></path><path d="M8 9l8 0"></path><path d="M8 13l6 0"></path></svg>
+                      Language</dd>
+                    <dd className="col-7 text-end">{customer.language}</dd>
 
-                  <dd className="col-5">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="icon me-2 text-muted" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M17 8v-3a1 1 0 0 0 -1 -1h-10a2 2 0 0 0 0 4h12a1 1 0 0 1 1 1v3m0 4v3a1 1 0 0 1 -1 1h-12a2 2 0 0 1 -2 -2v-12"></path><path d="M20 12v4h-4a2 2 0 0 1 0 -4h4"></path></svg>
-                    Payment Status</dd>
-                  <dd className="col-7 text-end">{status.name}</dd>
+                    <dd className="col-5">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="icon me-2 text-muted" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M8 7v-2a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v2"></path><line x1="12" y1="12" x2="12" y2="12.01"></line><path d="M3 13a20 20 0 0 0 18 0"></path></svg>
+                      Merchant</dd>
+                    <dd className="col-7 text-end">{customer.merchantId}</dd>
 
-                  <dd className="col-5">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="icon me-2 text-muted" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><circle cx="12" cy="11" r="3"></circle><path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z"></path></svg>
-                    Shipping Address</dd>
-                  <dd className="col-7 text-end">
-                    <address>
-                      {address?.line1} {address?.line2} {address?.line3}<br />
-                      {address?.city}, {address?.stateCode} {address?.postalCode} <br />
-                      {address?.countryCode}
-                    </address>
-                  </dd>
+                    <dd className="col-5">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="icon me-2 text-muted" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M17 8v-3a1 1 0 0 0 -1 -1h-10a2 2 0 0 0 0 4h12a1 1 0 0 1 1 1v3m0 4v3a1 1 0 0 1 -1 1h-12a2 2 0 0 1 -2 -2v-12"></path><path d="M20 12v4h-4a2 2 0 0 1 0 -4h4"></path></svg>
+                      Payment Status</dd>
+                    <dd className="col-7 text-end">{status.earningsClass}</dd>
+
+                    <dd className="col-5">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="icon me-2 text-muted" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><circle cx="12" cy="11" r="3"></circle><path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z"></path></svg>
+                      Shipping Address</dd>
+                    <dd className="col-7 text-end">
+                      <address>
+                        {address?.line1} {address?.line2} {address?.line3}<br />
+                        {address?.city}, {address?.stateCode} {address?.postalCode} <br />
+                        {address?.countryCode}
+                      </address>
+                    </dd>
+                  </>}
                 </dl>
               </div>
             </div>
@@ -257,34 +263,6 @@ const CustomerDetail = () => {
                   <RankAdvance ranks={rankAdvance} />
                 </div>
               </div>
-              <div className="col-12">
-                <div className="card">
-                  <div className="card-header">
-                    <h3 className="card-title">
-                      Organization
-                    </h3>
-                  </div>
-                  <div className="list-group list-group-flush">
-                    {trees.map((tree) => {
-                      return tree.nodes.map((node) => {
-                        return <div key={tree.id} className="list-group-item">
-                          <a className="row align-items-center text-reset" href={`/Customers/${node.uplineId}/Summary`}>
-                            <div className="col-auto">
-                              <Avatar name={node.upline?.fullName} url={node.upline?.profileImage} size="sm" />
-                            </div>
-                            <div className="col text-truncate">
-                              <span className='text-reset' >{node.upline?.fullName}</span>
-                              <div className="d-block text-muted text-truncate mt-n1">{tree.name}</div>
-                            </div>
-                          </a>
-                        </div>
-                      })
-                    })}
-                  </div>
-                </div>
-              </div>
-
-
               {/* @if (@Model.HasCoding())
                 { 
                     <div className="col-12">
@@ -318,31 +296,61 @@ const CustomerDetail = () => {
           <div className="col-md-7 col-xl-8">
             <div className="card">
               <div className="card-header">
-                <h3 className="card-title">Account Activity</h3>
+                <h3 className="card-title">
+                  Organization
+                </h3>
               </div>
-              <div className="table-responsive">
-                <table className="table table-vcenter card-table">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Message</th>
-                      <th>Submitted By</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {/* @foreach(var item in @Model.Customer.ActivityLog)
-                                          { */}
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <td className="text-muted"></td>
-                    </tr>
-                    {/* } */}
-                  </tbody>
-                </table>
+              <div className="list-group list-group-flush">
+                {trees.map((tree) => {
+                  return tree.nodes.map((node) => {
+                    return <div key={tree.id} className="list-group-item">
+                      <a className="row align-items-center text-reset" href={`/Customers/${node.uplineId}/Summary`}>
+                        <div className="col-auto">
+                          <Avatar name={node.upline?.fullName} url={node.upline?.profileImage} size="sm" />
+                        </div>
+                        <div className="col text-truncate">
+                          <span className='text-reset' >{node.upline?.fullName}</span>
+                          <div className="d-block text-muted text-truncate mt-n1">{tree.name}</div>
+                        </div>
+                      </a>
+                    </div>
+                  })
+                })}
               </div>
             </div>
           </div>
+
+          {!hasScope && <>
+            <div className="col-md-12">
+              <div className="card">
+                <div className="card-header">
+                  <h3 className="card-title">Account Activity</h3>
+                </div>
+                <div className="table-responsive">
+                  <table className="table table-vcenter card-table">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Message</th>
+                        <th>Submitted By</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {/* @foreach(var item in @Model.Customer.ActivityLog)
+                                          { */}
+                      <tr>
+                        <td></td>
+                        <td></td>
+                        <td className="text-muted"></td>
+                      </tr>
+                      {/* } */}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </>}
+
         </div>
 
         <ChangeStatusModal customerId={customer.id} id="modal-status" statusId={status.id} setStatus={setStatus} statuses={statuses} />
