@@ -59,9 +59,9 @@ const AddPayableModal = ({refetch}) => {
   }
 
   return <>
-  <button className="btn btn-default" onClick={handleShowNewPayable}>
+  <button className="btn btn-default btn-sm-icon" onClick={handleShowNewPayable}>
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-coin">   <path stroke="none" d="M0 0h24v24H0z" fill="none" />    <path d="M20.985 12.528a9 9 0 1 0 -8.45 8.456" />   <path d="M16 19h6" />   <path d="M19 16v6" />   <path d="M9 10h.01" />   <path d="M15 10h.01" />  <path d="M14.8 9a2 2 0 0 0 -1.8 -1h-2a2 2 0 1 0 0 4h2a2 2 0 1 1 0 4h-2a2 2 0 0 1 -1.8 -1" />   <path d="M12 7v10" /> </svg>
-    Add Payable
+    <span className="d-none d-sm-table-cell text-start">Add Payable</span>
   </button>
 
   < Modal showModal={showNewPayable} onHide={handleHideNewPayable} >

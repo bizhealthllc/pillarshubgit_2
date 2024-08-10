@@ -15,9 +15,9 @@ const ReportList = ({ categoryId }) => {
         <thead>
           <tr>
             <th>Name</th>
-            <th>description</th>
-            {/* <th>Author</th>
-            <th>Visibility</th> */}
+            <th className="d-none d-sm-table-cell text-start">description</th>
+            {/* <th>Author</th>*/}
+            <th className="d-none d-sm-table-cell text-start">Visibility</th>
             <th className="w-1"></th>
           </tr>
         </thead>
@@ -27,18 +27,18 @@ const ReportList = ({ categoryId }) => {
               <td>
                 <a href={`/reports/${report.id}`} className="text-reset">{report.name}</a>
               </td>
-              <td className="text-muted">
+              <td className="text-muted d-none d-sm-table-cell">
                 {report.description}
               </td>
               {/* <td className="text-muted">
                 {report.author}
-              </td>
-              <td className="text-muted">
+              </td>*/}
+              <td className="text-muted d-none d-sm-table-cell">
                 {report.visibility}
-              </td> */}
+              </td>
               <td>
                 {/* <a href="#">Edit</a> */}
-                
+
               </td>
             </tr>
           })}
