@@ -10,7 +10,6 @@ export default function useSubdomain() {
   const getSubdomain = () => {
     // Get the current URL
     const currentURL = window.location.hostname;
-
     // Split the URL by dots to get an array of subdomains
     const subdomains = currentURL.split('.');
 
@@ -18,7 +17,6 @@ export default function useSubdomain() {
     if (subdomains.length > 2) {
       // The first part of the subdomains array will be the subdomain
       const subdomain = subdomains[0];
-
       // Return the subdomain
       return subdomain;
     } else {

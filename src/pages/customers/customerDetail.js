@@ -257,40 +257,8 @@ const CustomerDetail = () => {
             </div>
           </div>
           <div className="col-md-5 col-xl-4">
-            <div className="row row-cards">
-              <div className="col-12">
-                <div className="card">
-                  <RankAdvance ranks={rankAdvance} />
-                </div>
-              </div>
-              {/* @if (@Model.HasCoding())
-                { 
-                    <div className="col-12">
-                        <div className="card">
-                            <div className="card-header">
-                                <h3 className="card-title">Coding</h3>
-                            </div>
-                            <table className="table card-table table-vcenter">
-                                <thead>
-                                    <tr>
-                                        <th>Coded To</th>
-                                        <th>Rank</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach(var coding in @Model.Customer.CodingDetail)
-                                    {
-                                        <tr>
-                                            <td>@coding.Customer.FullName</td>
-                                            <td>@coding.RankName</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                } */}
-
+            <div className="card">
+              <RankAdvance ranks={rankAdvance} />
             </div>
           </div>
           <div className="col-md-7 col-xl-8">

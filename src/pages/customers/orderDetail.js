@@ -93,7 +93,7 @@ const OrderDetail = () => {
   let totalPaid = order?.payments?.reduce((a, payment) => a + payment?.amount ?? 0, 0) ?? 0;
 
   return <>
-    <PageHeader preTitle="Order Detail" title={data?.customers[0].fullName} customerId={params.customerId}>
+    <PageHeader title={data?.customers[0].fullName} customerId={params.customerId} breadcrumbs={[{ title: 'Order History', link: `/customers/${params.customerId}/orders` }, { title: "Order Detail" }]}>
       <div className="container-xl">
         <div className="row row-cards">
           <div className="col-md-5 col-xl-4">

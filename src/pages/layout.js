@@ -4,11 +4,13 @@ import { GetScope } from "../features/authentication/hooks/useToken"
 import BackOfficeMenu from './backOfficeMenu';
 import CorporateMenu from './corporateMenu';
 import DataLoading from '../components/dataLoading';
+import useSubdomain from '../hooks/useSubdomain';
 import { useTheme } from '../hooks/useTheme';
 import AccountMenu from './accountMenu';
 
 const Layout = () => {
-  const { theme, loading, error } = useTheme();
+  const { subdomain } = useSubdomain();
+  const { theme, loading, error } = useTheme({ subdomain: subdomain });
 
   if (loading) return <DataLoading title="Loading Theme" />;
   if (error) return `Error! ${error}`;

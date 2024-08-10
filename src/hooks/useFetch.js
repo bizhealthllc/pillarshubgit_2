@@ -70,7 +70,12 @@ function Get(url, onSuccess, onError) {
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
       if (xhr.status >= 200 && xhr.status <= 205) {
-        onSuccess(JSON.parse(xhr.response));
+        try {
+          onSuccess(JSON.parse(xhr.response));
+        }
+        catch (e) {
+          onError(e);
+        }
       }
       else {
         onError(xhr.response, xhr.status);

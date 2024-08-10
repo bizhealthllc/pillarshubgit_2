@@ -4,7 +4,7 @@ import { useFetch } from "../../hooks/useFetch";
 import DataLoading from "../../components/dataLoading";
 
 const ReportList = ({ categoryId }) => {
-  const { loading, error, data } = useFetch(`/api/v1/Reports/MetaData/${categoryId}`);
+  const { loading, error, data } = useFetch(`/api/v1/Reports/?categoryId=${categoryId}`);
 
   if (loading) return <DataLoading />;
   if (error) return `Error! ${error}`;

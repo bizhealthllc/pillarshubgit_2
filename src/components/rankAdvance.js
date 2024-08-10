@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Chart from "react-apexcharts";
+import EmptyContent from "./emptyContent"
 
 const RankAdvance = ({ ranks }) => {
   const [rank, setRank] = useState(ranks?.length > 0 ? ranks[0] : null);
 
-  if (!rank) return <></>;
+  if (!rank) return <><EmptyContent title="No ranks found" text="Ranks are not available at the moment." /></>;
   var percent = getPercentTotal(rank);
 
   var handleNextRank = () => {

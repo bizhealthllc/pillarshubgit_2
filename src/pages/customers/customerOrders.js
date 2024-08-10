@@ -48,10 +48,10 @@ const CustomerOrders = () => {
   let orders = data.customers[0].orders;
 
   const getUniqueVolumeIds = (orders) => {
-    // Step 1: Flatten the nested arrays
+    // Step 1: Flatten the nested arrays and filter out null or empty volumes
     const allVolumes = orders.flatMap(order =>
       order.lineItems.flatMap(lineItem =>
-        lineItem.volume
+        lineItem.volume ? lineItem.volume : []
       )
     );
 
@@ -67,14 +67,18 @@ const CustomerOrders = () => {
   const getVolumeForVolumeId = (order, volumeId) => {
     let total = 0;
     for (const lineItem of order.lineItems) {
-      for (const volume of lineItem.volume) {
-        if (volume.volumeId === volumeId) {
-          total += volume.volume;
+      if (lineItem.volume) {
+        for (const volume of lineItem.volume) {
+          if (volume.volumeId === volumeId) {
+            total += volume.volume;
+          }
         }
       }
     }
     return total;
   };
+
+
 
   const uniqueVolumeIds = getUniqueVolumeIds(orders);
 
@@ -121,7 +125,6 @@ const CustomerOrders = () => {
                       })}
                       <th>Total</th>
                       <th>Status</th>
-                      <th>Tracking</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -139,9 +142,12 @@ const CustomerOrders = () => {
                           <LocalDate dateString={order.invoiceDate} hideTime="true" />
                         </td>
                         <td>
-                          {order.lineItems && order.lineItems.map((item) => {
-                            return <span className="me-2" key={item.id}>{item.description}</span>
-                          })}
+                          {order.lineItems && order.lineItems.slice(0, 1).map((item) => (
+                            <span className="me-2" key={item.id}>
+                              {item.description}
+                            </span>
+                          ))}
+                          {order.lineItems && order.lineItems.length > 2 && <span>+{order.lineItems.length - 1}</span>}
                         </td>
                         <td>{order.orderType}</td>
                         {uniqueVolumeIds.map((volumeId, index) => {
@@ -149,10 +155,7 @@ const CustomerOrders = () => {
                           return <td key={index}>{volume !== null ? volume : 'N/A'}</td>
                         })}
                         <td>{order.total.toLocaleString("en-US", { style: 'currency', currency: order?.priceCurrency ?? 'USD' })}</td>
-                        <td>
-                          {/* <span className="badge bg-danger me-1"></span> */} {order.status}
-                        </td>
-                        <td></td>
+                        <td>{order.status}</td>
                       </tr>
                     })}
                   </tbody>
