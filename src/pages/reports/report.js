@@ -12,6 +12,7 @@ import AutoComplete from "../../components/autocomplete";
 import TextInput from "../../components/textInput";
 import TreeSelect from "../../components/treeSelect";
 import DataError from "../../components/dataError";
+import LocalDate from "../../util/LocalDate";
 
 const Report = () => {
   let params = useParams()
@@ -110,7 +111,7 @@ const Report = () => {
                 <thead>
                   <tr>
                     {data.dataColumns.map((column) => {
-                      return <th key={column.title} className={`w-${column.dataLength}`}>{column.title}</th>;
+                      return <th key={column.name} className={`w-${column.dataLength}`}>{column.title}</th>;
                     })}
                   </tr>
                 </thead>
@@ -119,9 +120,19 @@ const Report = () => {
                     return (
                       <tr key={row.rowNumber}>
                         {data.dataColumns.map((column, index) => {
+                          var colValue = row.values[column.name];
                           return (
-                            <td key={`${row.rowNumber}_${index}`} style={{ whiteSpace: 'pre-wrap' }}>
-                              {row.values[column.title]}
+                            <td key={`${row.rowNumber}_${index}`} style={{ whiteSpace: 'nowrap' }}>
+                              {column.dataType == "String" && <span>{colValue}</span>}
+                              {column.dataType == "Number" && <span>{colValue}</span>}
+                              {column.dataType == "DateTime" && <LocalDate dateString={colValue} hideTime={false} />}
+                              {column.dataType == "Date" && <LocalDate dateString={colValue} hideTime={true} />}
+                              {column.dataType == "Boolean" && <span>{colValue == "1" ? 'True' : 'False'}</span>}
+                              {column.dataType == "Currency" && <span>{colValue}</span>}
+                              {column.dataType == "Level" &&
+                                <span style={{ marginLeft: `${(Math.min(colValue, 10) -1) * 15}px` }}>
+                                  {colValue}
+                                </span>}
                             </td>
                           );
                         })}
