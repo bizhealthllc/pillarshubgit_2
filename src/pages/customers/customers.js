@@ -35,8 +35,6 @@ var GET_CUSTOMERS = gql`query($offset: Int!, $first: Int!, $search: String!){
   totalCustomers
 }`;
 
-const hasScope = GetScope() != undefined;
-
 const Customers = () => {
   const { loading, error, data, variables, refetch } = useQuery(GET_CUSTOMERS, {
     variables: { offset: 0, first: 10, search: '' },
@@ -70,10 +68,8 @@ const Customers = () => {
                       <th>Handle</th>
                       <th>Customer Type</th>
                       <th>Status</th>
-                      {!hasScope && <>
-                        <th>Phone Number</th>
-                        <th>Email Address</th>
-                      </>}
+                      <th>Phone Number</th>
+                      <th>Email Address</th>
                       <th>Enroll Date</th>
                       <th className="text-center"><i className="icon-settings"></i></th>
                     </tr>
@@ -93,12 +89,10 @@ const Customers = () => {
                         <td>{item.webAlias}</td>
                         <td>{item.customerType?.name}</td>
                         <td><StatusPill status={item.status} small={true} /></td>
-                        {!hasScope && <>
-                          <td>
-                            {item.phoneNumbers && item.phoneNumbers.length > 0 && item.phoneNumbers[0].number}
-                          </td>
-                          <td>{item.emailAddress}</td>
-                        </>}
+                        <td>
+                          {item.phoneNumbers && item.phoneNumbers.length > 0 && item.phoneNumbers[0].number}
+                        </td>
+                        <td>{item.emailAddress}</td>
                         <td><LocalDate dateString={item.enrollDate} hideTime={true} /></td>
                         <td className="text-center"></td>
                       </tr>
