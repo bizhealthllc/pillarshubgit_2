@@ -25,7 +25,7 @@ export default function useTheme({ subdomain } = {}) {
     if (theme == undefined) {
       let path = '/api/v1/Theme';
       if (subdomain) { path += "/" + subdomain; }
-      
+
       Get(path, (data) => {
         setLoading(false);
         SetThemeInLocalStorage(data, GetToken()?.environmentId);

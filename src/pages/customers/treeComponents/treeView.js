@@ -278,7 +278,7 @@ function treeBorad(id, rootId, treeId, periodDate, dataUrl, selectNode, getTempl
           legNames
           nodes(nodeIds: $nodeIds, date: $periodDate) {
             nodeId
-            nodes
+            nodes (levels: 1)
             {
               nodeId
               uplineLeg
