@@ -6,7 +6,7 @@ import SelectInput from './selectInput';
 import NumericInput from './numericInput';
 import EmptyContent from './emptyContent';
 
-const AvailabilityInput = ({ name, value, onChange }) => {
+const AvailabilityInput = ({ name, value, resourceName, onChange }) => {
   const { data, loading, error } = useFetch('/api/v1/CompensationPlans');
 
   if (loading) return <DataLoading />;
@@ -36,10 +36,10 @@ const AvailabilityInput = ({ name, value, onChange }) => {
 
   return <>
     <div className="card">
-      {isEmpty && <EmptyContent title="No Requirements" text="This resource will be visible to all customers" />}
+      {isEmpty && <EmptyContent title="No Requirements" text={`This ${resourceName} will be visible to all customers`} />}
       {!isEmpty && <>
         <div className="card-header">
-          <h3 className="card-title">Course Requirements</h3>
+          <h3 className="card-title text-capitalize">{resourceName} Requirements</h3>
         </div>
         <table className="table table-sm mb-0">
           <thead>
@@ -110,5 +110,6 @@ export default AvailabilityInput;
 AvailabilityInput.propTypes = {
   name: PropTypes.string.isRequired,
   value: PropTypes.array.isRequired,
+  resourceName: PropTypes.string,
   onChange: PropTypes.func
 }

@@ -13,6 +13,95 @@ import WidgetContent from "./widgetContent/widgetContent";
 import CssEditor from "../../components/cssEditor ";
 import DataLoading from "../../components/dataLoading";
 import DataError from "../../components/dataError";
+import AvailabilityInput from "../../components/availabilityInput";
+import AutoComplete from "../../components/autocomplete";
+
+var GET_PREVIEW_DATA = gql`query ($nodeIds: [String]!, $periodDate: Date!) {
+  customers(idList: $nodeIds) {
+    id
+    fullName
+    enrollDate
+    profileImage
+    status {
+      id
+      name
+      statusClass
+    }
+    emailAddress
+    customerType {
+      id
+      name
+    }
+    socialMedia {
+      name
+      value
+    }
+    language
+    customData
+    phoneNumbers {
+      type
+      number
+    }
+    addresses {
+      type
+      line1
+      line2
+      line3
+      city
+      stateCode
+      zip
+      countryCode
+    }
+    cards(idList: ["Dashboard"], date: $periodDate) {
+      id
+      values {
+        value
+        valueName
+        valueId
+      }
+    }
+  }
+  trees {
+    id
+    name
+    nodes(nodeIds: $nodeIds, date: $periodDate) {
+      nodeId
+      uplineId
+      uplineLeg
+      upline {
+        fullName
+        profileImage
+      }
+    }
+  }
+  compensationPlans {
+    period(date: $periodDate) {
+      rankAdvance(nodeIds: $nodeIds) {
+        nodeId
+        rankId
+        rankName
+        requirements {
+          maintanance
+          conditions {
+            legCap
+            legValue
+            required
+            value
+            valueId
+          }
+        }
+      }
+    }
+  }
+  customerStatuses {
+    id
+    name
+    statusClass
+    earningsClass
+  }
+}`;
+
+
 
 var GET_DATA = gql`query {
   compensationPlans {
@@ -36,12 +125,20 @@ var GET_DATA = gql`query {
 
 const EditWidget = () => {
   let params = useParams()
+
+  const [previewId, setPreviewId] = useState();
+  const [previewData, setPreviewData] = useState();
+
   const [previewSize] = useState(12);
   const [item, setItem] = useState();
   const [date] = useState(new Date().toISOString());
   const { widget, error } = useWidget(params.widgetId);
   const { data, loading, error: dataError } = useQuery(GET_DATA, {
     variables: {},
+  });
+  const { refetch } = useQuery(GET_PREVIEW_DATA, {
+    variables: { nodeIds: [], periodDate: date },
+    skip: true, // Initially skip the query
   });
 
   useEffect(() => {
@@ -77,6 +174,30 @@ const EditWidget = () => {
     })
   }
 
+  const handlePreviewChange = (name, value) => {
+
+    if (value) {
+      refetch({ nodeIds: [value], periodDate: date })
+        .then((result) => {
+          let customer = result.data.customers[0];
+          let compensationPlans = result.data.compensationPlans;
+          let trees = result.data.trees;
+          setPreviewData({ customer: customer, compensationPlans: compensationPlans, trees: trees });
+          setPreviewId(value);
+        })
+        .catch((error) => {
+          alert(error)
+          setPreviewData();
+          setPreviewId();
+        });
+    } else {
+      setPreviewData();
+      setPreviewId();
+    }
+  }
+
+  const isPreview = previewId == null || previewId == undefined;
+
   return <PageHeader title="Edit Widget" breadcrumbs={[{ title: `Widgets`, link: `/settings/widgets` }, { title: "Edit Widget" }]}>
     <div className="container-xl">
       <div className="row">
@@ -88,6 +209,9 @@ const EditWidget = () => {
                 <ul className="nav nav-tabs card-header-tabs" data-bs-toggle="tabs" role="tablist">
                   <li className="nav-item" role="presentation">
                     <a href="#tabs-home-7" className="nav-link active" data-bs-toggle="tab" aria-selected="true" role="tab">Content</a>
+                  </li>
+                  <li className="nav-item" role="presentation">
+                    <a href="#tabs-requirements-7" className="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab">Requirements</a>
                   </li>
                   <li className="nav-item" role="presentation">
                     <a href="#tabs-advanced-7" className="nav-link" data-bs-toggle="tab" aria-selected="false" role="tab" tabIndex="-1">CSS Overrides</a>
@@ -153,6 +277,9 @@ const EditWidget = () => {
                     <WidgetContent widget={item} updateWidget={setItem} trees={data.trees} definitions={data.compensationPlans} />
 
                   </div>
+                  <div className="tab-pane" id="tabs-requirements-7" role="tabpanel">
+                    <AvailabilityInput name="availability" resourceName="widget" value={item?.availability ?? []} onChange={handleChange} />
+                  </div>
                   <div className="tab-pane" id="tabs-advanced-7" role="tabpanel">
                     <div className="col-12 mb-3">
                       <CssEditor name="css" value={item?.css} onChange={handleChange} />
@@ -176,9 +303,14 @@ const EditWidget = () => {
             <div className="card-header">
               <h4 className="card-title">Widget Preview</h4>
             </div>
+            <div className="card-header">
+              <div className="w-100">
+                <AutoComplete name="customerId"  value={previewId} placeholder="Widget preview customer" onChange={handlePreviewChange} allowNull={true} showClear={true} />
+              </div>
+            </div>
             <div className="p-2">
               <div className={`col-${previewSize}`}>
-                {item && <Widget widget={item} trees={data?.trees} isPreview={true} date={date} />}
+                {item && <Widget widget={item} trees={previewData?.trees ?? data?.trees} customer={previewData?.customer} compensationPlans={previewData?.compensationPlans} isPreview={isPreview} date={date} />}
               </div>
             </div>
           </div>

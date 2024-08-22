@@ -99,8 +99,11 @@ const Widget = ({ widget, customer, compensationPlans, trees, isPreview = false,
   const modifiedCss = widget?.css?.replace(/([^,{}]+)(?=\s*{)/g, (match) => `.${widgetId} ${match}`) ?? '';
 
   useEffect(() => {
+    setSCustomer(customer);
+  }, [customer]);
+
+  useEffect(() => {
     if (wDate != date && !isPreview) {
-      console.log('Loadding');
       setLoading(true);
       refetch({ nodeIds: [customer.id], periodDate: wDate })
         .then((result) => {
@@ -138,7 +141,7 @@ const Widget = ({ widget, customer, compensationPlans, trees, isPreview = false,
 }
 
 function Content(widget, customer, compensationPlans, trees, isPreview, loading) {
-  const [carouselId] = useState(() => 'carousel_' +  + generateUUID());
+  const [carouselId] = useState(() => 'carousel_' + + generateUUID());
 
   if (!compensationPlans) {
     compensationPlans = [{ period: { rankAdvance: [{ rankId: 10, rankName: 'Example Rank', requirements: [{ conditions: [{ valueId: "Personal Volume", value: 20, required: 20 }, { valueId: "Group Volume", value: 90, required: 200 }] }] }] } }]

@@ -6,7 +6,6 @@ import DataLoading from '../../components/dataLoading';
 
 import PageHeader from '../../components/pageHeader';
 import { useFetch } from "../../hooks/useFetch";
-import useWidgets from '../../features/widgets/hooks/useWidgets';
 import Widget from '../../features/widgets/components/widget';
 import DataError from '../../components/dataError';
 
@@ -54,6 +53,31 @@ var GET_CUSTOMER = gql`query ($nodeIds: [String]!, $periodDate: Date!) {
         valueId
       }
     }
+    widgets {
+      id
+      name
+      title
+      description
+      type
+      showDatePicker
+      headerColor
+      headerTextColor
+      headerAlignment
+      backgroundColor
+      textColor
+      borderColor
+      css
+      panes {
+        imageUrl
+        title
+        text
+        description
+        values {
+          text
+          value
+        }
+      }
+    }
   }
   trees {
     id
@@ -99,19 +123,19 @@ const Dashboard = () => {
   let params = useParams()
   const [iDate] = useState(new Date().toISOString());
   const { data: dashboard, loading: dbLoading, error: dbError } = useFetch('/api/v1/dashboards', {});
-  const { widgets, loading: wLoading, error: wError } = useWidgets();
+  //const { widgets, loading: wLoading, error: wError } = useWidgets();
   const { loading, error, data } = useQuery(GET_CUSTOMER, {
     variables: { nodeIds: [params.customerId], periodDate: iDate },
   });
 
-  if (loading || dbLoading || wLoading) return <DataLoading />;
+  if (loading || dbLoading) return <DataLoading />;
   if (error) return <DataError error={error} />
   if (dbError) return <DataError error={dbError} />
-  if (wError) return <DataError error={wError} />
 
   let customer = data?.customers[0];
   let compensationPlans = data?.compensationPlans;
   let trees = data?.trees;
+  let widgets = customer?.widgets;
 
   const showTitle = false;
   const title = (GetScope() == undefined && showTitle) ? data?.customers[0]?.fullName : '';
@@ -133,8 +157,10 @@ const Dashboard = () => {
 function buildCard(card, widgets, customer, compensationPlans, trees, date) {
   if ((card?.widgetId || card?.children) && widgets !== undefined) {
     let widget = widgets.find((w) => w.id === card?.widgetId ?? '');
+    if (!widget && (!card.children || card.children.length == 0)) return <></>
+
     return <div key={card?.id} className={`col-sm-12 col-lg-${card?.columns > 6 ? '12' : '6'} col-xl-${card?.columns}`}>
-      {card?.widgetId && <Widget key={card?.widgetId} widget={widget} customer={customer} compensationPlans={compensationPlans} trees={trees} date={date} />}
+      {card?.widgetId && widget && <Widget key={card?.widgetId} widget={widget} customer={customer} compensationPlans={compensationPlans} trees={trees} date={date} />}
       {card.children && card.children.length > 0 && <>
         <div className="card card-borderless card-transparent">
           <div className="row row-cards row-deck">

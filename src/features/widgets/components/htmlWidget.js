@@ -59,7 +59,7 @@ const HtmlWidget = ({ html, customer, widget }) => {
         //Nothing
       }
     }
-  }, [html, data])
+  }, [html, data, customer])
 
   let renderedOutput = null;
 

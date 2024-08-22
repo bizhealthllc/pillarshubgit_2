@@ -192,7 +192,7 @@ const EditCourse = () => {
           </div>
 
           <div className="col-4 mb-3">
-            <AvailabilityInput name="availability" value={course.availability ?? []} onChange={handleChange} />
+            <AvailabilityInput name="availability" resourceName="course" value={course.availability ?? []} onChange={handleChange} />
           </div>
 
           <div className="col-md-4 mb-3">
