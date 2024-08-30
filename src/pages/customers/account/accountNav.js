@@ -27,7 +27,7 @@ const AccountNav = ({ customerId, pageId, loading, children, treeData }) => {
                 {/*<a href="#" className={`list-group-item list-group-item-action d-flex align-items-center`}>My Notifications</a> */}
                 <a href={`/customers/${customerId}/account/security`} className={`list-group-item list-group-item-action d-flex align-items-center ${activeClass(pageId, 'security')}`}>Security</a>
                 {/* <a href={`/customers/${customerId}/account/moneyin`} className={`list-group-item list-group-item-action d-flex align-items-center ${activeClass(pageId, 'moneyin')}`}>Payment Preferences</a> */}
-                <a href={`/customers/${customerId}/account/moneyout`} className={`list-group-item list-group-item-action d-flex align-items-center ${activeClass(pageId, 'moneyout')}`}>Funds Transfer</a>
+                {/* <a href={`/customers/${customerId}/account/moneyout`} className={`list-group-item list-group-item-action d-flex align-items-center ${activeClass(pageId, 'moneyout')}`}>Funds Transfer</a> */}
                 {showTreeSettings && <a href={`/customers/${customerId}/account/treesettings`} className={`list-group-item list-group-item-action d-flex align-items-center ${activeClass(pageId, 'treeSettings')}`}>Placement Rules</a>}
               </div>
               {/* <h4 className="subheader mt-4">Experience</h4>
