@@ -309,7 +309,7 @@ function Content(widget, customer, compensationPlans, trees, isPreview, loading)
         <div className={compact ? '' : 'datagrid widgetDatagrid'}>
           {widget.panes.map((pane) => {
             const emptyValue = isPreview ? pane.values?.length > 0 ? pane.values[0].value : Math.floor(Math.random() * (5000 - 100 + 1)) + 100 : 0;
-            const stat = values.find((s) => s.valueId == pane.title) ?? { value: emptyValue };
+            const stat = values?.find((s) => s.valueId == pane.title) ?? { value: emptyValue };
             const value = loading ? '-' : pane.values?.length > 0 ? pane.values.find((m) => m.value == stat.value)?.text ?? '-' : stat.value.toLocaleString();
             return <div key={pane.title} className={compact ? 'row' : 'datagrid-item'} style={{ color: pane.imageUrl }}>
               {(cardContent(pane, value, compact))}
@@ -365,7 +365,7 @@ function Content(widget, customer, compensationPlans, trees, isPreview, loading)
   }
 
   if (widget.type == WidgetTypes.Rank) {
-    let rankAdvance = compensationPlans.flatMap(plan => plan.period || []).find(period => period.rankAdvance?.length > 0)?.rankAdvance || null;
+    let rankAdvance = {}//compensationPlans.flatMap(plan => plan.period || []).find(period => period.rankAdvance?.length > 0)?.rankAdvance || null;
     return <RankAdvance ranks={rankAdvance} />
   }
 

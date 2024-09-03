@@ -16,7 +16,7 @@ const WidgetContent = ({ widget, updateWidget, trees, definitions }) => {
     case WidgetTypes.Profile:
       return <ProfileContent widget={widget} updateWidget={updateWidget} />;
     case WidgetTypes.Rank:
-      return <RankContent widget={widget} updateWidget={updateWidget} />;
+      return <RankContent widget={widget} updateWidget={updateWidget} definitions={definitions}/>;
     case WidgetTypes.Upline:
       return <UplineContent widget={widget} updateWidget={updateWidget} trees={trees} />;
     case WidgetTypes.Calendar:
