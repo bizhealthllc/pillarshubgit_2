@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { GetToken } from '../features/authentication/hooks/useToken';
 import BaseUrl from './baseUrl';
 
-function useFetch(url, params) {
+function useFetch(url, params, notFoundResult = null) {
   const [variables, setVariables] = useState(params);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -20,8 +20,6 @@ function useFetch(url, params) {
 
     get_private(filteredCombined);
   }
-
-
 
   function get_private(prms) {
     if (url) {
@@ -41,9 +39,15 @@ function useFetch(url, params) {
         setVariables(prms);
         setError(null);
         setData(r);
-      }, (error) => {
+      }, (error, code) => {
         setLoading(false);
-        setError(error);
+        if (code == 404 && notFoundResult != null) {
+          setVariables(prms);
+          setError(null);
+          setData(notFoundResult);
+        } else {
+          setError({ code: code, message: error });
+        }
       });
     } else {
       setLoading(false);

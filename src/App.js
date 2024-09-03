@@ -59,7 +59,9 @@ import MediaList from "./pages/tools/mediaList";
 import Schedule from "./pages/tools/schedule";
 import Theme from "./pages/settings/theme";
 import Navigation from "./pages/settings/navigation";
-import DashboardSettings from "./pages/settings/dashboard";
+import DashboardSettings from "./pages/settings/pageSettings/dashboard";
+import CustomerDetailSettings from "./pages/settings/pageSettings/customerDetailSettings";
+import TreeSettings from "./pages/settings/pageSettings/treeSettings";
 import WidgetSettings from "./pages/settings/widgets";
 import EditWidget from "./pages/settings/editWidget";
 import Dashboard from "./pages/customers/dashboard";
@@ -73,6 +75,7 @@ import EmailContent from "./pages/settings/emailContent";
 import Autoships from "./pages/customers/autoships";
 import BonusDetail from "./pages/commissions/bonusDetail";
 import RankDetail from "./pages/commissions/rankDetail";
+import Pages from "./pages/settings/pages";
 
 function App() {
   const { token, setToken, clearToken } = useToken();
@@ -144,7 +147,10 @@ function App() {
             <Route path="settings/users" element={<Users />} />
             <Route path="settings/theme" element={<Theme />} />
             <Route path="settings/navigation" element={<Navigation />} />
-            <Route path="settings/dashboard" element={<DashboardSettings />} />
+            <Route path="settings/pages" element={<Pages />} />
+            <Route path="settings/pages/dashboard" element={<DashboardSettings />} />
+            <Route path="settings/pages/customer" element={<CustomerDetailSettings />} />
+            <Route path="settings/pages/tree/:treeId" element={<TreeSettings />} />
             <Route path="settings/widgets" element={<WidgetSettings />} />
             <Route path="settings/widgets/:widgetId" element={<EditWidget />} />
             <Route path="settings/email/providers" element={<EmailSettings />} />

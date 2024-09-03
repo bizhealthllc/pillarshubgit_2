@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useQuery, gql } from "@apollo/client";
-import PageHeader from "../../components/pageHeader";
-import Modal from "../../components/modal"
-import useWidgets from "../../features/widgets/hooks/useWidgets";
-import { useFetch } from "../../hooks/useFetch";
-import { SendRequest } from "../../hooks/usePost";
-import DataLoading from "../../components/dataLoading";
+import PageHeader from "../../../components/pageHeader";
+import Modal from "../../../components/modal"
+import useWidgets from "../../../features/widgets/hooks/useWidgets";
+import { useFetch } from "../../../hooks/useFetch";
+import { SendRequest } from "../../../hooks/usePost";
+import DataLoading from "../../../components/dataLoading";
+import DataError from "../../../components/dataError";
 import { closestCenter, DndContext, DragOverlay, PointerSensor, useSensor } from '@dnd-kit/core';
 import { SortableContext, rectSwappingStrategy } from '@dnd-kit/sortable';
-import SortGridItem from './sortGridItem';
+import SortGridItem from '../sortGridItem';
 
 var GET_TREES = gql`query {
   trees
@@ -23,7 +24,7 @@ const DashboardSettings = () => {
   const containerRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(null);
 
-  const { data, loading, error } = useFetch('/api/v1/dashboards', {});
+  const { data, loading, error } = useFetch('/api/v1/dashboards/PDB', {});
   const { widgets, loading: wLoading, error: wError } = useWidgets();
   const [dashboardId, setDashboardId] = useState();
   const [showDel, setShowDel] = useState(false);
@@ -35,13 +36,13 @@ const DashboardSettings = () => {
 
   useEffect(() => {
     if (data) {
-      setDashboardId(data[0].id);
-      setItems(data[0].children)
+      setDashboardId(data.id);
+      setItems(data.children)
     }
   }, [data, widgets]);
 
-  if (error) return `Error! ${error}`;
-  if (wError) return `Error! ${wError}`;
+  if (error) return <DataError error={error} />;
+  if (wError) return <DataError error={wError} />;
   if (loading) return <DataLoading />
   if (wLoading) return <DataLoading />
 
@@ -175,7 +176,7 @@ const DashboardSettings = () => {
   };
 
   return <>
-    <PageHeader title="Page Settings" breadcrumbs={[{ title: `Pages & Navigation`, link: `/settings/navigation` }, { title: "Edit Page" }]}>
+    <PageHeader title="Dashboard Settings" breadcrumbs={[{ title: `Pages`, link: `/settings/pages` }, { title: "Edit Page" }]}>
       <div className="container-xl">
 
         {widgets && items && <>

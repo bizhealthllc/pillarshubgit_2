@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom"
 import { useQuery, gql } from "@apollo/client";
+import { useFetch } from "../../hooks/useFetch";
 import PageHeader, { CardHeader } from '../../components/pageHeader';
 import TreeSideCard from './treeComponents/treeSideCard';
 import PeriodDatePicker from '../../components/periodDatePicker';
@@ -10,6 +11,7 @@ import TreeNode from './treeComponents/treeNode';
 import HoldingTank from './treeComponents/holdingTank';
 import ChangePlacementModal from './treeComponents/changePlacementModal';
 import LoadingNode from './treeComponents/loadingNode.js';
+import DataError from '../../components/dataError.js';
 
 var GET_DATA = gql`query ($nodeIds: [String]!, $treeIds: [String]!, $periodDate: Date) {
   customers(idList: $nodeIds) {
@@ -41,6 +43,9 @@ const CustomerTree = () => {
     variables: { nodeIds: [ params.customerId ], treeIds: [ params.treeId ], periodDate: periodDate },
   });
 
+  const dId = `T${params.treeId}DB`;
+  const { data: dashboard, loading: dbLoading, error: dbError } = useFetch(`/api/v1/dashboards/${dId}`, {}, { id: dId, children: [] });
+  
   const handlePeriodChange = (name, value) => {
     setPeriodDate(value);
     refetch({ nodeIds: [params.customerId], periodDate: value });
@@ -67,7 +72,7 @@ const CustomerTree = () => {
           }
         },
         function (node) {
-          return <TreeNode node={node} />
+          return <TreeNode node={node} dashboard={dashboard} trees={data?.trees} date={periodDate} />
         },
         function (id) { 
           return <LoadingNode node={id} />
@@ -76,10 +81,11 @@ const CustomerTree = () => {
     }
   }, [data]);
 
-  if (loading) return <DataLoading />;
-  if (error) return `Error! ${error}`;
+  if (loading || dbLoading) return <DataLoading />;
+  if (error) return <DataError error={error} />
+  if (dbError) return <DataError error={dbError} />
 
-  var tree = data.trees[0];
+  var tree = data.trees.find(t => t.id == params.treeId);
 
   return <>
     <PageHeader preTitle={`${data?.trees[0].name} Tree`} title={data?.customers[0].fullName} pageId="tree" customerId={params.customerId} subPage={params.treeId}>
@@ -90,7 +96,7 @@ const CustomerTree = () => {
 
       <div id="box" className="h-100" ></div>
 
-      <TreeSideCard customerId={activeId} periodDate={periodDate} treeId={params.treeId} showModal={handleShow} />
+      <TreeSideCard customerId={activeId} periodDate={periodDate} treeId={params.treeId} dashboard={dashboard} showModal={handleShow} />
       <HoldingTank nodeId={params.customerId} treeId={params.treeId} uplineId={htNode?.uplineId} uplineLeg={htNode?.uplineLeg} showModal={handleShow} />
     </PageHeader>
 

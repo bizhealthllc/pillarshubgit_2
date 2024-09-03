@@ -110,11 +110,27 @@ const CardContent = ({ widget, definitions, updateWidget }) => {
     updateWidget((v) => ({ ...v, [name]: value }));
   }
 
+  const handleWidgetSettingsChange = (name, value) => {
+    updateWidget((v) => ({
+      ...v,
+      settings: {
+        ...v.settings,
+        [name]: value,
+      },
+    }));
+  };
+
   return <>
+    <div className="mb-2 border-bottom">
+      <Switch name="showDatePicker" value={widget?.showDatePicker} title="Enable Date Selector" onChange={handleWidgetChange} />
+    </div>
+
+    <div className="mb-2 border-bottom">
+      <Switch name="customer" value={widget?.settings?.['customer']} title="Customer Name" onChange={handleWidgetSettingsChange} />
+    </div>
+
     <div className="mb-3 border-bottom">
-      <div className="mt-2">
-        <Switch name="showDatePicker" value={widget?.showDatePicker} title="Enable Date Selector" onChange={handleWidgetChange} />
-      </div>
+      <Switch name="compact" value={widget?.settings?.['compact']} title="Compact View" onChange={handleWidgetSettingsChange} />
     </div>
 
     <div className="row row-deck row-cards">
@@ -166,7 +182,6 @@ const CardContent = ({ widget, definitions, updateWidget }) => {
                   return <option key={`${plan.id}_${definition.valueId}`} value={definition.valueId}>{definition.name} ({definition.valueId})</option>
                 }))
               })}
-
             </SelectInput>
           </div>
           <div className="col-12 mb-3">

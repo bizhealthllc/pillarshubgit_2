@@ -7,7 +7,7 @@
 {
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 195px;
+    text-wrap: nowrap;
 }
 
 .text-end
@@ -180,6 +180,7 @@
 
 .flip-card:hover .flip-card-inner {
   transform: rotateY(180deg);
+  z-index:99999 !important;
 }
 
 .flip-card-front, .flip-card-back {

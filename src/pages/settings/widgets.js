@@ -33,7 +33,7 @@ const WidgetSettings = () => {
         <span className="card-title">Widgets</span>
       </div>
       <div className="table-responsive">
-        <table className="table card-table table-vcenter text-nowrap datatable">
+        <table className="table card-table table-vcenter text-nowrap datatable table-ellipsis">
           <thead>
             <tr>
               <th>Name</th>

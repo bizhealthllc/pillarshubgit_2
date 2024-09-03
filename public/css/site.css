@@ -35,7 +35,7 @@ input[type=number] {
 
   .btn-sm-icon .icon {
     margin: calc(-1 * var(--tblr-btn-padding-x))
-}
+  }
 
 }
 
@@ -301,4 +301,12 @@ input[type=number] {
 
 .tooltip2:hover .tooltiptext {
   opacity: 1;
+}
+
+
+.table.table-ellipsis tbody td {
+  max-width: 500px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap
 }

@@ -208,31 +208,58 @@ function treeBorad(id, rootId, treeId, periodDate, dataUrl, selectNode, getTempl
             nodeId
             totalChildNodes
             customer{
-                fullName
-                enrollDate
-                profileImage
-                status {
-                  id,
-                  name,
-                  statusClass
+              id
+              fullName
+              enrollDate
+              profileImage
+              status {
+                id,
+                name,
+                statusClass
+              }
+              phoneNumbers {
+                type
+                number
+              }
+              emailAddress
+              customerType {
+                id
+                name
+              }
+              cards(idList: $cardIds, date: $periodDate){
+                name
+                values {
+                  value
+                  valueName
+                  valueId
                 }
-                phoneNumbers {
-                  type
-                  number
-                }
-                emailAddress
-                customerType {
-                  id
-                  name
-                }
-                cards(idList: $cardIds, date: $periodDate){
-                  name
+              }
+              widgets {
+                id
+                name
+                title
+                description
+                type
+                showDatePicker
+                headerColor
+                headerTextColor
+                headerAlignment
+                backgroundColor
+                textColor
+                borderColor
+                css
+                settings
+                panes {
+                  imageUrl
+                  title
+                  text
+                  description
                   values {
+                    text
                     value
-                    valueName
-                    valueId
                   }
                 }
+              }
             }
           }
         }
@@ -284,6 +311,7 @@ function treeBorad(id, rootId, treeId, periodDate, dataUrl, selectNode, getTempl
               uplineLeg
               totalChildNodes
               customer {
+                id
                 fullName
                 enrollDate
                 profileImage
@@ -307,6 +335,32 @@ function treeBorad(id, rootId, treeId, periodDate, dataUrl, selectNode, getTempl
                     value
                     valueName
                     valueId
+                  }
+                }
+                widgets {
+                  id
+                  name
+                  title
+                  description
+                  type
+                  showDatePicker
+                  headerColor
+                  headerTextColor
+                  headerAlignment
+                  backgroundColor
+                  textColor
+                  borderColor
+                  css
+                  settings
+                  panes {
+                    imageUrl
+                    title
+                    text
+                    description
+                    values {
+                      text
+                      value
+                    }
                   }
                 }
               }

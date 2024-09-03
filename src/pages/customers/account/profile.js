@@ -196,7 +196,11 @@ const CustomerProfile = () => {
             </div>
           })}
         </div>
-        {customer.socialMedia && customer.socialMedia.some(item => item.value) && <Widget widget={{ type: WidgetTypes.SocialLinks }} customer={customer} />}
+        {customer.socialMedia && customer.socialMedia.some(item => item.value) &&
+          <div>
+            <Widget widget={{ type: WidgetTypes.SocialLinks }} customer={customer} compensationPlans={{}} trees={{}} date={new Date().toISOString()} />
+          </div>
+        }
       </div>
       <div className="card-footer bg-transparent">
         {saved && <div id="passwordSuccess" className="alert alert-success" role="alert">

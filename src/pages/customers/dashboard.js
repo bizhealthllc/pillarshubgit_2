@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { GetScope } from "../../features/authentication/hooks/useToken"
 import { useQuery, gql } from "@apollo/client";
 import { useParams } from "react-router-dom"
+import { useFetch } from "../../hooks/useFetch";
 import DataLoading from '../../components/dataLoading';
 
 import PageHeader from '../../components/pageHeader';
-import { useFetch } from "../../hooks/useFetch";
 import Widget from '../../features/widgets/components/widget';
 import DataError from '../../components/dataError';
 
@@ -122,8 +122,7 @@ var GET_CUSTOMER = gql`query ($nodeIds: [String]!, $periodDate: Date!) {
 const Dashboard = () => {
   let params = useParams()
   const [iDate] = useState(new Date().toISOString());
-  const { data: dashboard, loading: dbLoading, error: dbError } = useFetch('/api/v1/dashboards', {});
-  //const { widgets, loading: wLoading, error: wError } = useWidgets();
+  const { data: dashboard, loading: dbLoading, error: dbError } = useFetch('/api/v1/dashboards/PDB', {});
   const { loading, error, data } = useQuery(GET_CUSTOMER, {
     variables: { nodeIds: [params.customerId], periodDate: iDate },
   });
@@ -145,7 +144,7 @@ const Dashboard = () => {
     <PageHeader title={title} preTitle={preTitle} pageId="dashboard" customerId={params.customerId}>
       <div className="container-xl">
         <div className="row row-cards row-deck mb-3">
-          {dashboard && dashboard[0]?.children && dashboard[0].children.map((card) => {
+          {dashboard && dashboard?.children && dashboard.children.map((card) => {
             return buildCard(card, widgets, customer, compensationPlans, trees, iDate);
           })}
         </div>

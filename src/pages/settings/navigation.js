@@ -188,7 +188,7 @@ const Navigation = () => {
   ]
 
   return <>
-    <PageHeader title="Pages & Navigation" preTitle="Settings">
+    <PageHeader title="Navigation" preTitle="Settings">
       <SettingsNav title="Navigation" loading={loading} error={error} pageId="navigation">
         {/* <div className="card-header"><span className="card-title">System Menus</span></div> */}
         <div className="card-header inverted">
@@ -200,28 +200,28 @@ const Navigation = () => {
             })}
           </ul>
         </div>
-
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd} >
-          <SortableContext items={items} strategy={verticalListSortingStrategy} >
-            <table className="table table-vcenter table-border table-nowrap card-table">
-              <thead>
-                <tr>
-                  <th className="w-1"></th>
-                  <th>Title</th>
-                  <th>Destination</th>
-                  <th>Status</th>
-                  <th className="w-1"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map(item => (
-                  <SortableRow key={item.id} id={item.id} data={item} internalPages={internalPages} onEdit={handleShow} onDelete={handleShowDelete} />
-                ))}
-              </tbody>
-            </table>
-          </SortableContext>
-        </DndContext>
-
+        <div className="table-responsive">
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd} >
+            <SortableContext items={items} strategy={verticalListSortingStrategy} >
+              <table className="table table-vcenter table-border table-nowrap card-table table-ellipsis">
+                <thead>
+                  <tr>
+                    <th className="w-1"></th>
+                    <th>Title</th>
+                    <th>Destination</th>
+                    <th>Status</th>
+                    <th className="w-1"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map(item => (
+                    <SortableRow key={item.id} id={item.id} data={item} internalPages={internalPages} onEdit={handleShow} onDelete={handleShowDelete} />
+                  ))}
+                </tbody>
+              </table>
+            </SortableContext>
+          </DndContext>
+        </div>
         <div className="card-footer">
           <div className="row">
             <div className="col">
