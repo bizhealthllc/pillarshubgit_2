@@ -10,6 +10,7 @@ import EnvironmentList from './pages/account/environmentList';
 import Home from "./pages/home/home";
 import Customers from "./pages/customers/customers";
 import CustomerDetail from "./pages/customers/customerDetail";
+import CustomerSummary from "./pages/customers/summary";
 import Users from "./pages/settings/users";
 import CustomerTree from "./pages/customers/customerTree";
 import Statuses from "./pages/settings/statuses";
@@ -102,7 +103,8 @@ function App() {
             <Route path="customers" element={<Customers />} />
             <Route path="customers/new" element={<NewCustomer />} />
             <Route path="customers/:customerId/edit" element={<EditCustomer />} />
-            <Route path="customers/:customerId/summary" element={<CustomerDetail />} />
+            <Route path="customers/:customerId/summary" element={<CustomerSummary />} />
+            <Route path="customers/:customerId/details" element={<CustomerDetail />} />
             <Route path="customers/:customerId/dashboard" element={<Dashboard />} />
             <Route path="customers/:customerId/orders" element={<CustomerOrders />} />
             <Route path="customers/:customerId/autoships" element={<Autoships />} />

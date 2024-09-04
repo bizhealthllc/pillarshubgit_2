@@ -365,7 +365,7 @@ function Content(widget, customer, compensationPlans, trees, isPreview, loading)
   }
 
   if (widget.type == WidgetTypes.Rank) {
-    let rankAdvance = {}//compensationPlans.flatMap(plan => plan.period || []).find(period => period.rankAdvance?.length > 0)?.rankAdvance || null;
+    let rankAdvance = compensationPlans.flatMap(plan => plan.period || []).find(period => period.rankAdvance?.length > 0)?.rankAdvance || null;
     return <RankAdvance ranks={rankAdvance} />
   }
 
