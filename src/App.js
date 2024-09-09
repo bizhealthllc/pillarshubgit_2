@@ -56,6 +56,7 @@ import ForgotPassword from "./pages/account/forgotPassword";
 import ResetPassword from "./pages/account/resetpassword";
 import Reports from "./pages/reports/reports";
 import Report from "./pages/reports/report";
+import EditReport from "./pages/reports/editReport";
 import MediaList from "./pages/tools/mediaList";
 import Schedule from "./pages/tools/schedule";
 import Theme from "./pages/settings/theme";
@@ -145,6 +146,7 @@ function App() {
             <Route path="training/:courseId" element={<EditCourse />} />
             <Route path="reports" element={<Reports />} />
             <Route path="reports/:reportId" element={<Report />} />
+            <Route path="reports/:reportId/edit" element={<EditReport />} />
             <Route path="tools/adjustments" element={<Adjustments />} />
             <Route path="settings/users" element={<Users />} />
             <Route path="settings/theme" element={<Theme />} />

@@ -87,13 +87,14 @@ const BonusDetail = () => {
                   {period.bonuses && period.bonuses.map((bonus) => {
                     return <tr key={bonus.bonusId}>
                       <td className="text-center">
-                        <Avatar name={bonus.customer.fullName} url={bonus.customer.profileImage} size="xs" />
+                        {bonus.customer && <Avatar name={bonus.customer?.fullName} url={bonus.customer?.profileImage} size="xs" />}
                       </td>
                       <td>
-                        <a className="text-reset" href={`/Customers/${bonus.customer.id}/commissions?periodId=` + params.periodId}>{bonus.customer.fullName}</a>
+                        {!bonus.customer && <span>Customer {bonus.nodeId}</span>}
+                        <a className="text-reset" href={`/Customers/${bonus.customer?.id}/commissions?periodId=` + params.periodId}>{bonus.customer?.fullName}</a>
                       </td>
                       <td>
-                        <a className="text-reset" href={`/customers/${bonus.customer.id}/commissions/${bonus.bonusId}?periodId=${params.periodId}`}>{bonus.bonusTitle}</a>
+                        <a className="text-reset" href={`/customers/${bonus.customer?.id}/commissions/${bonus.bonusId}?periodId=${params.periodId}`}>{bonus.bonusTitle}</a>
                       </td>
                       <td> {bonus.level}</td>
                       <td><LocalDate dateString={bonus.commissionDate} hideTime={false} /></td>

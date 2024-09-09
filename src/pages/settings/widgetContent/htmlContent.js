@@ -4,6 +4,7 @@ import CodeEditor from "../../../components/codeEditor";
 import SelectInput from "../../../components/selectInput";
 import TextInput from "../../../components/textInput";
 import Tabs, { Tab } from "../../../components/tabs";
+import GraphQLEditor from "../../../components/graphQLEdtor";
 
 const HtmlContent = ({ widget, updateWidget }) => {
 
@@ -56,7 +57,7 @@ const HtmlContent = ({ widget, updateWidget }) => {
           }
           {widget.panes && widget.panes[0]?.imageUrl != 'API' &&
             <div className="border">
-              <CodeEditor name="title" value={widget.panes ? widget.panes[0]?.title : ''} onChange={handleChange} />
+              <GraphQLEditor query={widget.panes ? widget.panes[0]?.title : ''} onChange={(query) => handleChange("title", query)} />
             </div>
           }
         </div>
