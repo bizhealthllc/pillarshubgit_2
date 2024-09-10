@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-//import { SendRequest } from "../../hooks/usePost";
+import { SendRequest } from "../../hooks/usePost";
 import Modal from "../../components/modal";
 
 const PayablesModal = ({ batchData, showModal, onHide }) => {
@@ -8,12 +8,12 @@ const PayablesModal = ({ batchData, showModal, onHide }) => {
 
   const handleProcessPayables = () => {
     setProcessing(true);
-    /* SendRequest('POST', '/api/v1/Batches', batchData, () => {
+    SendRequest('POST', '/api/v1/Batches', batchData, () => {
       location = '/commissions/paid';
     }, (error) => {
       alert(error);
       setProcessing(false);
-    }); */
+    });
   }
 
   return <>
@@ -45,7 +45,7 @@ const PayablesModal = ({ batchData, showModal, onHide }) => {
           <span className="spinner-border spinner-border-sm me-2" role="status"></span>
           Processing...
         </button>}
-
+        {JSON.stringify(batchData)}
       </div>
     </Modal>
   </>

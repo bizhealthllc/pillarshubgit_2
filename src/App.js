@@ -1,83 +1,83 @@
-import React from "react-dom/client";
+import React, { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import useToken from './features/authentication/hooks/useToken';
 import { TokenProvider } from './features/authentication/hooks/useToken';
 
-import Layout from "./pages/layout";
-
-import Login from './pages/account/login';
-import EnvironmentList from './pages/account/environmentList';
-import Home from "./pages/home/home";
-import Customers from "./pages/customers/customers";
-import CustomerDetail from "./pages/customers/customerDetail";
-import CustomerSummary from "./pages/customers/summary";
-import Users from "./pages/settings/users";
-import CustomerTree from "./pages/customers/customerTree";
-import Statuses from "./pages/settings/statuses";
-import NoPage from "./pages/nopage";
-import Company from "./pages/settings/company";
-import SalesTax from "./pages/settings/salesTax";
-import Currency from "./pages/settings/currency";
-import Countries from "./pages/settings/countries";
-import Regions from "./pages/settings/regions";
-import Payments from "./pages/settings/payments";
-import RegionDetail from "./pages/settings/regionDetail";
-import Stores from "./pages/inventory/stores";
-import Categories from "./pages/inventory/categories";
-import Products from "./pages/inventory/products";
-import ProductDetail from "./pages/inventory/productDetail";
-import ProductData from "./pages/inventory/productData";
-import ProductPricing from "./pages/inventory/productPricing";
-import ProductImages from "./pages/inventory/productImages";
-import ProductVariants from "./pages/inventory/productVariants";
-import ProductBom from "./pages/inventory/productBom";
-import Periods from "./pages/commissions/periods";
-import PeriodDetail from "./pages/commissions/periodDetail";
-import NewCustomer from "./pages/customers/newCustomer";
-import EditCustomer from "./pages/customers/editCustomer";
-import CustomerOrders from "./pages/customers/customerOrders";
-import OrderDetail from "./pages/customers/orderDetail";
-import NewProduct from "./pages/inventory/newProduct";
-import CustomerProfile from "./pages/customers/account/profile"
-import Shop from "./pages/customers/shop";
-import Checkout from "./pages/customers/checkout";
-import Adjustments from "./pages/tools/adjustments";
-import CommissionsDetail from "./pages/customers/commissionsDetail";
-import Profile from "./pages/account/profile";
-import CustomerSecurity from "./pages/customers/account/security";
-import CustomerMoneyOut from "./pages/customers/account/moneyOut";
-import CustomerMoneyIn from "./pages/customers/account/moneyIn";
-import Payables from "./pages/commissions/payables";
-import PaymentHistory from "./pages/commissions/paymentHistory";
-import VolumeSummary from "./pages/commissions/volumesummary";
-import CommissionsBonusDetail from "./pages/customers/commissionsBonusDetail";
-import CustomerTreeSettings from "./pages/customers/account/treeSettings";
-import ForgotPassword from "./pages/account/forgotPassword";
-import ResetPassword from "./pages/account/resetpassword";
-import Reports from "./pages/reports/reports";
-import Report from "./pages/reports/report";
-import EditReport from "./pages/reports/editReport";
-import MediaList from "./pages/tools/mediaList";
-import Schedule from "./pages/tools/schedule";
-import Theme from "./pages/settings/theme";
-import Navigation from "./pages/settings/navigation";
-import DashboardSettings from "./pages/settings/pageSettings/dashboard";
-import CustomerDetailSettings from "./pages/settings/pageSettings/customerDetailSettings";
-import TreeSettings from "./pages/settings/pageSettings/treeSettings";
-import WidgetSettings from "./pages/settings/widgets";
-import EditWidget from "./pages/settings/editWidget";
-import Dashboard from "./pages/customers/dashboard";
-import PaymentHistoryDetail from "./pages/commissions/paymentHistoryDetail";
-import PlacementRules from "./pages/settings/placementRules";
-import Training from "./pages/tools/training";
-import Course from "./pages/customers/course";
-import EditCourse from "./pages/tools/editCourse";
-import EmailSettings from "./pages/settings/emailSettings";
-import EmailContent from "./pages/settings/emailContent";
-import Autoships from "./pages/customers/autoships";
-import BonusDetail from "./pages/commissions/bonusDetail";
-import RankDetail from "./pages/commissions/rankDetail";
-import Pages from "./pages/settings/pages";
+const Layout = lazy(() => import("./pages/layout"));
+const Login = lazy(() => import('./pages/account/login'));
+const EnvironmentList = lazy(() => import('./pages/account/environmentList'));
+const Home = lazy(() => import("./pages/home/home"));
+const Profile = lazy(() => import("./pages/account/profile"));
+const Customers = lazy(() => import("./pages/customers/customers"));
+const CustomerDetail = lazy(() => import("./pages/customers/customerDetail"));
+const CustomerSummary = lazy(() => import("./pages/customers/summary"));
+const Users = lazy(() => import("./pages/settings/users"));
+const CustomerTree = lazy(() => import("./pages/customers/customerTree"));
+const Statuses = lazy(() => import("./pages/settings/statuses"));
+const NoPage = lazy(() => import("./pages/nopage"));
+const Company = lazy(() => import("./pages/settings/company"));
+const SalesTax = lazy(() => import("./pages/settings/salesTax"));
+const Currency = lazy(() => import("./pages/settings/currency"));
+const Countries = lazy(() => import("./pages/settings/countries"));
+const Regions = lazy(() => import("./pages/settings/regions"));
+const Payments = lazy(() => import("./pages/settings/payments"));
+const RegionDetail = lazy(() => import("./pages/settings/regionDetail"));
+const Stores = lazy(() => import("./pages/inventory/stores"));
+const Categories = lazy(() => import("./pages/inventory/categories"));
+const Products = lazy(() => import("./pages/inventory/products"));
+const ProductDetail = lazy(() => import("./pages/inventory/productDetail"));
+const ProductData = lazy(() => import("./pages/inventory/productData"));
+const ProductPricing = lazy(() => import("./pages/inventory/productPricing"));
+const ProductImages = lazy(() => import("./pages/inventory/productImages"));
+const ProductVariants = lazy(() => import("./pages/inventory/productVariants"));
+const ProductBom = lazy(() => import("./pages/inventory/productBom"));
+const Periods = lazy(() => import("./pages/commissions/periods"));
+const PeriodDetail = lazy(() => import("./pages/commissions/periodDetail"));
+const NewCustomer = lazy(() => import("./pages/customers/newCustomer"));
+const EditCustomer = lazy(() => import("./pages/customers/editCustomer"));
+const CustomerOrders = lazy(() => import("./pages/customers/customerOrders"));
+const OrderDetail = lazy(() => import("./pages/customers/orderDetail"));
+const NewProduct = lazy(() => import("./pages/inventory/newProduct"));
+const CustomerProfile = lazy(() => import("./pages/customers/account/profile"));
+const Shop = lazy(() => import("./pages/customers/shop"));
+const Checkout = lazy(() => import("./pages/customers/checkout"));
+const Adjustments = lazy(() => import("./pages/tools/adjustments"));
+const CommissionsDetail = lazy(() => import("./pages/customers/commissionsDetail"));
+const CustomerSecurity = lazy(() => import("./pages/customers/account/security"));
+const CustomerMoneyOut = lazy(() => import("./pages/customers/account/moneyOut"));
+const CustomerMoneyIn = lazy(() => import("./pages/customers/account/moneyIn"));
+const Payables = lazy(() => import("./pages/commissions/payables"));
+const PaymentHistory = lazy(() => import("./pages/commissions/paymentHistory"));
+const VolumeSummary = lazy(() => import("./pages/commissions/volumesummary"));
+const CommissionsBonusDetail = lazy(() => import("./pages/customers/commissionsBonusDetail"));
+const CustomerTreeSettings = lazy(() => import("./pages/customers/account/treeSettings"));
+const ForgotPassword = lazy(() => import("./pages/account/forgotPassword"));
+const ResetPassword = lazy(() => import("./pages/account/resetpassword"));
+const Reports = lazy(() => import("./pages/reports/reports"));
+const Report = lazy(() => import("./pages/reports/report"));
+const EditReport = lazy(() => import("./pages/reports/editReport"));
+const MediaList = lazy(() => import("./pages/tools/mediaList"));
+const Schedule = lazy(() => import("./pages/tools/schedule"));
+const Theme = lazy(() => import("./pages/settings/theme"));
+const Navigation = lazy(() => import("./pages/settings/navigation"));
+const DashboardSettings = lazy(() => import("./pages/settings/pageSettings/dashboard"));
+const CustomerDetailSettings = lazy(() => import("./pages/settings/pageSettings/customerDetailSettings"));
+const TreeSettings = lazy(() => import("./pages/settings/pageSettings/treeSettings"));
+const WidgetSettings = lazy(() => import("./pages/settings/widgets"));
+const EditWidget = lazy(() => import("./pages/settings/editWidget"));
+const Dashboard = lazy(() => import("./pages/customers/dashboard"));
+const PaymentHistoryDetail = lazy(() => import("./pages/commissions/paymentHistoryDetail"));
+const PlacementRules = lazy(() => import("./pages/settings/placementRules"));
+const Training = lazy(() => import("./pages/tools/training"));
+const Course = lazy(() => import("./pages/customers/course"));
+const EditCourse = lazy(() => import("./pages/tools/editCourse"));
+const EmailSettings = lazy(() => import("./pages/settings/emailSettings"));
+const EmailContent = lazy(() => import("./pages/settings/emailContent"));
+const Autoships = lazy(() => import("./pages/customers/autoships"));
+const BonusDetail = lazy(() => import("./pages/commissions/bonusDetail"));
+const RankDetail = lazy(() => import("./pages/commissions/rankDetail"));
+const Pages = lazy(() => import("./pages/settings/pages"));
+const ReportQuery = lazy(() => import("./pages/reports/reportQuery"));
 
 function App() {
   const { token, setToken, clearToken } = useToken();
@@ -97,80 +97,83 @@ function App() {
   return (
     <BrowserRouter>
       <TokenProvider clearToken={clearToken}>
-        <Routes>
-          <Route path="/" element={<Layout clearToken={clearToken} />}>
-            <Route index element={<Home />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="customers" element={<Customers />} />
-            <Route path="customers/new" element={<NewCustomer />} />
-            <Route path="customers/:customerId/edit" element={<EditCustomer />} />
-            <Route path="customers/:customerId/summary" element={<CustomerSummary />} />
-            <Route path="customers/:customerId/details" element={<CustomerDetail />} />
-            <Route path="customers/:customerId/dashboard" element={<Dashboard />} />
-            <Route path="customers/:customerId/orders" element={<CustomerOrders />} />
-            <Route path="customers/:customerId/autoships" element={<Autoships />} />
-            <Route path="customers/:customerId/orders/:orderId" element={<OrderDetail />} />
-            <Route path="customers/:customerId/shop" element={<Shop />} />
-            <Route path="customers/:customerId/checkout" element={<Checkout />} />
-            <Route path="customers/:customerId/training" element={<Training />} />
-            <Route path="customers/:customerId/training/:courseId" element={<Course />} />
-            <Route path="customers/:customerId/account/profile" element={<CustomerProfile />} />
-            <Route path="customers/:customerId/account/security" element={<CustomerSecurity />} />
-            <Route path="customers/:customerId/account/moneyin" element={<CustomerMoneyIn />} />
-            <Route path="customers/:customerId/account/moneyout" element={<CustomerMoneyOut />} />
-            <Route path="customers/:customerId/account/treesettings" element={<CustomerTreeSettings />} />
-            <Route path="customers/:customerId/commissions" element={<CommissionsDetail />} />
-            <Route path="customers/:customerId/commissions/:bonusId" element={<CommissionsBonusDetail />} />
-            <Route path="customers/:customerId/tree/:treeId" element={<CustomerTree />} />
-            <Route path="inventory/stores" element={<Stores />} />
-            <Route path="inventory/categories" element={<Categories />} />
-            <Route path="inventory/products" element={<Products />} />
-            <Route path="inventory/products/new" element={<NewProduct />} />
-            <Route path="inventory/products/:productId/general" element={<ProductDetail />} />
-            <Route path="inventory/products/:productId/data" element={<ProductData />} />
-            <Route path="inventory/products/:productId/pricing" element={<ProductPricing />} />
-            <Route path="inventory/products/:productId/variants" element={<ProductVariants />} />
-            <Route path="inventory/products/:productId/images" element={<ProductImages />} />
-            <Route path="inventory/products/:productId/bom" element={<ProductBom />} />
-            <Route path="commissions/periods" element={<Periods />} />
-            <Route path="commissions/periods/:periodId/summary" element={<PeriodDetail />} />
-            <Route path="commissions/periods/:periodId/volumesummary" element={<VolumeSummary />} />
-            <Route path="commissions/periods/:periodId/bonusDetail/:bonusId" element={<BonusDetail />} />
-            <Route path="commissions/periods/:periodId/rankDetail/:rankId" element={<RankDetail />} />
-            <Route path="commissions/payables" element={<Payables />} />
-            <Route path="commissions/paid" element={<PaymentHistory />} />
-            <Route path="commissions/paid/:batchId" element={<PaymentHistoryDetail />} />
-            <Route path="media" element={<MediaList />} />
-            <Route path="schedule" element={<Schedule />} />
-            <Route path="training" element={<Training />} />
-            <Route path="training/:courseId" element={<EditCourse />} />
-            <Route path="reports" element={<Reports />} />
-            <Route path="reports/:reportId" element={<Report />} />
-            <Route path="reports/:reportId/edit" element={<EditReport />} />
-            <Route path="tools/adjustments" element={<Adjustments />} />
-            <Route path="settings/users" element={<Users />} />
-            <Route path="settings/theme" element={<Theme />} />
-            <Route path="settings/navigation" element={<Navigation />} />
-            <Route path="settings/pages" element={<Pages />} />
-            <Route path="settings/pages/dashboard" element={<DashboardSettings />} />
-            <Route path="settings/pages/customer" element={<CustomerDetailSettings />} />
-            <Route path="settings/pages/tree/:treeId" element={<TreeSettings />} />
-            <Route path="settings/widgets" element={<WidgetSettings />} />
-            <Route path="settings/widgets/:widgetId" element={<EditWidget />} />
-            <Route path="settings/email/providers" element={<EmailSettings />} />
-            <Route path="settings/email/content" element={<EmailContent />} />
-            <Route path="settings/payments" element={<Payments />} />
-            <Route path="settings/regions" element={<Regions />} />
-            <Route path="settings/regions/:regionId" element={<RegionDetail />} />
-            <Route path="settings/countries" element={<Countries />} />
-            <Route path="settings/currency" element={<Currency />} />
-            <Route path="settings/salestax" element={<SalesTax />} />
-            <Route path="settings/statuses" element={<Statuses />} />
-            <Route path="settings/company" element={<Company />} />
-            <Route path="settings/trees" element={<PlacementRules />} />
-            <Route path="*" element={<NoPage />} />
-          </Route>
-        </Routes>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Routes>
+            <Route path="/" element={<Layout clearToken={clearToken} />}>
+              <Route index element={<Home />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="customers" element={<Customers />} />
+              <Route path="customers/new" element={<NewCustomer />} />
+              <Route path="customers/:customerId/edit" element={<EditCustomer />} />
+              <Route path="customers/:customerId/summary" element={<CustomerSummary />} />
+              <Route path="customers/:customerId/details" element={<CustomerDetail />} />
+              <Route path="customers/:customerId/dashboard" element={<Dashboard />} />
+              <Route path="customers/:customerId/orders" element={<CustomerOrders />} />
+              <Route path="customers/:customerId/autoships" element={<Autoships />} />
+              <Route path="customers/:customerId/orders/:orderId" element={<OrderDetail />} />
+              <Route path="customers/:customerId/shop" element={<Shop />} />
+              <Route path="customers/:customerId/checkout" element={<Checkout />} />
+              <Route path="customers/:customerId/training" element={<Training />} />
+              <Route path="customers/:customerId/training/:courseId" element={<Course />} />
+              <Route path="customers/:customerId/account/profile" element={<CustomerProfile />} />
+              <Route path="customers/:customerId/account/security" element={<CustomerSecurity />} />
+              <Route path="customers/:customerId/account/moneyin" element={<CustomerMoneyIn />} />
+              <Route path="customers/:customerId/account/moneyout" element={<CustomerMoneyOut />} />
+              <Route path="customers/:customerId/account/treesettings" element={<CustomerTreeSettings />} />
+              <Route path="customers/:customerId/commissions" element={<CommissionsDetail />} />
+              <Route path="customers/:customerId/commissions/:bonusId" element={<CommissionsBonusDetail />} />
+              <Route path="customers/:customerId/tree/:treeId" element={<CustomerTree />} />
+              <Route path="inventory/stores" element={<Stores />} />
+              <Route path="inventory/categories" element={<Categories />} />
+              <Route path="inventory/products" element={<Products />} />
+              <Route path="inventory/products/new" element={<NewProduct />} />
+              <Route path="inventory/products/:productId/general" element={<ProductDetail />} />
+              <Route path="inventory/products/:productId/data" element={<ProductData />} />
+              <Route path="inventory/products/:productId/pricing" element={<ProductPricing />} />
+              <Route path="inventory/products/:productId/variants" element={<ProductVariants />} />
+              <Route path="inventory/products/:productId/images" element={<ProductImages />} />
+              <Route path="inventory/products/:productId/bom" element={<ProductBom />} />
+              <Route path="commissions/periods" element={<Periods />} />
+              <Route path="commissions/periods/:periodId/summary" element={<PeriodDetail />} />
+              <Route path="commissions/periods/:periodId/volumesummary" element={<VolumeSummary />} />
+              <Route path="commissions/periods/:periodId/bonusDetail/:bonusId" element={<BonusDetail />} />
+              <Route path="commissions/periods/:periodId/rankDetail/:rankId" element={<RankDetail />} />
+              <Route path="commissions/payables" element={<Payables />} />
+              <Route path="commissions/paid" element={<PaymentHistory />} />
+              <Route path="commissions/paid/:batchId" element={<PaymentHistoryDetail />} />
+              <Route path="media" element={<MediaList />} />
+              <Route path="schedule" element={<Schedule />} />
+              <Route path="training" element={<Training />} />
+              <Route path="training/:courseId" element={<EditCourse />} />
+              <Route path="reports" element={<Reports />} />
+              <Route path="reports/graphQL" element={<ReportQuery />} />
+              <Route path="reports/:reportId" element={<Report />} />
+              <Route path="reports/:reportId/edit" element={<EditReport />} />
+              <Route path="tools/adjustments" element={<Adjustments />} />
+              <Route path="settings/users" element={<Users />} />
+              <Route path="settings/theme" element={<Theme />} />
+              <Route path="settings/navigation" element={<Navigation />} />
+              <Route path="settings/pages" element={<Pages />} />
+              <Route path="settings/pages/dashboard" element={<DashboardSettings />} />
+              <Route path="settings/pages/customer" element={<CustomerDetailSettings />} />
+              <Route path="settings/pages/tree/:treeId" element={<TreeSettings />} />
+              <Route path="settings/widgets" element={<WidgetSettings />} />
+              <Route path="settings/widgets/:widgetId" element={<EditWidget />} />
+              <Route path="settings/email/providers" element={<EmailSettings />} />
+              <Route path="settings/email/content" element={<EmailContent />} />
+              <Route path="settings/payments" element={<Payments />} />
+              <Route path="settings/regions" element={<Regions />} />
+              <Route path="settings/regions/:regionId" element={<RegionDetail />} />
+              <Route path="settings/countries" element={<Countries />} />
+              <Route path="settings/currency" element={<Currency />} />
+              <Route path="settings/salestax" element={<SalesTax />} />
+              <Route path="settings/statuses" element={<Statuses />} />
+              <Route path="settings/company" element={<Company />} />
+              <Route path="settings/trees" element={<PlacementRules />} />
+              <Route path="*" element={<NoPage />} />
+            </Route>
+          </Routes>
+        </Suspense>
       </TokenProvider>
     </BrowserRouter>
   );

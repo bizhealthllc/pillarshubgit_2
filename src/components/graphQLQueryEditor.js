@@ -46,14 +46,14 @@ const GraphQLQueryEditor = ({ query, variables, onChange, onFetch }) => {
   };
 
   return (
-    <div>
+    <>
       <style>
         {`
           .graphiql-container{
             min-height: 500px
           }
 
-          .graphiql-tab-add {
+          3.graphiql-tab-add {
             display: none !important; 
           }
 
@@ -68,6 +68,7 @@ const GraphQLQueryEditor = ({ query, variables, onChange, onFetch }) => {
           }
 
           .graphiql-editors{
+            margin: 0 !important;
             border-radius: 0 !important;
           }
 
@@ -75,24 +76,24 @@ const GraphQLQueryEditor = ({ query, variables, onChange, onFetch }) => {
             display: none !important; 
           }
 
-          .graphiql-sidebar3{
+          3.graphiql-sidebar3{
             display: none !important; 
           }
 
-          .graphiql-editor-tools3 {
+          3.graphiql-editor-tools3 {
             display: none !important; 
           }
 
-          .topBar .historyButton,
-          .topBar button[title="Show History"] {
+          3.topBar .historyButton,
+          3.topBar button[title="Show History"] {
             display: none !important;
           }
 
-          .graphiql-response{
+          3.graphiql-response{
             background-color: var(--tblr-light);
           }
 
-          .graphiql-container .graphiql-editors.full-height {
+          3.graphiql-container .graphiql-editors.full-height {
              margin: 0;
           }
         `}
@@ -105,8 +106,9 @@ const GraphQLQueryEditor = ({ query, variables, onChange, onFetch }) => {
         onEditQuery={handleQueryChange}
         onEditVariables={handleVariablesChange}
         onFetch={handleFetch}
+        defaultQuery={""} // This ensures no default query or tabs are loaded
       />
-    </div>
+    </>
   );
 };
 

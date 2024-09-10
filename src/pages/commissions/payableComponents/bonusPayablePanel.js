@@ -39,7 +39,7 @@ const BonusPayablePanel = ({ date, currentBonus, setCurrentBatch, handleViewCust
   useEffect(() => {
     if (data) {
       const groupedData = data.unreleased.reduce((acc, current) => {
-        const customerId = current.customer.id;
+        const customerId = current.customer?.id;
 
         if (!acc[customerId]) {
           acc[customerId] = {
@@ -56,10 +56,10 @@ const BonusPayablePanel = ({ date, currentBonus, setCurrentBatch, handleViewCust
 
       const groupedPayables = Object.values(groupedData).map((s) => ({
         ...s,
-        id: s.bonusTitle + '_' + s.customer.id + '_' + s.level,
+        id: s.bonusTitle + '_' + s.customer?.id + '_' + s.level,
         selected: currentBonus.earningsClass.toLowerCase() !== 'hold',
         earningsClass: currentBonus.earningsClass
-      })).sort((a, b) => a.customer.fullName.localeCompare(b.customer.fullName));
+      })).sort((a, b) => a.customer?.fullName.localeCompare(b.customer?.fullName));
 
       setPayables(groupedPayables);
     }
@@ -70,7 +70,7 @@ const BonusPayablePanel = ({ date, currentBonus, setCurrentBatch, handleViewCust
       setCurrentBatch({
         cutoffDate: date,
         bonusGroups: [{ bonusTitle: currentBonus.bonus, earningsClass: currentBonus.earningsClass }],
-        nodeIds: payables.filter(x => x.selected).map(x => (x.customer.id)),
+        nodeIds: payables.filter(x => x.selected).map(x => (x.customer?.id)),
         total: payables.filter(x => x.selected && x.earningsClass == 'RELEASE').reduce((t, x) => t + (x.amount - x.released), 0),
         forfeitTotal: payables.filter(x => x.selected && x.earningsClass == 'FORFEIT').reduce((t, x) => t + (x.amount - x.released), 0),
         totalCustomers: payables.filter(x => x.selected && x.earningsClass !== 'HOLD').reduce((t) => t + 1, 0),
@@ -143,18 +143,18 @@ const BonusPayablePanel = ({ date, currentBonus, setCurrentBatch, handleViewCust
                 </td>
                 <td>
                   <button onClick={() => handleViewCustomer(payable.customer.id)} className="btn-link text-reset p-0">
-                    {payable.customer.fullName} {index}
+                    {payable.customer?.fullName} {index}
                   </button>
                 </td>
                 <td className="d-none d-sm-table-cell text-start">
                   <button onClick={() => handleViewCustomer(payable.customer.id)} className="btn-link text-reset p-0">
-                    {payable.customer.webAlias}
+                    {payable.customer?.webAlias}
                   </button>
                 </td>
-                <td className="d-none d-sm-table-cell text-start">{payable.customer.customerType.name}</td>
+                <td className="d-none d-sm-table-cell text-start">{payable.customer?.customerType.name}</td>
                 <td className="d-none d-sm-table-cell text-start">
-                  <span className={`status status-${statusColor(payable.customer.status.statusClass)} status-lite`}>
-                    <span className="status-dot"></span> {payable.customer.status.name}
+                  <span className={`status status-${statusColor(payable.customer?.status.statusClass)} status-lite`}>
+                    <span className="status-dot"></span> {payable.customer?.status.name}
                   </span>
                 </td>
                 <td className="d-none d-sm-table-cell text-end">

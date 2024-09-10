@@ -8,10 +8,18 @@ import GraphQLQueryEditor from "../../components/graphQLQueryEditor";
 import TextInput from "../../components/textInput";
 import SelectInput from "../../components/selectInput";
 import TextArea from "../../components/textArea";
+import Modal from "../../components/modal";
 import FilterInput from "./filterInput";
+
+const filterDelType = "del_filter";
+const columnDelType = "del_column";
 
 const EditReport = () => {
   let params = useParams()
+  const [showFilter, setShowFilter] = useState(false);
+  const [showColumn, setShowColumn] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
+  const [activeItem, setActiveItem] = useState();
   const [report, setReport] = useState();
   const [values, setValues] = useState({ offset: 0, count: 10 });
   const { loading, error, data } = useFetch(`/api/v1/Reports/${params.reportId}`);
@@ -24,6 +32,89 @@ const EditReport = () => {
 
   if (loading || !report) return <DataLoading />
   if (error) return <DataError error={error} />
+
+  const handleDeleteClose = () => setShowDelete(false);
+  const handleDeleteShow = (id, type) => {
+    if (type == filterDelType) {
+      var fIndex = report.filters.findIndex(f => f.id == id);
+      setActiveItem({ index: fIndex, type: type });
+    } else {
+      var cIndex = report.dataColumns.findIndex(f => f.name == id);
+      setActiveItem({ index: cIndex, type: type });
+    }
+    setShowDelete(true);
+  }
+
+  const handleDelete = () => {
+    setReport(r => {
+      var newFilters = r.filters;
+      var newColumns = r.dataColumns;
+
+      if (activeItem.type == filterDelType) {
+        newFilters.splice(activeItem.index, 1);
+      } else {
+        newColumns.splice(activeItem.index, 1);
+      }
+
+      return { ...r, filters: newFilters, dataColumns: newColumns }
+    })
+    setShowDelete(false);
+  }
+
+  const handleFilterClose = () => setShowFilter(false);
+  const handleFilterShow = (filterId) => {
+
+    var index = report.filters.findIndex(f => f.id == filterId);
+    var item = index > -1 ? report.filters[index] : { inputType: 'Period' };
+    item.index = index;
+
+    setActiveItem(item);
+    setShowFilter(true);
+  }
+
+  const handleFilterSubmit = () => {
+    setReport(r => {
+      var newFilters = r.filters;
+      if (activeItem.index == -1) {
+        newFilters.push(activeItem);
+      } else {
+        newFilters[activeItem.index] = activeItem;
+      }
+
+      return { ...r, filters: newFilters }
+    })
+
+    setShowFilter(false);
+  }
+
+  const handleColumnClose = () => setShowColumn(false);
+  const handleColumnShow = (columnName) => {
+
+    var index = report.dataColumns.findIndex(f => f.name == columnName);
+    var item = index > -1 ? report.dataColumns[index] : { dataType: 'String' };
+    item.index = index;
+
+    setActiveItem(item);
+    setShowColumn(true);
+  }
+
+  const handleColumnSubmit = () => {
+    setReport(r => {
+      var newColumns = r.dataColumns;
+      if (activeItem.index == -1) {
+        newColumns.push(activeItem);
+      } else {
+        newColumns[activeItem.index] = activeItem;
+      }
+
+      return { ...r, dataColumns: newColumns }
+    })
+    setShowColumn(false);
+  }
+
+  const handleActiveChange = (name, value) => {
+    setActiveItem(v => ({ ...v, [name]: value }));
+  }
 
   const handleChange = (name, value) => {
     setReport(v => ({ ...v, [name]: value }));
@@ -72,12 +163,12 @@ const EditReport = () => {
                       <FilterInput key={filter.id} filter={filter} values={values} onChange={handleValueChange} />
                     </div>
                     <div className="col-auto">
-                      <a className="btn btn-default btn-icon me-2" href={`/reports/${params.reportId}/edit`} >
+                      <button className="btn btn-default btn-icon me-2" onClick={() => handleFilterShow(filter.id)} >
                         <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-edit" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path><path d="M16 5l3 3"></path></svg>
-                      </a>
-                      <a className="btn btn-default btn-icon" href={`/reports/${params.reportId}/edit`} >
+                      </button>
+                      <button className="btn btn-default btn-icon" onClick={() => handleDeleteShow(filter.id, filterDelType)} >
                         <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-trash" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M4 7l16 0"></path><path d="M10 11l0 6"></path><path d="M14 11l0 6"></path><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path></svg>
-                      </a>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -88,7 +179,7 @@ const EditReport = () => {
                 <div className="col">
                 </div>
                 <div className="col-auto">
-                  <button className="btn btn-default">
+                  <button className="btn btn-default" onClick={() => handleFilterShow()}>
                     Add Filter
                   </button>
                 </div>
@@ -126,31 +217,41 @@ const EditReport = () => {
                 <GraphQLQueryEditor query={report.query} variables={JSON.stringify(values)} onChange={(q) => handleChange("query", q)} />
               </div>
               <div className="tab-pane" id="tabs-requirements-7" role="tabpanel">
-                <div className="card-body">
-                  {report.dataColumns && report.dataColumns.map((column) => {
-                    return <div key={column.name} className="mb-1">
-                      <div className="row">
-                        <div className="col w-100">
-                          {JSON.stringify(column)}
-                        </div>
-                        <div className="col-auto">
-                          <a className="btn btn-ghost-secondary btn-icon" href={`/reports/${params.reportId}/edit`} >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-edit" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path><path d="M16 5l3 3"></path></svg>
-                          </a>
-                          <a className="btn btn-ghost-secondary btn-icon" href={`/reports/${params.reportId}/edit`} >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-trash" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M4 7l16 0"></path><path d="M10 11l0 6"></path><path d="M14 11l0 6"></path><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path></svg>
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  })}
+                <div className="table-responsive">
+                  <table className="table card-table table-vcenter text-nowrap datatable table-ellipsis">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th className="w-1"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {report.dataColumns && report.dataColumns.map((column) => {
+                        return <tr key={column.name}>
+                          <td>{column.name}</td>
+                          <td>{column.title}</td>
+                          <td>{column.dataType}</td>
+                          <td>
+                            <button className="btn btn-ghost-secondary btn-icon" onClick={() => handleColumnShow(column.name)} >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-edit" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path><path d="M16 5l3 3"></path></svg>
+                            </button>
+                            <button className="btn btn-ghost-secondary btn-icon" onClick={() => handleDeleteShow(column.name, columnDelType)} >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-trash" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M4 7l16 0"></path><path d="M10 11l0 6"></path><path d="M14 11l0 6"></path><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path></svg>
+                            </button>
+                          </td>
+                        </tr>
+                      })}
+                    </tbody>
+                  </table>
                 </div>
                 <div className="card-footer">
                   <div className="row">
                     <div className="col">
                     </div>
                     <div className="col-auto">
-                      <button className="btn btn-default">
+                      <button className="btn btn-default" onClick={() => handleColumnShow()}>
                         Add Column
                       </button>
                     </div>
@@ -159,13 +260,103 @@ const EditReport = () => {
               </div>
 
             </div>
+            <div className="card-footer">
+              <button className="btn btn-primary">Save</button>
+            </div>
           </div>
         </div>
       </div>
-      <div className="mt-3 d-none">
+      <div className="mt-3">
+        {JSON.stringify(report.filters)}
+      </div>
+      <div className="mt-3">
+        {JSON.stringify(report.dataColumns)}
+      </div>
+      <div className="mt-3">
         {JSON.stringify(report)}
       </div>
     </div>
+
+    <Modal showModal={showFilter} onHide={handleFilterClose} >
+      <div className="modal-header">
+        <h5 className="modal-title">Filter</h5>
+        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div className="modal-body">
+        <div className="mb-3">
+          <label className="form-label">Name</label>
+          <TextInput name="id" value={activeItem?.id} onChange={handleActiveChange} />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Filter Type</label>
+          <SelectInput name="inputType" value={activeItem?.inputType} onChange={handleActiveChange} >
+            <option>Period</option>
+            <option>Date</option>
+            <option>CustomerId</option>
+            <option>Rank</option>
+            <option>Tree</option>
+          </SelectInput>
+        </div>
+      </div>
+      <div className="modal-footer">
+        <a href="#" className="btn btn-link link-secondary" data-bs-dismiss="modal">
+          Cancel
+        </a>
+        <button type="submit" className="btn btn-primary ms-auto" onClick={handleFilterSubmit}>
+          Set Filter
+        </button>
+      </div>
+    </Modal>
+
+    <Modal showModal={showColumn} onHide={handleColumnClose} >
+      <div className="modal-header">
+        <h5 className="modal-title">Column</h5>
+        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div className="modal-body">
+        <div className="mb-3">
+          <label className="form-label">Name</label>
+          <TextInput name="name" value={activeItem?.name} onChange={handleActiveChange} />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Title</label>
+          <TextInput name="title" value={activeItem?.title} onChange={handleActiveChange} />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Type</label>
+          <SelectInput name="dataType" value={activeItem?.dataType} onChange={handleActiveChange} >
+            <option>String</option>
+            <option>Number</option>
+            <option>DateTime</option>
+            <option>Date</option>
+            <option>Boolean</option>
+            <option>Currency</option>
+            <option>Level</option>
+          </SelectInput>
+        </div>
+      </div>
+      <div className="modal-footer">
+        <a href="#" className="btn btn-link link-secondary" data-bs-dismiss="modal">
+          Cancel
+        </a>
+        <button type="submit" className="btn btn-primary ms-auto" onClick={handleColumnSubmit}>
+          Save Currency
+        </button>
+      </div>
+    </Modal>
+
+    <Modal showModal={showDelete} size="sm" onHide={handleDeleteClose}>
+      <div className="modal-body">
+        <div className="modal-title">Are you sure?</div>
+        <div>If you proceed, you will lose the widget settings.</div>
+        {JSON.stringify(activeItem)}
+      </div>
+      <div className="modal-footer">
+        <button type="button" className="btn btn-link link-secondary me-auto" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" className="btn btn-danger" onClick={handleDelete}>Delete Widget</button>
+      </div>
+    </Modal>
+
   </PageHeader>
 }
 
