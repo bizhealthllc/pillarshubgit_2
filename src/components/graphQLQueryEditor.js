@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { GraphiQL } from 'graphiql';
 import 'graphiql/graphiql.css';
 import { GetToken } from '../features/authentication/hooks/useToken';
+import BaseUrl from '../hooks/baseUrl';
 
 const GraphQLQueryEditor = ({ query, variables, onChange, onFetch }) => {
   const [_variables, setVariables] = useState(variables ?? '');
@@ -16,7 +17,7 @@ const GraphQLQueryEditor = ({ query, variables, onChange, onFetch }) => {
     var isIntrospection = graphQLParams.query.includes('query IntrospectionQuery ')
     if (isIntrospection && introspectionCache) return introspectionCache;
 
-    const data = await fetch('https://api.pillarshub.com/graphQL', {
+    const data = await fetch(`${BaseUrl}/graphQL`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

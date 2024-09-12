@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"
 import { useFetch } from "../../hooks/useFetch";
+import { SendRequest } from "../../hooks/usePost";
 import PageHeader from "../../components/pageHeader";
 import DataLoading from "../../components/dataLoading";
 import DataError from "../../components/dataError";
@@ -32,6 +33,14 @@ const EditReport = () => {
 
   if (loading || !report) return <DataLoading />
   if (error) return <DataError error={error} />
+
+  const handleSave = () =>{
+    SendRequest("PUT", `/api/v1/Reports/${params.reportId}`, report, () => {
+      alert('saved');
+    }, (error) => {
+      alert(error);
+    });
+  }
 
   const handleDeleteClose = () => setShowDelete(false);
   const handleDeleteShow = (id, type) => {
@@ -261,19 +270,10 @@ const EditReport = () => {
 
             </div>
             <div className="card-footer">
-              <button className="btn btn-primary">Save</button>
+              <button className="btn btn-primary" onClick={handleSave}>Save</button>
             </div>
           </div>
         </div>
-      </div>
-      <div className="mt-3">
-        {JSON.stringify(report.filters)}
-      </div>
-      <div className="mt-3">
-        {JSON.stringify(report.dataColumns)}
-      </div>
-      <div className="mt-3">
-        {JSON.stringify(report)}
       </div>
     </div>
 
