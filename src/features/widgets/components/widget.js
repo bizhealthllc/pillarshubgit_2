@@ -366,7 +366,16 @@ function Content(widget, customer, compensationPlans, trees, isPreview, loading)
 
   if (widget.type == WidgetTypes.Rank) {
     let rankAdvance = compensationPlans.flatMap(plan => plan.period || []).find(period => period.rankAdvance?.length > 0)?.rankAdvance || null;
-    return <RankAdvance ranks={rankAdvance} />
+    let currentRank = customer?.cards?.[0]?.values.find(v => v.valueId.toLowerCase() == 'rank')?.value ?? 0;
+
+    var showRankId = (widget?.settings?.['showRankId'] ?? false);
+    var itemPercent = (widget?.settings?.['itemPercent'] ?? false);
+
+    var valueMap = widget?.panes?.map(p => ({ valueId: p.title, text: p.text, description: p.description }));
+
+    return <>
+      <RankAdvance currentRank={currentRank} ranks={rankAdvance} showRankId={showRankId} showItemPercent={itemPercent ? false : true} valueMap={valueMap} />
+    </>
   }
 
   if (widget.type == WidgetTypes.Upline) {

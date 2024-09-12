@@ -171,6 +171,7 @@ const CustomerSummary = () => {
   const hasScope = GetScope() != undefined;
 
   let customer = data.customers[0] ?? { id: params.customerId, cards: [] };
+  let currentRank = customer.cards?.[0]?.values.find(v => v.valueId.toLowerCase() == 'rank')?.value ?? 0;
   let rankAdvance = data.compensationPlans.flatMap(plan => plan.period || []).find(period => period.rankAdvance?.length > 0)?.rankAdvance || null;
   let address = customer.addresses ? customer.addresses[0] : { line1: '' };
   let trees = data.trees;
@@ -308,7 +309,7 @@ const CustomerSummary = () => {
             </div>
             <div className="col-md-5 col-xl-4">
               <div className="card">
-                <RankAdvance ranks={rankAdvance} />
+                <RankAdvance currentRank={currentRank} ranks={rankAdvance} />
               </div>
             </div>
             <div className="col-md-7 col-xl-8">

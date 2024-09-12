@@ -45,7 +45,6 @@ const PayablesModal = ({ batchData, showModal, onHide }) => {
           <span className="spinner-border spinner-border-sm me-2" role="status"></span>
           Processing...
         </button>}
-        {JSON.stringify(batchData)}
       </div>
     </Modal>
   </>

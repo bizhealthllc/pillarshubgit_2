@@ -66,6 +66,7 @@ var GET_CUSTOMER = gql`query ($nodeIds: [String]!, $periodDate: Date!) {
       backgroundColor
       textColor
       borderColor
+      settings
       css
       panes {
         imageUrl
