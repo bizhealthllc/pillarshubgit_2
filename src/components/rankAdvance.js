@@ -4,9 +4,9 @@ import Chart from "react-apexcharts";
 import EmptyContent from "./emptyContent"
 
 const RankAdvance = ({ currentRank, ranks, valueMap, showRankId = false, showItemPercent = true }) => {
-  var initRank = [...ranks]?.sort((a, b) => a.rankId - b.rankId) // Sort the ranks by rankId in ascending order
-    .find(r => r.rankId > currentRank) ?? ranks?.find(r => r.rankId == currentRank) ?? null;
-  const [rank, setRank] = useState(initRank);
+  const initialRank = ranks ? ranks.slice().sort((a, b) => a.rankId - b.rankId).find(r => r.rankId > currentRank) || ranks.find(r => r.rankId === currentRank) || null : null;
+  const [rank, setRank] = useState(initialRank);
+
 
   if (!rank) return <><EmptyContent title="No ranks found" text="Ranks are not available at the moment." /></>;
   var percent = getPercentTotal(rank);
