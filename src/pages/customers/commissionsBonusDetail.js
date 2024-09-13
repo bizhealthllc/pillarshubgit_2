@@ -12,7 +12,7 @@ var GET_DATA = gql`query ($nodeIds: [String]!, $period: BigInt!, $bonusIds: [Str
     id
     fullName
   }
-  compensationPlans(first: 1) {
+  compensationPlans {
     periods(at: $period) {
       id
       begin
@@ -58,7 +58,7 @@ const CommissionsBonusDetail = () => {
   if (loading) return <DataLoading />;
   if (error) return `Error! ${error}`;
 
-  let period = data.compensationPlans[0].periods[0];
+  let period = data.compensationPlans.find(plan => plan.periods.length > 0)?.periods[0];
   let bonuses = period?.bonuses ?? [];
 
   return <PageHeader title={data?.customers[0].fullName} pageId="commissions" customerId={params.customerId} breadcrumbs={[{ title: 'Earnings', link: `/customers/${params.customerId}/commissions?periodId=${periodId}` }, { title: "Bonus Detail" }]}>
