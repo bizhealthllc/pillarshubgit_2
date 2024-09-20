@@ -22,6 +22,7 @@ var GET_CUSTOMER = gql`query ($nodeIds: [String]!, $periodDate: Date!) {
     fullName
     enrollDate
     profileImage
+    webAlias
     status {
       id
       name

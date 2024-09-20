@@ -71,6 +71,15 @@ const CardContent = ({ widget, definitions, updateWidget }) => {
       rankValues = definitions.find(item => item.ranks?.length > 0).ranks.map((rank) => { return { value: rank.id, text: rank.name } });
     }
 
+    if (!foundDefinition) {
+      foundDefinition = {
+        name: value,
+        valueId: "",
+        comment: ""
+      }
+    }
+
+
     setEditItem((v) => ({
       ...v,
       title: value,
@@ -176,12 +185,22 @@ const CardContent = ({ widget, definitions, updateWidget }) => {
           <div className="col-12 mb-3">
             <label className="form-label">Source Term</label>
             <SelectInput name="title" value={editItem?.title} emptyOption="-- Please select --" onChange={handleTermChange}>
-              <option value="Rank">Rank</option>
-              {definitions && definitions.map((plan) => {
-                return (plan.definitions && plan.definitions.map((definition) => {
-                  return <option key={`${plan.id}_${definition.valueId}`} value={definition.valueId}>{definition.name} ({definition.valueId})</option>
-                }))
-              })}
+              <optgroup label="Customer Values">
+                <option value="CustType">Customer Type</option>
+                <option value="Status">Status</option>
+                <option value="Email">Email</option>
+                <option value="Handle">Handle</option>
+                <option value="EnrollDate">Enroll Date</option>
+                <option value="Phone">Phone</option>
+              </optgroup>
+              <optgroup label="Commission Values">
+                <option value="Rank">Rank</option>
+                {definitions && definitions.map((plan) => {
+                  return (plan.definitions && plan.definitions.map((definition) => {
+                    return <option key={`${plan.id}_${definition.valueId}`} value={definition.valueId}>{definition.name} ({definition.valueId})</option>
+                  }))
+                })}
+              </optgroup>
             </SelectInput>
           </div>
           <div className="col-12 mb-3">

@@ -34,7 +34,7 @@ const EditReport = () => {
   if (loading || !report) return <DataLoading />
   if (error) return <DataError error={error} />
 
-  const handleSave = () =>{
+  const handleSave = () => {
     SendRequest("PUT", `/api/v1/Reports/${params.reportId}`, report, () => {
       alert('saved');
     }, (error) => {
@@ -74,7 +74,7 @@ const EditReport = () => {
   const handleFilterShow = (filterId) => {
 
     var index = report.filters.findIndex(f => f.id == filterId);
-    var item = index > -1 ? report.filters[index] : { inputType: 'Period' };
+    var item = index > -1 ? report.filters[index] : { inputType: 'Text' };
     item.index = index;
 
     setActiveItem(item);
@@ -290,11 +290,14 @@ const EditReport = () => {
         <div className="mb-3">
           <label className="form-label">Filter Type</label>
           <SelectInput name="inputType" value={activeItem?.inputType} onChange={handleActiveChange} >
+            <option>Text</option>
+            <option>Number</option>
             <option>Period</option>
             <option>Date</option>
             <option>CustomerId</option>
             <option>Rank</option>
             <option>Tree</option>
+            <option>CustomerType</option>
           </SelectInput>
         </div>
       </div>

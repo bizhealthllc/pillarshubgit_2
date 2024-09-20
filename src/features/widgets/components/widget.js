@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid'; // Using uuid library for fallback
 import { useQuery, gql } from "@apollo/client";
 import { WidgetTypes } from "../hooks/useWidgets";
+import { ToLocalDate } from "../../../util/LocalDate";
 
 import Avatar from '../../../components/avatar';
 import StatusPill from '../../../pages/customers/statusPill';
@@ -273,7 +274,16 @@ function Content(widget, customer, compensationPlans, trees, isPreview, loading)
   }
 
   if (widget.type == WidgetTypes.Card) {
-    var values = customer.cards[0]?.values;
+    var values = [
+      ...(customer.cards[0]?.values || []),
+      { valueName: "Customer Type", valueId: "CustType", value: customer.customerType.name },
+      { valueName: "Status", valueId: "Status", value: customer.status.name },
+      { valueName: "Email", valueId: "Email", value: customer.emailAddress },
+      { valueName: "Handle", valueId: "Handle", value: customer.webAlias ?? customer.id },
+      { valueName: "Enroll Date", valueId: "EnrollDate", value: ToLocalDate(customer.enrollDate, true) },
+      { valueName: "Phone", valueId: "Phone", value: customer.phoneNumbers && customer.phoneNumbers.length > 0 ? customer.phoneNumbers[0].number : '' }
+    ];
+
     var compact = (widget?.settings?.['compact'] ?? false);
     var showCustomer = (widget?.settings?.['customer'] ?? false);
 
@@ -310,7 +320,7 @@ function Content(widget, customer, compensationPlans, trees, isPreview, loading)
           {widget.panes.map((pane) => {
             const emptyValue = isPreview ? pane.values?.length > 0 ? pane.values[0].value : Math.floor(Math.random() * (5000 - 100 + 1)) + 100 : 0;
             const stat = values?.find((s) => s.valueId == pane.title) ?? { value: emptyValue };
-            const value = loading ? '-' : pane.values?.length > 0 ? pane.values.find((m) => m.value == stat.value)?.text ?? '-' : stat.value.toLocaleString();
+            const value = loading ? '-' : pane.values?.length > 0 ? pane.values.find((m) => m.value == stat.value)?.text ?? '-' : stat.value;
             return <div key={pane.title} className={compact ? 'row' : 'datagrid-item'} style={{ color: pane.imageUrl }}>
               {(cardContent(pane, value, compact))}
             </div>
@@ -322,7 +332,7 @@ function Content(widget, customer, compensationPlans, trees, isPreview, loading)
         <div className="datagrid widgetDatagrid">
           {values && values.map((stat) => {
             return <div key={stat.valueId} className="datagrid-item">
-              {(cardContent({ text: stat.valueName + ' ' + stat.valueId == stat.valueName ? `` : `(${stat.valueId})` }, stat.value, compact))}
+              {(cardContent({ text: `${stat.valueName} ${stat.valueId == stat.valueName ? `` : `(${stat.valueId})`}` }, stat.value, compact))}
             </div>
           })}
         </div>
