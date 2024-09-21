@@ -25,7 +25,8 @@ const WidgetTypes = {
   Card: "card",
   Banner: "banner",
   SocialLinks: "social",
-  Html: "html",
+  Earnings: "earnings",
+  Html: "html"
   //Report: "report"
 }
 

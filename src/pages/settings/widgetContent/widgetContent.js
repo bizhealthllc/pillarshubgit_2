@@ -9,6 +9,7 @@ import CardContent from "./cardContent";
 import BannerContent from "./bannerContent";
 import SocialLinksContent from "./socialLinksContent";
 import HtmlContent from "./htmlContent";
+import EarningsContent from "./earningsContent";
 
 const WidgetContent = ({ widget, updateWidget, trees, definitions }) => {
   
@@ -29,6 +30,8 @@ const WidgetContent = ({ widget, updateWidget, trees, definitions }) => {
       return <SocialLinksContent widget={widget} updateWidget={updateWidget} />;
     case WidgetTypes.Html:
       return <HtmlContent widget={widget} updateWidget={updateWidget} />
+    case WidgetTypes.Earnings:
+      return <EarningsContent widget={widget} updateWidget={updateWidget} />
   }
 
   return <></>

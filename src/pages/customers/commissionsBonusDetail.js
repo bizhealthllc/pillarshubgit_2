@@ -131,6 +131,7 @@ const CommissionsBonusDetail = () => {
                         <td className="strong">{totalVolume}</td>
                         <td className="strong">{totalReleased.toLocaleString("en-US", { style: 'currency', currency: bonuses[0]?.currency ?? 'USD' })}</td>
                         <td></td>
+                        <td></td>
                       </tr>
                     );
                   })()}

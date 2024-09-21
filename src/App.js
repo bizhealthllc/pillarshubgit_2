@@ -60,7 +60,6 @@ const MediaList = lazy(() => import("./pages/tools/mediaList"));
 const Schedule = lazy(() => import("./pages/tools/schedule"));
 const Theme = lazy(() => import("./pages/settings/theme"));
 const Navigation = lazy(() => import("./pages/settings/navigation"));
-const DashboardSettings = lazy(() => import("./pages/settings/pageSettings/dashboard"));
 const CustomerDetailSettings = lazy(() => import("./pages/settings/pageSettings/customerDetailSettings"));
 const TreeSettings = lazy(() => import("./pages/settings/pageSettings/treeSettings"));
 const WidgetSettings = lazy(() => import("./pages/settings/widgets"));
@@ -154,8 +153,7 @@ function App() {
               <Route path="settings/theme" element={<Theme />} />
               <Route path="settings/navigation" element={<Navigation />} />
               <Route path="settings/pages" element={<Pages />} />
-              <Route path="settings/pages/dashboard" element={<DashboardSettings />} />
-              <Route path="settings/pages/customer" element={<CustomerDetailSettings />} />
+              <Route path="settings/pages/:pageId" element={<CustomerDetailSettings />} />
               <Route path="settings/pages/tree/:treeId" element={<TreeSettings />} />
               <Route path="settings/widgets" element={<WidgetSettings />} />
               <Route path="settings/widgets/:widgetId" element={<EditWidget />} />

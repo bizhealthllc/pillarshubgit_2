@@ -74,6 +74,6 @@ export default PeriodPicker;
 
 
 PeriodPicker.propTypes = {
-  periodId: PropTypes.string.isRequired,
+  periodId: PropTypes.any.isRequired,
   setPeriodId: PropTypes.func.isRequired
 }

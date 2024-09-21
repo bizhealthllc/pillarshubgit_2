@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useParams } from "react-router-dom"
 import { useQuery, gql } from "@apollo/client";
 import PageHeader from "../../../components/pageHeader";
 import Modal from "../../../components/modal"
@@ -21,11 +22,16 @@ var GET_TREES = gql`query {
 }`
 
 const CustomerDetailSettings = () => {
+  const params = useParams()
+  let initId = params.pageId; 
+  if (initId == 'customer') initId = "CSDB";
+  if (initId == 'dashboard') initId = "PDB";
+
   const sensors = [useSensor(PointerSensor)];
   const containerRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(null);
 
-  const { data, loading, error } = useFetch('/api/v1/dashboards/CSDB', {}, { id: 'CSDB', children: [] });
+  const { data, loading, error } = useFetch(`/api/v1/dashboards/${initId}`, {}, { id: initId, children: [] });
   const { widgets, loading: wLoading, error: wError } = useWidgets();
   const [dashboardId, setDashboardId] = useState();
   const [showDel, setShowDel] = useState(false);

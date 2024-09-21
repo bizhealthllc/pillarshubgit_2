@@ -17,6 +17,8 @@ import SocialMediaLink from "../../../components/socialMediaLink";
 import { SocialMediaPlatforms } from "../../../components/socialMediaIcon";
 import HtmlWidget from "./htmlWidget";
 import LocalDate from "../../../util/LocalDate";
+import EarningsTable from "../../../components/earningsTable";
+import PeriodPicker from "../../../components/periodPicker";
 
 var GET_CUSTOMER = gql`query ($nodeIds: [String]!, $periodDate: Date!) {
   customers(idList: $nodeIds) {
@@ -73,10 +75,11 @@ const generateUUID = () => {
   }
 };
 
-const Widget = ({ widget, customer, compensationPlans, trees, isPreview = false, date, supressQuery = false }) => {
+const Widget = ({ widget, customer, compensationPlans, trees, isPreview = false, date, periodId, supressQuery = false }) => {
   const [wDate, setWDate] = useState(date);
   const [loading, setLoading] = useState(false);
   const [sCustomer, setSCustomer] = useState(customer);
+  const [widgetValues, setWidgetValues] = useState(date);
 
   const [widgetId] = useState(() => 'wd_' + generateUUID());
 
@@ -102,6 +105,13 @@ const Widget = ({ widget, customer, compensationPlans, trees, isPreview = false,
     }, [wDate]);
   }
 
+  useEffect(() => {
+    if (widget && widget.type == WidgetTypes.Earnings) {
+      var pId = periodId ?? 0;//(widget?.settings?.['periodId']?.trim() ?? 0);
+      setWidgetValues({ periodId: pId })
+    }
+  }, [widget]);
+
   if (widget == undefined) return <EmptyContent title="Widget not found" text="Please check your widget library to verify it has been configured correctly." />;
 
   const inlineStyle = {
@@ -126,6 +136,12 @@ const Widget = ({ widget, customer, compensationPlans, trees, isPreview = false,
     setWDate(value);
   }
 
+  const handlePeriodChange = (pId, u) => {
+    if (u) {
+      setWidgetValues(v => ({ ...v, periodId: Number(pId) }));
+    }
+  };
+
   const styleTag = {
     __html: modifiedCss,
   };
@@ -133,19 +149,24 @@ const Widget = ({ widget, customer, compensationPlans, trees, isPreview = false,
   return <div style={{ display: "contents" }} className={widgetId}><div className={`card h-100 ${isPreview ? '' : 'mb-3'}`} style={inlineStyle}>
     {widget.title && <div className="card-header" style={{ backgroundColor: (widget?.headerColor ?? '#ffffff') }}>
       <h3 className={`card-title ${msStyle} ${meStyle}`}>{widget.title}</h3>
-      {widget.showDatePicker && <>
+      {widget.showDatePicker && widget.type != WidgetTypes.Earnings && <>
         <div className="card-actions">
           <PeriodDatePicker name="date" value={wDate} onChange={handleDateChange} />
+        </div>
+      </>}
+      {widget.showDatePicker && widget.type == WidgetTypes.Earnings && <>
+        <div className="card-actions">
+          <PeriodPicker periodId={widgetValues?.periodId ?? 0} setPeriodId={handlePeriodChange} />
         </div>
       </>}
 
     </div>}
     <style dangerouslySetInnerHTML={styleTag} />
-    {Content(widget, sCustomer, compensationPlans, trees, isPreview, loading)}
+    {Content(widget, sCustomer, compensationPlans, trees, isPreview, widgetValues, loading)}
   </div></div>
 }
 
-function Content(widget, customer, compensationPlans, trees, isPreview, loading) {
+function Content(widget, customer, compensationPlans, trees, isPreview, widgetValues, loading) {
   const [carouselId] = useState(() => 'carousel_' + + generateUUID());
 
   if (!compensationPlans) {
@@ -448,8 +469,14 @@ function Content(widget, customer, compensationPlans, trees, isPreview, loading)
 
   if (widget.type == WidgetTypes.Html) {
     const html = widget.panes ? widget.panes[0]?.text : '';
+    return <HtmlWidget html={html} customer={customer} widget={widget} />
+  }
+
+  if (widget.type == WidgetTypes.Earnings) {
+    var overrides = widget.panes.map((p) => ({ title: p.title, display: p.text, show: p.imageUrl.toLowerCase() == 'true' }));
+
     return <>
-      <HtmlWidget html={html} customer={customer} widget={widget} />
+      <EarningsTable customerId={customer.id} periodId={widgetValues?.periodId ?? 0} overrides={overrides} />
     </>
   }
 
@@ -467,5 +494,6 @@ Widget.propTypes = {
   trees: PropTypes.any.isRequired,
   isPreview: PropTypes.bool,
   date: PropTypes.string.isRequired,
-  supressQuery: PropTypes.bool
+  supressQuery: PropTypes.bool,
+  periodId: PropTypes.number
 }
