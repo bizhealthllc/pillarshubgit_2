@@ -60,7 +60,7 @@ const EarningsContent = ({ widget, updateWidget, }) => {
     </div>
 
     <div className="row row-cards">
-      {widget.panes && widget.panes.map((pane) => {
+      {widget.panes && widget.panes?.map((pane) => {
         return <React.Fragment key={pane.title}>
           <div className="col-md-3">
             <label className="form-label">{pane.title}</label>

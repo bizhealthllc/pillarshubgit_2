@@ -98,9 +98,20 @@ const EarningsTable = ({ customerId, periodId, overrides }) => {
             </tr>
           })}
           {(() => {
-            const totalAmount = bonuses.reduce((acc, bonus) => acc + bonus.amount, 0);
-            const totalVolume = bonuses.reduce((acc, bonus) => acc + bonus.volume, 0);
-            const totalReleased = bonuses.reduce((acc, bonus) => acc + bonus.released, 0);
+            const totalAmount = bonuses.reduce((acc, bonus) => {
+              const override = overrides?.find(o => o.title == bonus.bonusTitle) ?? { show: true };
+              return override.show ? acc + bonus.amount : acc;
+            }, 0);
+
+            const totalVolume = bonuses.reduce((acc, bonus) => {
+              const override = overrides?.find(o => o.title == bonus.bonusTitle) ?? { show: true };
+              return override.show ? acc + bonus.volume : acc;
+            }, 0);
+
+            const totalReleased = bonuses.reduce((acc, bonus) => {
+              const override = overrides?.find(o => o.title == bonus.bonusTitle) ?? { show: true };
+              return override.show ? acc + bonus.released : acc;
+            }, 0);
 
             return (
               <tr className="table-light">

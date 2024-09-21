@@ -473,7 +473,7 @@ function Content(widget, customer, compensationPlans, trees, isPreview, widgetVa
   }
 
   if (widget.type == WidgetTypes.Earnings) {
-    var overrides = widget.panes.map((p) => ({ title: p.title, display: p.text, show: p.imageUrl.toLowerCase() == 'true' }));
+    var overrides = widget.panes?.map((p) => ({ title: p.title, display: p.text, show: p.imageUrl.toLowerCase() == 'true' }));
 
     return <>
       <EarningsTable customerId={customer.id} periodId={widgetValues?.periodId ?? 0} overrides={overrides} />
