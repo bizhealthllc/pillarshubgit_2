@@ -42,7 +42,7 @@ const PaymentHistoryDetail = () => {
 
   // Grouping releases by customer.id and period.id
   const groupedReleases = releases.reduce((acc, release) => {
-    const key = `${release.customer.id}-${release.period.id}`;
+    const key = `${release.customer?.id}-${release.period?.id}`;
 
     if (!acc[key]) {
       acc[key] = { customer: release.customer, period: release.period, amount: 0, detail: [] };
@@ -78,18 +78,18 @@ const PaymentHistoryDetail = () => {
             </thead>
             <tbody>
               {groupedReleaseArray.map((release) => {
-                return <tr key={release.id}>
+                return <tr key={release?.id}>
                   <td className="text-center">
-                    <Avatar name={release.customer.fullName} url={release.customer.profileImage} size="sm" />
+                    <Avatar name={release.customer?.fullName} url={release.customer?.profileImage} size="sm" />
                   </td>
                   <td>
-                    <a className="text-reset" href={`/Customers/${release.customer.id}/commissions?periodId=${release.period.id}`}>{release.customer.fullName}</a>
-                    <div className="small text-muted">{release.customer.id}</div>
+                    <a className="text-reset" href={`/Customers/${release.customer?.id}/commissions?periodId=${release.period?.id}`}>{release.customer?.fullName}</a>
+                    <div className="small text-muted">{release.customer?.id}</div>
                   </td>
                   <td className="">
                   {release.detail.map((s) => {
                       return <div key={s.amount} className="mb-2">
-                        <span className="me-3">{s.id}</span>
+                        <span className="me-3">{s?.id}</span>
                       </div>
                     })}
                   {/* {(release.amount).toLocaleString("en-US", { style: 'currency', currency: 'USD' })} */}

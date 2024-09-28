@@ -5,7 +5,7 @@ const EmptyContent = ({ title, text, buttonText = '', href = '', onClick }) => {
   return <div className="empty">
     <p className="empty-title">{title ?? 'Content not found'}</p>
     <p className="empty-subtitle text-muted">
-      {text ?? 'The content request cannot be found.'}
+      {text ?? 'The content requested cannot be found.'}
     </p>
     {buttonText && <div className="empty-action">
       {href && <a href={href} className="btn btn-primary">

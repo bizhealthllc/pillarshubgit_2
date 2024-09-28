@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 function LocalDate({ dateString, hideTime }) {
   if (dateString == null || dateString === '') return <span>  </span>;
-  return <span>{ToLocalDate(dateString, hideTime)}</span>;
+  return <span title={dateString}>{ToLocalDate(dateString, hideTime)}</span>;
 }
 
 LocalDate.propTypes = {

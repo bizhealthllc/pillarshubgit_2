@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom"
 import { useQuery, gql } from "@apollo/client";
-import PageHeader from "../../../components/pageHeader";
+import PageHeader, { CardHeader } from "../../../components/pageHeader";
 import Modal from "../../../components/modal"
-import useWidgets from "../../../features/widgets/hooks/useWidgets";
+import useWidgets, { WidgetTypes } from "../../../features/widgets/hooks/useWidgets";
 import { useFetch } from "../../../hooks/useFetch";
 import { SendRequest } from "../../../hooks/usePost";
 import DataLoading from "../../../components/dataLoading";
@@ -22,8 +22,9 @@ var GET_TREES = gql`query {
 }`
 
 const CustomerDetailSettings = () => {
+  const initialRender = useRef(true);
   const params = useParams()
-  let initId = params.pageId; 
+  let initId = params.pageId;
   if (initId == 'customer') initId = "CSDB";
   if (initId == 'dashboard') initId = "PDB";
 
@@ -32,7 +33,7 @@ const CustomerDetailSettings = () => {
   const [activeIndex, setActiveIndex] = useState(null);
 
   const { data, loading, error } = useFetch(`/api/v1/dashboards/${initId}`, {}, { id: initId, children: [] });
-  const { widgets, loading: wLoading, error: wError } = useWidgets();
+  const { widgets, loading: wLoading, error: wError, CreateWidget, DeleteWidget } = useWidgets();
   const [dashboardId, setDashboardId] = useState();
   const [showDel, setShowDel] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -44,9 +45,19 @@ const CustomerDetailSettings = () => {
   useEffect(() => {
     if (data) {
       setDashboardId(data.id);
-      setItems(data.children)
+      setItems(data.children);
     }
-  }, [data, widgets]);
+  }, [data]);
+
+  useEffect(() => {
+    if (items && !initialRender.current) {
+      handleSave();
+    }
+
+    if (items && initialRender.current) {
+      initialRender.current = false;
+    }
+  }, [items]);
 
   if (error) return <DataError error={error} />;
   if (wError) return <DataError error={wError} />;
@@ -72,14 +83,16 @@ const CustomerDetailSettings = () => {
 
   const handleDelete = () => {
     handleDelhide();
-    setItems((prevData) => {
-      const source = findId(prevData, current.id);
-      if (source) {
-        source.arr.splice(source.index, 1);
-      }
+    DeleteWidget(current.widgetId, () => {
+      setItems((prevData) => {
+        const source = findId(prevData, current.id);
+        if (source) {
+          source.arr.splice(source.index, 1);
+        }
 
-      return [...prevData]; // Return the original data if source or target not found
-    });
+        return [...prevData]; // Return the original data if source or target not found
+      });
+    })
   }
 
   const handleAddhide = () => setShowEdit(false);
@@ -106,20 +119,39 @@ const CustomerDetailSettings = () => {
 
   const handleAdd = () => {
     setShowEdit(false);
-    setItems((items) => {
-      const newItems = [...items];
-      const newItem = { id: crypto.randomUUID(), widgetId: current?.widgetId, columns: (current?.id ? 12 : 4), children: [] }
+    if ((current?.widgetType ?? '') == '') {
+      setItems((items) => {
+        const newItems = [...items];
+        const newItem = { id: crypto.randomUUID(), widgetId: '', columns: (current?.id ? 12 : 4), children: [] }
 
-      if (current?.id) {
-        const activeItem = findItemAndParent(newItems, current.id);
-        const { parent: activeParent, index: activeIndex, } = activeItem;
-        activeParent[activeIndex].children.push(newItem);
-      } else {
-        newItems.push(newItem);
-      }
+        if (current?.id) {
+          const activeItem = findItemAndParent(newItems, current.id);
+          const { parent: activeParent, index: activeIndex, } = activeItem;
+          activeParent[activeIndex].children.push(newItem);
+        } else {
+          newItems.push(newItem);
+        }
 
-      return newItems;
-    });
+        return newItems;
+      });
+    } else {
+      CreateWidget(current.widgetType, (w) => {
+        setItems((items) => {
+          const newItems = [...items];
+          const newItem = { id: crypto.randomUUID(), widgetId: w?.id, columns: (current?.id ? 12 : 6), children: [] }
+
+          if (current?.id) {
+            const activeItem = findItemAndParent(newItems, current.id);
+            const { parent: activeParent, index: activeIndex, } = activeItem;
+            activeParent[activeIndex].children.push(newItem);
+          } else {
+            newItems.push(newItem);
+          }
+
+          return newItems;
+        });
+      })
+    }
   }
 
   /* Drag Handlers */
@@ -182,8 +214,18 @@ const CustomerDetailSettings = () => {
     return null;
   };
 
+  let pageName = capitalizeFirstLetter(dashboardId ?? 'A');
+  if (pageName == 'CSDB') pageName = "Customer Detail";
+  if (pageName == 'PDB') pageName = "Dashboard";
+
   return <>
-    <PageHeader title="Customer Detail Settings" breadcrumbs={[{ title: `Pages`, link: `/settings/pages` }, { title: "Edit Page" }]}>
+    <PageHeader title={`${pageName} Settings`} breadcrumbs={[{ title: `Pages`, link: `/settings/pages` }, { title: "Edit Page" }]}>
+      <CardHeader>
+        <button className="btn btn-default" onClick={handleAddShow}>
+          <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-layout-grid-add" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M4 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path><path d="M14 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path><path d="M4 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path><path d="M14 17h6m-3 -3v6"></path></svg>
+          Add Widget
+        </button>
+      </CardHeader>
       <div className="container-xl">
         {(!items || items.length == 0) && <>
           <EmptyContent />
@@ -194,7 +236,7 @@ const CustomerDetailSettings = () => {
               <SortableContext items={items.map((item) => item.title)} strategy={rectSwappingStrategy}>
                 <div className="row row-cards row-deck mb-3">
                   {items && items.map((item, itemIndex) => {
-                    return <SortGridItem key={item.id} id={item.id} col={item.columns} item={item} widgets={widgets} trees={treeData?.trees} onAdd={handleAddShow} onResize={handleResize} onDelete={handleDelShow} styles={activeIndex === itemIndex ? { opacity: 0 } : {}} />
+                    return <SortGridItem key={item.id} id={item.id} col={item.columns} item={item} pageId={dashboardId} widgets={widgets} trees={treeData?.trees} onAdd={handleAddShow} onResize={handleResize} onDelete={handleDelShow} styles={activeIndex === itemIndex ? { opacity: 0 } : {}} />
                   })}
                 </div>
               </SortableContext>
@@ -209,20 +251,6 @@ const CustomerDetailSettings = () => {
             </DndContext>
           </div>
         </>}
-
-        <div className="card-footer">
-          <div className="row">
-            <div className="col">
-              <button type="submit" className="btn btn-primary" onClick={handleSave}>Save</button>
-            </div>
-            <div className="col-auto">
-              <button className="btn btn-default" onClick={handleAddShow}>
-                <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-layout-grid-add" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M4 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path><path d="M14 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path><path d="M4 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"></path><path d="M14 17h6m-3 -3v6"></path></svg>
-                Add Widget
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
     </PageHeader>
 
@@ -236,11 +264,10 @@ const CustomerDetailSettings = () => {
           <div className="col-md-12">
             <div className="mb-3">
               <label className="form-label">Widget</label>
-              <select className="form-select" name="widgetId" value={current?.widgetId ?? ''} onChange={(e) => handleActiveEdit(e.target.name, e.target.value)}>
+              <select className="form-select" name="widgetType" value={current?.widgetType ?? ''} onChange={(e) => handleActiveEdit(e.target.name, e.target.value)}>
                 <option value="">Container</option>
-                <option disabled>──────────</option>
-                {widgets && widgets.map((w) => {
-                  return <option key={w.id} value={w.id}>{w.name}</option>
+                {WidgetTypes && Object.keys(WidgetTypes).map((key) => {
+                  return <option key={key} value={WidgetTypes[key]}>{key}</option>
                 })}
               </select>
             </div>
@@ -283,6 +310,10 @@ function findId(arr, targetId) {
   }
 
   return null;
+}
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
 export default CustomerDetailSettings;

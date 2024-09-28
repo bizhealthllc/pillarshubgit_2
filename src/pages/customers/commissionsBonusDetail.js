@@ -6,6 +6,7 @@ import DataLoading from "../../components/dataLoading";
 import Avatar from '../../components/avatar';
 import EmptyContent from '../../components/emptyContent';
 import LocalDate from '../../util/LocalDate';
+import DataError from '../../components/dataError';
 
 var GET_DATA = gql`query ($nodeIds: [String]!, $period: BigInt!, $bonusIds: [String]!) {
   customers(idList: $nodeIds) {
@@ -56,7 +57,7 @@ const CommissionsBonusDetail = () => {
   });
 
   if (loading) return <DataLoading />;
-  if (error) return `Error! ${error}`;
+  if (error) return <DataError error={error} showHeader={true} />
 
   let period = data.compensationPlans.find(plan => plan.periods.length > 0)?.periods[0];
   let bonuses = period?.bonuses ?? [];

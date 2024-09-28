@@ -197,8 +197,22 @@ const EditWidget = () => {
   }
 
   const isPreview = previewId == null || previewId == undefined;
+  var breadcrumbs = [{ title: `Widgets`, link: `/settings/widgets` }, { title: "Edit Widget" }];
+  if (params.pageId) {
+    let pageLink = params.pageId;
+    let pageName = capitalizeFirstLetter(params?.pageId ?? "A");
+    if (pageName == 'CSDB') pageName = "Customer Detail";
+    if (pageName == 'PDB') pageName = "Dashboard";
+    if (pageLink.startsWith('tree_')) {
+      var treeId = params.pageId.substring(5);
+      pageName = `${data.trees.find(t => t.id == treeId)?.name} Tree Settings`;
+      pageLink = `tree/${treeId}`;
+    }
 
-  return <PageHeader title="Edit Widget" breadcrumbs={[{ title: `Widgets`, link: `/settings/widgets` }, { title: "Edit Widget" }]}>
+    breadcrumbs = [{ title: `Pages`, link: `/settings/Pages` }, { title: `${pageName}`, link: `/settings/Pages/${pageLink}` }]
+  }
+
+  return <PageHeader title="Edit Widget" breadcrumbs={breadcrumbs}>
     <div className="container-xl">
       <div className="row">
         <div className="col-md-6 col-lg-8">
@@ -305,7 +319,7 @@ const EditWidget = () => {
             </div>
             <div className="card-header">
               <div className="w-100">
-                <AutoComplete name="customerId"  value={previewId} placeholder="Widget preview customer" onChange={handlePreviewChange} allowNull={true} showClear={true} />
+                <AutoComplete name="customerId" value={previewId} placeholder="Widget preview customer" onChange={handlePreviewChange} allowNull={true} showClear={true} />
               </div>
             </div>
             <div className="p-2">
@@ -319,5 +333,10 @@ const EditWidget = () => {
     </div>
   </PageHeader>
 }
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 
 export default EditWidget;

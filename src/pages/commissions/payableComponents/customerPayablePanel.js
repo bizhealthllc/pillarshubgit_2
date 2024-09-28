@@ -72,6 +72,7 @@ const CustomerPayablePanel = ({ date, customerId, setCurrentBatch }) => {
           acc[bonusTitle] = {
             ...current,
             amount: 0,
+            released: 0,
             children: []
           };
         }

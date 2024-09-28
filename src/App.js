@@ -152,9 +152,11 @@ function App() {
               <Route path="settings/users" element={<Users />} />
               <Route path="settings/theme" element={<Theme />} />
               <Route path="settings/navigation" element={<Navigation />} />
+              <Route path="settings/pages/:pageId/widgets/:widgetId" element={<EditWidget />} />
               <Route path="settings/pages" element={<Pages />} />
               <Route path="settings/pages/:pageId" element={<CustomerDetailSettings />} />
               <Route path="settings/pages/tree/:treeId" element={<TreeSettings />} />
+              <Route path="settings/widgets" element={<WidgetSettings />} />
               <Route path="settings/widgets" element={<WidgetSettings />} />
               <Route path="settings/widgets/:widgetId" element={<EditWidget />} />
               <Route path="settings/email/providers" element={<EmailSettings />} />

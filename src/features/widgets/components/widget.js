@@ -311,8 +311,8 @@ function Content(widget, customer, compensationPlans, trees, isPreview, widgetVa
     const cardContent = (pane, value, compact) => {
       if (compact) {
         return <>
-          <dd className="col-6">{pane.text}</dd>
-          <dd className="col-6 text-end">{value}</dd>
+          <dd className="col-3">{pane.text}</dd>
+          <dd className="col-9 text-end">{value}</dd>
         </>
       } else {
         return <>
@@ -328,7 +328,7 @@ function Content(widget, customer, compensationPlans, trees, isPreview, widgetVa
     }
 
     if (widget.panes) {
-      return <div className="card-body">
+      return <div className="card-body" style={{ whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
         {showCustomer && <>
           <h1 className="d-flex align-items-center">
             <span className="me-3">
@@ -363,6 +363,10 @@ function Content(widget, customer, compensationPlans, trees, isPreview, widgetVa
 
   if (widget.type == WidgetTypes.Banner) {
     return <>
+      {(widget?.panes?.length ?? 0) == 0 && <>
+        <EmptyContent />
+      </>}
+
       <div id={carouselId} className="carousel slide" data-bs-ride="carousel">
         <div className="carousel-inner content-bottom">
           {widget.panes && widget.panes.map((p, index) => {

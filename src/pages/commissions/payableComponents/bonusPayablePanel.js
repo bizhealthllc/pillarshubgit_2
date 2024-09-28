@@ -45,6 +45,7 @@ const BonusPayablePanel = ({ date, currentBonus, setCurrentBatch, handleViewCust
           acc[customerId] = {
             ...current,
             amount: 0,
+            released: 0
           };
         }
 
@@ -143,7 +144,7 @@ const BonusPayablePanel = ({ date, currentBonus, setCurrentBatch, handleViewCust
                 </td>
                 <td>
                   <button onClick={() => handleViewCustomer(payable.customer.id)} className="btn-link text-reset p-0">
-                    {payable.customer?.fullName} {index}
+                    {payable.customer?.fullName}
                   </button>
                 </td>
                 <td className="d-none d-sm-table-cell text-start">
@@ -164,7 +165,7 @@ const BonusPayablePanel = ({ date, currentBonus, setCurrentBatch, handleViewCust
                   {payable.released.toLocaleString("en-US", { style: 'currency', currency: 'USD' })}
                 </td>
                 <td className="border-start text-end strong">
-                  {(payable.amount - payable.released).toLocaleString("en-US", { style: 'currency', currency: 'USD' })}
+                  {(payable.amount - payable.released).toLocaleString("en-US", { style: 'currency', currency: 'USD' })} 
                 </td>
               </tr>
             }

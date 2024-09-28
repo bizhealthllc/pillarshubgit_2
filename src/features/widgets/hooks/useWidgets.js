@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useFetch } from "../../../hooks/useFetch";
+import { SendRequest } from "../../../hooks/usePost";
 
 export default function useWidgets() {
   const [widgets, setWidgets] = useState();
@@ -13,8 +14,33 @@ export default function useWidgets() {
     }
   }, [data])
 
+  const handleCreateWidget = (widgetType, onSucces) => {
+    var widget = { type: widgetType };
+    SendRequest("POST", `/api/v1/Widgets`, widget, (r) => {
+      setWidgets(w => [...w, r]);
+      onSucces(r);
+    }, (error) => {
+      alert(error);
+    })
+  }
 
-  return { widgets: widgets, loading: loading, error: error, refetch };
+  const handleDeleteWidget = (widgetId, onSuccess) => {
+    if (!widgetId) {
+      onSuccess(widgetId);
+    } else {
+      SendRequest("DELETE", `/api/v1/Widgets/${widgetId}`, {}, () => {
+        onSuccess(widgetId);
+      }, (error, code) => {
+        if (code === 404) {
+          onSuccess(widgetId); //If the widget is not found. Act as if it was deleted.
+        } else {
+          alert(error + code);
+        }
+      })
+    }
+  }
+
+  return { widgets: widgets, loading: loading, error: error, refetch, CreateWidget: handleCreateWidget, DeleteWidget: handleDeleteWidget };
 }
 
 const WidgetTypes = {
