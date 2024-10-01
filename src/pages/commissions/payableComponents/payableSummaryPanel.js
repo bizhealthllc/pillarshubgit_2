@@ -16,6 +16,10 @@ var GET_SUMMARY = gql`query ($date: Date!) {
     customerPaidCount
     totalVolume
     realeased
+    period {
+      id
+      end
+    }
   }
 }`;
 
@@ -29,7 +33,28 @@ const PayableSummaryPanel = ({ date, setCurrentBatch, handleViewBonus }) => {
   useEffect(() => {
     if (data) {
       const customSortOrder = ['RELEASE', 'FORFEIT', 'HOLD'];
-      const sortedData = data.unreleasedSummary.map((s) => (
+
+
+      const groupedData = data.unreleasedSummary.reduce((acc, current) => {
+        const bonusTitle = `${current.bonusTitle}_${current.earningsClass}`;
+
+        if (!acc[bonusTitle]) {
+          acc[bonusTitle] = {
+            ...current,
+            paidAmount: 0,
+            released: 0,
+            children: []
+          };
+        }
+
+        acc[bonusTitle].paidAmount += current.paidAmount;
+        acc[bonusTitle].released += current.released;
+        acc[bonusTitle].children.push(current);
+
+        return acc;
+      }, {});
+
+      const sortedData = Object.values(groupedData).map((s) => (
         {
           ...s,
           id: s.bonusTitle + '_' + s.earningsClass,
@@ -75,25 +100,19 @@ const PayableSummaryPanel = ({ date, setCurrentBatch, handleViewBonus }) => {
       <div className="table-responsive">
         <table className="table card-table table-vcenter text-nowrap">
           <thead>
-            <tr>
-              <th colSpan={2}>Status / Bonus</th>
-              <th className="d-none d-sm-table-cell text-start w-4">Customers</th>
-              <th className="d-none d-sm-table-cell text-end w-4">Total Amount</th>
-              <th className="d-none d-sm-table-cell text-end w-4">Released</th>
-              <th className="border-start text-center w-3">Amount Due</th>
-            </tr>
+
           </thead>
           <tbody>
             {payables.map((payable, index) => {
               let eClass = (index === 0 || payable.earningsClass !== payables[index - 1].earningsClass) ? payable.earningsClass : null;
 
               return <React.Fragment key={payable.id}>
-                {eClass && <tr className="bg-light">
-                  <td className="subheader" colSpan={2}>{eClass}</td>
-                  <td className="d-none d-sm-table-cell"></td>
-                  <td className="d-none d-sm-table-cell"></td>
-                  <td className="d-none d-sm-table-cell"></td>
-                  <td></td>
+                {eClass && <tr className="table-light">
+                  <th className="subheader" colSpan={2}>Bonuses to {eClass}</th>
+                  <th className="subheader d-none d-sm-table-cell text-start w-4">Customers</th>
+                  <th className="subheader d-none d-sm-table-cell text-end w-4">Total Amount</th>
+                  <th className="subheader d-none d-sm-table-cell text-end w-4">Released</th>
+                  <th className="subheader border-start text-center w-3">Amount Due</th>
                 </tr>}
                 <tr>
                   <td className="w-1">

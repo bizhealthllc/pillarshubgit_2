@@ -80,6 +80,7 @@ const PaymentHistory = () => {
               {!customerId && !currentBonus && currentDate && <>
                 <PayableSummaryPanel date={currentDate} setCurrentBatch={setCurrentBatch} handleViewBonus={handleViewBonus} />
               </>}
+
             </div>
           </div>
 

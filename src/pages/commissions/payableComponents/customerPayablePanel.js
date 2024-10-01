@@ -180,8 +180,7 @@ const CustomerPayablePanel = ({ date, customerId, setCurrentBatch }) => {
             <tr>
               <th className="w-1"></th>
               <th className="w-10">Bonus</th>
-              <th>Bonus Date</th>
-              <th className="d-none d-sm-table-cell">Level</th>
+              <th className="d-none d-sm-table-cell w-4">Level</th>
               <th className="d-none d-sm-table-cell text-end w-4">Bonus Amount</th>
               <th className="d-none d-sm-table-cell text-end w-4">Released</th>
               <th className="border-start text-center w-3">Amount Due</th>
@@ -194,10 +193,9 @@ const CustomerPayablePanel = ({ date, customerId, setCurrentBatch }) => {
                   <td className="w-1">
                     <CheckBox name={payable.id} value={payable.selected} disabled={customer.status.earningsClass.toLowerCase() === 'hold'} onChange={updateSelected} />
                   </td>
-                  <td className="subheader" colSpan={2}>
+                  <td className="fw-bold" colSpan={2}>
                     {payable.bonusTitle}
                   </td>
-                  <td className="d-none d-sm-table-cell text-end"></td>
                   <td className="d-none d-sm-table-cell text-end">
                     {payable.amount.toLocaleString("en-US", { style: 'currency', currency: 'USD' })}
                   </td>
@@ -211,13 +209,7 @@ const CustomerPayablePanel = ({ date, customerId, setCurrentBatch }) => {
                 {payable.children && payable.children.map((child) => {
                   return <tr key={`${payable.id}_${child.period.id}`}>
                     <td colSpan={2}>
-                      {child.bonusTitle}
-                    </td>
-                    <td>
-                      <LocalDate dateString={child.commissionDate} hideTime={true} />
-                      {/* <div className="small text-muted">
-                        <span>Earned: </span> <LocalDate dateString={child.period.end} hideTime={true} />
-                      </div> */}
+                    <LocalDate dateString={child.commissionDate} hideTime={true} />
                     </td>
                     <td className="d-none d-sm-table-cell text-start">
                       {child.level}
