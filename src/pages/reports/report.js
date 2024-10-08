@@ -12,7 +12,7 @@ import FilterInput from "./filterInput";
 
 const Report = () => {
   let params = useParams()
-  const [values, setValues] = useState({ offset: 0, count: 10 });
+  const [values, setValues] = useState({ offset: 0, count: 15 });
   const [data, setData] = useState();
   const [downloadLink, setDownloadLink] = useState();
   const [dataLoading, setDataLoading] = useState(false);
@@ -67,6 +67,7 @@ const Report = () => {
   }
 
   const handleChange = (name, value) => {
+
     setValues((v) => ({ ...v, [name]: value }));
   }
 
@@ -126,27 +127,33 @@ const Report = () => {
                 </thead>
                 <tbody>
                   {data.dataRows && data.dataRows.map((row) => {
-                    return (
-                      <tr key={row.rowNumber}>
-                        {data.dataColumns.map((column, index) => {
-                          var colValue = row.values[column.name];
-                          return (
-                            <td key={`${row.rowNumber}_${index}`} style={{ whiteSpace: 'nowrap' }}>
-                              {column.dataType == "String" && <span>{colValue}</span>}
-                              {column.dataType == "Number" && <span>{colValue}</span>}
-                              {column.dataType == "DateTime" && <LocalDate dateString={colValue} hideTime={false} />}
-                              {column.dataType == "Date" && <LocalDate dateString={colValue} hideTime={true} />}
-                              {column.dataType == "Boolean" && <span>{colValue == "1" ? 'True' : 'False'}</span>}
-                              {column.dataType == "Currency" && <span>{colValue}</span>}
-                              {column.dataType == "Level" &&
-                                <span style={{ marginLeft: `${(Math.min(colValue, 10) - 1) * 15}px` }}>
-                                  {colValue}
-                                </span>}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    );
+                    return <tr key={row.rowNumber}>
+                      {data.dataColumns.map((column, index) => {
+                        var colValue = row.values[column.name];
+                        return <td key={`${row.rowNumber}_${index}`} style={{ whiteSpace: 'nowrap' }}>
+                          {column.dataType == "String" && <span>{colValue}</span>}
+                          {column.dataType == "Number" && <span>{colValue}</span>}
+                          {column.dataType == "DateTime" && <LocalDate dateString={colValue} hideTime={false} />}
+                          {column.dataType == "Date" && <LocalDate dateString={colValue} hideTime={true} />}
+                          {column.dataType == "Boolean" && <span>{colValue == "1" ? 'True' : 'False'}</span>}
+                          {column.dataType == "Currency" && <span>{colValue}</span>}
+                          {column.dataType == "Percent" && <div className="row align-items-center">
+                            <div className="col-12 col-lg-auto" style={{ width: "3rem" }}>{colValue}%</div>
+                            <div className="col">
+                              <div className="progress" style={{ width: "3rem" }}>
+                                <div className="progress-bar" style={{ width: `${colValue}%` }} role="progressbar" aria-valuenow={colValue} aria-valuemin="0" aria-valuemax="100" aria-label={`${colValue}% Complete`}>
+                                  <span className="visually-hidden">38% Complete</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>}
+                          {column.dataType == "Level" &&
+                            <span style={{ marginLeft: `${(Math.min(colValue, 10) - 1) * 15}px` }}>
+                              {colValue}
+                            </span>}
+                        </td>
+                      })}
+                    </tr>
                   })}
                 </tbody>
               </table>

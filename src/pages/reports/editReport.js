@@ -335,6 +335,7 @@ const EditReport = () => {
             <option>Boolean</option>
             <option>Currency</option>
             <option>Level</option>
+            <option>Percent</option>
           </SelectInput>
         </div>
       </div>

@@ -58,7 +58,7 @@ const PaymentHistory = () => {
                   </div>
                   <div className="col-sm">
                     <div className="w-100">
-                      <AutoComplete onChange={handleSearch} value={customerId} allowNull={true} showClear={true} />
+                      <AutoComplete placeholder="Search Payables" value={customerId} allowNull={true} showClear={true} onChange={handleSearch} />
                     </div>
                   </div>
                   <div className="col-sm-auto">

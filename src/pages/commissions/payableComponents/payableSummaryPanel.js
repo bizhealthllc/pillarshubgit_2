@@ -43,10 +43,12 @@ const PayableSummaryPanel = ({ date, setCurrentBatch, handleViewBonus }) => {
             ...current,
             paidAmount: 0,
             released: 0,
+            customerPaidCount: 0,
             children: []
           };
         }
 
+        acc[bonusTitle].customerPaidCount += current.customerPaidCount
         acc[bonusTitle].paidAmount += current.paidAmount;
         acc[bonusTitle].released += current.released;
         acc[bonusTitle].children.push(current);

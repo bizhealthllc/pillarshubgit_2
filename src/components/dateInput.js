@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-const DateInput = ({ className = 'form-control', name, value, onChange, disabled, placeholder, errorText, errored }) => {
+const DateInput = ({ className = 'form-control', name, value, onChange, disabled, placeholder, errorText, errored, allowEmpty = true }) => {
+
+  useEffect(() => {
+    if (!allowEmpty && !value) {
+      console.log(value);
+      const formattedDate = new Date().toISOString();
+      onChange(name, formattedDate);
+    }
+  }, [value])
 
   const handleChange = (date) => {
     const formattedDate = date.toISOString();
@@ -13,7 +21,6 @@ const DateInput = ({ className = 'form-control', name, value, onChange, disabled
   const inputClass = (errorText || errored) ? `${className} is-invalid` : className;
 
   return <>
-    {/* <input type="date" className={inputClass} placeholder={placeholder ?? ''} name={name} value={value} disabled={disabled} onChange={handleChange} autoComplete='off' /> */}
     <div className="input-icon">
       <DatePicker
         selected={value ? new Date(value) : null}
@@ -21,6 +28,7 @@ const DateInput = ({ className = 'form-control', name, value, onChange, disabled
         className={inputClass}
         placeholderText={placeholder ?? ''}
         name={name}
+        autocomplete="off"
         timezone
         disabled={disabled}
         dateFormat="yyyy-MM-dd"
@@ -46,5 +54,6 @@ DateInput.propTypes = {
   disabled: PropTypes.bool,
   placeholder: PropTypes.string,
   errorText: PropTypes.string,
-  errored: PropTypes.bool
+  errored: PropTypes.bool,
+  allowEmpty: PropTypes.bool
 }
