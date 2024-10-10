@@ -9,6 +9,7 @@ import GraphQLQueryEditor from "../../components/graphQLQueryEditor";
 import TextInput from "../../components/textInput";
 import SelectInput from "../../components/selectInput";
 import TextArea from "../../components/textArea";
+import Switch from "../../components/switch";
 import Modal from "../../components/modal";
 import FilterInput from "./filterInput";
 
@@ -233,6 +234,7 @@ const EditReport = () => {
                         <th>Name</th>
                         <th>Title</th>
                         <th>Type</th>
+                        <th>Skip row if empty</th>
                         <th className="w-1"></th>
                       </tr>
                     </thead>
@@ -242,6 +244,7 @@ const EditReport = () => {
                           <td>{column.name}</td>
                           <td>{column.title}</td>
                           <td>{column.dataType}</td>
+                          <td>{column.hideRowIfEmpty ? 'Yes' : "No"}</td>
                           <td>
                             <button className="btn btn-ghost-secondary btn-icon" onClick={() => handleColumnShow(column.name)} >
                               <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-edit" width="40" height="40" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path><path d="M16 5l3 3"></path></svg>
@@ -325,18 +328,25 @@ const EditReport = () => {
           <label className="form-label">Title</label>
           <TextInput name="title" value={activeItem?.title} onChange={handleActiveChange} />
         </div>
-        <div className="mb-3">
-          <label className="form-label">Type</label>
-          <SelectInput name="dataType" value={activeItem?.dataType} onChange={handleActiveChange} >
-            <option>String</option>
-            <option>Number</option>
-            <option>DateTime</option>
-            <option>Date</option>
-            <option>Boolean</option>
-            <option>Currency</option>
-            <option>Level</option>
-            <option>Percent</option>
-          </SelectInput>
+        <div className="row">
+          <div className="col-12">
+            <div className="mb-3">
+              <label className="form-label">Type</label>
+              <SelectInput name="dataType" value={activeItem?.dataType} onChange={handleActiveChange} >
+                <option>String</option>
+                <option>Number</option>
+                <option>DateTime</option>
+                <option>Date</option>
+                <option>Boolean</option>
+                <option>Currency</option>
+                <option>Level</option>
+                <option>Percent</option>
+              </SelectInput>
+            </div>
+          </div>
+          <div className="col-12">
+            <Switch title="Skip row if empty" name="hideRowIfEmpty" value={activeItem?.hideRowIfEmpty} onChange={handleActiveChange} />
+          </div>
         </div>
       </div>
       <div className="modal-footer">

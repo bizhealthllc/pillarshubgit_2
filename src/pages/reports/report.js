@@ -10,12 +10,16 @@ import DataError from "../../components/dataError";
 import LocalDate from "../../util/LocalDate";
 import FilterInput from "./filterInput";
 
+const notLoading = 0;
+const loadingPage = 1;
+const loadingMore = 2;
+
 const Report = () => {
   let params = useParams()
   const [values, setValues] = useState({ offset: 0, count: 15 });
   const [data, setData] = useState();
   const [downloadLink, setDownloadLink] = useState();
-  const [dataLoading, setDataLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(notLoading);
   const [dataError, setDataError] = useState();
   const { loading: metaLoading, error: metaError, data: meta } = useFetch(`/api/v1/Reports/${params.reportId}`);
 
@@ -33,7 +37,7 @@ const Report = () => {
   useEffect(() => {
     if (meta) {
       if (meta.filters.every(item => Object.prototype.hasOwnProperty.call(values, item.id) && values[item.id])) {
-        setDataLoading(true);
+        setDataLoading((values?.filterUpdate ?? true) ? loadingPage : loadingMore);
         setDataError();
 
         const objString = values ? '?' + Object.entries(values).map(([key, value]) => {
@@ -49,10 +53,18 @@ const Report = () => {
         setDownloadLink(`${BaseUrl}/api/v1/reports/${params.reportId}/csv${objString}&authorization=${GetToken().token}`);
 
         Get(`/api/v1/Reports/${params.reportId}/json${objString}`, (r) => {
-          setDataLoading(false);
-          setData(r)
+          setDataLoading(notLoading);
+          if (r.totalRows == -1 && !values.filterUpdate) {
+            setData(c => ({
+              ...r,
+              dataRows: [...(c?.dataRows || []), ...r.dataRows]
+            }));
+          } else {
+            setData(r);
+          }
+
         }, (error) => {
-          setDataLoading(false);
+          setDataLoading(notLoading);
           setDataError(error);
         })
       }
@@ -63,15 +75,14 @@ const Report = () => {
   if (metaLoading) return <DataLoading />
 
   const handlePageChange = (page) => {
-    setValues(v => ({ ...v, offset: page.offset }));
+    setValues(v => ({ ...v, offset: page.offset, filterUpdate: false }));
   }
 
   const handleChange = (name, value) => {
-
-    setValues((v) => ({ ...v, [name]: value }));
+    setValues((v) => ({ ...v, [name]: value, filterUpdate: true }));
   }
 
-  //var hasScope = (GetScope() != undefined);
+  var showPaging = (data?.totalRows ?? 1) > 0;
 
   return <PageHeader title={meta.name} breadcrumbs={[{ title: 'Reports', link: '/reports' }, { title: meta.categoryName, link: `/reports#${meta.categoryId}` }]}>
     <CardHeader>
@@ -104,9 +115,11 @@ const Report = () => {
               </div>
             </div>
           </>}
-          {dataLoading && <DataLoading title="Generating Report Data" />}
+
+          {dataLoading == loadingPage && <DataLoading title="Generating Report Data" />}
           {dataError && <DataError error={dataError} />}
-          {!dataLoading && !dataError && (!data || data.totalRows == 0) && <>
+
+          {!dataLoading && !dataError && (!data || data.dataRows.length == 0) && <>
             <div className="empty">
               <p className="empty-title">No Data Found</p>
               <p className="empty-subtitle text-muted">
@@ -115,7 +128,7 @@ const Report = () => {
             </div>
           </>}
 
-          {!dataLoading && data && data.totalRows > 0 && <>
+          {(dataLoading != loadingPage) && data && (data?.totalRows > 0 || data?.totalRows == -1) && <>
             <div className="table-responsive">
               <table className="table card-table table-vcenter text-nowrap datatable">
                 <thead>
@@ -159,7 +172,9 @@ const Report = () => {
               </table>
             </div>
             <div className="card-footer d-flex align-items-center">
-              <Pagination variables={values} refetch={handlePageChange} total={data.totalRows} />
+              {dataLoading == notLoading && !showPaging && data.moreRows && <button className="btn btn-default w-100" onClick={() => handlePageChange({ offset: values.offset + values.count })} >Load More</button>}
+              {dataLoading == loadingMore && !showPaging && data.moreRows && <button className="btn btn-default w-100" disabled> <span className="spinner-border spinner-border-sm me-2" role="status"></span> Loading</button>}
+              {showPaging && <Pagination variables={values} refetch={handlePageChange} total={data.totalRows} />}
             </div>
           </>}
         </div>

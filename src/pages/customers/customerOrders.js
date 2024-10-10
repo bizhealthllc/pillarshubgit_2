@@ -6,6 +6,7 @@ import PageHeader from "../../components/pageHeader";
 import DataLoading from "../../components/dataLoading";
 import Pagination from "../../components/pagination";
 import LocalDate from "../../util/LocalDate";
+import DataError from "../../components/dataError";
 
 var GET_DATA = gql`query ($offset: Int!, $first: Int!, $nodeIds: [String]!) {
   customers(idList: $nodeIds) {
@@ -43,7 +44,7 @@ const CustomerOrders = () => {
   });
 
   if (loading) return <DataLoading />;
-  if (error) return `Error! ${error}`;
+  if (error) return <DataError error={error} showHeader={false} />
 
   let orders = data.customers[0].orders;
 
