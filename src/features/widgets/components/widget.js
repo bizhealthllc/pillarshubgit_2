@@ -19,6 +19,7 @@ import HtmlWidget from "./htmlWidget";
 import LocalDate from "../../../util/LocalDate";
 import EarningsTable from "../../../components/earningsTable";
 import PeriodPicker from "../../../components/periodPicker";
+import RecruiterWidget from "./recruiterWidget";
 
 var GET_CUSTOMER = gql`query ($nodeIds: [String]!, $periodDate: Date!) {
   customers(idList: $nodeIds) {
@@ -471,6 +472,20 @@ function Content(widget, customer, compensationPlans, trees, isPreview, widgetVa
     </div>
   }
 
+  if (widget.type == WidgetTypes.Recruiter) {
+
+    var columTitle = widget?.settings?.['columnTitle'] ?? "";
+    var maxRows = widget?.settings?.['maxRows'] ?? 10;
+    var timePeriod = widget?.settings?.['timePeriod'] ?? "";
+    var recruiterTypes = widget?.settings?.['recruiterTypes'] ?? [];
+    var enrolledTypes = widget?.settings?.['enrolledTypes'] ?? [];
+    var rCompact = (widget?.settings?.['compact'] ?? false);
+    var showPercent = (widget?.settings?.['showPercent'] ?? false);
+    var treeId = (widget?.settings?.['treeId'] ?? trees[0].id);
+
+    return <RecruiterWidget customerId={customer.id} treeId={treeId} columnTitle={columTitle} maxRows={maxRows} timePeriod={timePeriod} recruiterTypes={recruiterTypes} enrolledTypes={enrolledTypes} compact={rCompact} showPercent={showPercent} isPreview={isPreview} />
+  }
+
   if (widget.type == WidgetTypes.Html) {
     const html = widget.panes ? widget.panes[0]?.text : '';
     return <HtmlWidget html={html} customer={customer} widget={widget} />
@@ -485,7 +500,9 @@ function Content(widget, customer, compensationPlans, trees, isPreview, widgetVa
   }
 
   return <div id={`wdg_${widget.id}`} className={`card`}>
-    {JSON.stringify(widget)}
+    <div className="card-body">
+      {JSON.stringify(widget)}
+    </div>
   </div>
 }
 

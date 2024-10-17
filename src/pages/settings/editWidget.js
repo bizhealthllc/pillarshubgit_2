@@ -121,6 +121,10 @@ var GET_DATA = gql`query {
     name
     id
   }
+  customerTypes {
+    id
+    name
+  }
 }`
 
 const EditWidget = () => {
@@ -244,16 +248,16 @@ const EditWidget = () => {
                           })}
                         </select>
                       </div>
-                      <div className="col-md-4 col-lg-4 mb-3">
+                      {/* <div className="col-md-4 col-lg-4 mb-3">
                         <label className="form-label">Name</label>
                         <TextInput name="name" value={item?.name ?? ''} onChange={handleChange} placeholder="Name of the Wedget" />
                       </div>
                       <div className="col-md-4 col-lg-6 mb-3">
                         <label className="form-label">Description</label>
                         <TextInput name="description" value={item?.description ?? ''} rows={1} onChange={handleChange} placeholder="Short Description of what this widget is about" />
-                      </div>
+                      </div> */}
 
-                      <div className="col-4 mb-3">
+                      <div className="col-8 mb-3">
                         <label className="form-label">Header Title</label>
                         <TextInput name="title" value={item?.title ?? ''} onChange={handleChange} />
                       </div>
@@ -274,21 +278,21 @@ const EditWidget = () => {
                         <ColorInput name="headerTextColor" value={item?.headerTextColor} defaultValue="#1d273b" onChange={handleChange} />
                       </div>
 
-                      <div className="col-4 mb-3">
+                      <div className="col-3 mb-3">
                         <label className="form-label">Card Background Color</label>
                         <ColorInput name="backgroundColor" value={item?.backgroundColor} defaultValue="#ffffff" onChange={handleChange} />
                       </div>
-                      <div className="col-4 mb-3">
+                      <div className="col-3 mb-3">
                         <label className="form-label">Card Text Color</label>
                         <ColorInput name="textColor" value={item?.textColor} defaultValue="#1d273b" onChange={handleChange} />
                       </div>
-                      <div className="col-4 mb-3">
+                      <div className="col-3 mb-3">
                         <label className="form-label">Card Border Color</label>
                         <ColorInput name="borderColor" value={item?.borderColor} defaultValue="#e6e7e9" onChange={handleChange} />
                       </div>
                     </div>
 
-                    <WidgetContent widget={item} updateWidget={setItem} trees={data.trees} definitions={data.compensationPlans} />
+                    <WidgetContent widget={item} updateWidget={setItem} trees={data.trees} definitions={data.compensationPlans} customerTypes={data.customerTypes} />
 
                   </div>
                   <div className="tab-pane" id="tabs-requirements-7" role="tabpanel">

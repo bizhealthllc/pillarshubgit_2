@@ -10,14 +10,15 @@ import BannerContent from "./bannerContent";
 import SocialLinksContent from "./socialLinksContent";
 import HtmlContent from "./htmlContent";
 import EarningsContent from "./earningsContent";
+import RecruiterContent from "./recruiterContent";
 
-const WidgetContent = ({ widget, updateWidget, trees, definitions }) => {
-  
+const WidgetContent = ({ widget, updateWidget, trees, definitions, customerTypes }) => {
+
   switch (widget?.type) {
     case WidgetTypes.Profile:
       return <ProfileContent widget={widget} updateWidget={updateWidget} />;
     case WidgetTypes.Rank:
-      return <RankContent widget={widget} updateWidget={updateWidget} definitions={definitions}/>;
+      return <RankContent widget={widget} updateWidget={updateWidget} definitions={definitions} />;
     case WidgetTypes.Upline:
       return <UplineContent widget={widget} updateWidget={updateWidget} trees={trees} />;
     case WidgetTypes.Calendar:
@@ -32,6 +33,8 @@ const WidgetContent = ({ widget, updateWidget, trees, definitions }) => {
       return <HtmlContent widget={widget} updateWidget={updateWidget} />
     case WidgetTypes.Earnings:
       return <EarningsContent widget={widget} updateWidget={updateWidget} />
+    case WidgetTypes.Recruiter:
+      return <RecruiterContent widget={widget} updateWidget={updateWidget} trees={trees} customerTypes={customerTypes} />;
   }
 
   return <></>
@@ -43,5 +46,6 @@ WidgetContent.propTypes = {
   widget: PropTypes.any.isRequired,
   updateWidget: PropTypes.func.isRequired,
   trees: PropTypes.any.isRequired,
-  definitions: PropTypes.any.isRequired
+  definitions: PropTypes.any.isRequired,
+  customerTypes: PropTypes.any.isRequired
 }
