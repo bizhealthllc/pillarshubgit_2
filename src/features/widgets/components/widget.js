@@ -473,7 +473,6 @@ function Content(widget, customer, compensationPlans, trees, isPreview, widgetVa
   }
 
   if (widget.type == WidgetTypes.Recruiter) {
-
     var columTitle = widget?.settings?.['columnTitle'] ?? "";
     var maxRows = widget?.settings?.['maxRows'] ?? 10;
     var timePeriod = widget?.settings?.['timePeriod'] ?? "";
@@ -481,7 +480,7 @@ function Content(widget, customer, compensationPlans, trees, isPreview, widgetVa
     var enrolledTypes = widget?.settings?.['enrolledTypes'] ?? [];
     var rCompact = (widget?.settings?.['compact'] ?? false);
     var showPercent = (widget?.settings?.['showPercent'] ?? false);
-    var treeId = (widget?.settings?.['treeId'] ?? trees[0].id);
+    var treeId = (widget?.settings?.['treeId'] ?? trees?.[0]?.id ?? 0);
 
     return <RecruiterWidget customerId={customer.id} treeId={treeId} columnTitle={columTitle} maxRows={maxRows} timePeriod={timePeriod} recruiterTypes={recruiterTypes} enrolledTypes={enrolledTypes} compact={rCompact} showPercent={showPercent} isPreview={isPreview} />
   }
