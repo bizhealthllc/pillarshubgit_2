@@ -38,7 +38,7 @@ function RecruiterWidget({ customerId, treeId, columnTitle, maxRows, timePeriod,
       setData([...previewData.slice(0, maxRows)])
     } else {
       setLoading(true);
-      refetch({ customerId: customerId, treeId: treeId, $enrolledTypes: enrolledTypes })
+      refetch({ customerId: customerId, treeId: treeId, enrolledTypes: enrolledTypes.map(Number) })
         .then((result) => {
           setLoading(false);
           setData([...convertToData(result, recruiterTypes).slice(0, maxRows)])
