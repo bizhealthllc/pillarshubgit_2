@@ -110,6 +110,19 @@ var GET_CUSTOMER = gql`query ($nodeIds: [String]!, $periodDate: Date!) {
           }
         }
       }
+      bonuses(nodeIds: $nodeIds) {
+        bonusTitle
+        description
+        amount
+        bonusId
+        nodeId
+        level
+        rank
+        released
+        percent
+        commissionDate
+        volume
+      }
     }
   }
   customerStatuses {

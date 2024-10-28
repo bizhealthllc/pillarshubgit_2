@@ -9,7 +9,13 @@ import Avatar from '../../../components/avatar';
 import StatusPill from '../../../pages/customers/statusPill';
 import Calendar from '../../../components/calendar';
 import RankAdvance from '../../../components/rankAdvance';
+import Donut from '../../../components/donut';
 import PeriodDatePicker from "../../../components/periodDatePicker";
+import Funnelchart from "../../../components/funnelChart";
+import Progressbar from "../../../components/progressBar";
+import StackedbarChart from "../../../components/stackedBar";
+import Barchart from "../../../components/barChart";
+import MultiStackChart from "../../../components/multiStackChart";
 
 import "./widget.css";
 import EmptyContent from "../../../components/emptyContent";
@@ -20,6 +26,7 @@ import LocalDate from "../../../util/LocalDate";
 import EarningsTable from "../../../components/earningsTable";
 import PeriodPicker from "../../../components/periodPicker";
 import RecruiterWidget from "./recruiterWidget";
+import ListView from "../../../components/listView";
 
 var GET_CUSTOMER = gql`query ($nodeIds: [String]!, $periodDate: Date!) {
   customers(idList: $nodeIds) {
@@ -68,6 +75,17 @@ var GET_CUSTOMER = gql`query ($nodeIds: [String]!, $periodDate: Date!) {
   }
 }`;
 
+var GET_VALUES = gql`query {
+  compensationPlans {
+    id
+    definitions {
+      name
+      valueId
+      comment
+    }
+  }
+}`
+
 const generateUUID = () => {
   try {
     return crypto.randomUUID().replace(/-/g, '_');
@@ -81,7 +99,7 @@ const Widget = ({ widget, customer, compensationPlans, trees, isPreview = false,
   const [loading, setLoading] = useState(false);
   const [sCustomer, setSCustomer] = useState(customer);
   const [widgetValues, setWidgetValues] = useState(date);
-
+  const [availableValues, setAvailableValues] = useState(customer);
   const [widgetId] = useState(() => 'wd_' + generateUUID());
 
   if (!supressQuery) {
@@ -105,6 +123,26 @@ const Widget = ({ widget, customer, compensationPlans, trees, isPreview = false,
       }
     }, [wDate]);
   }
+  
+  if (!supressQuery) {
+    const { refetch } = useQuery(GET_VALUES, {
+      skip: false, // Initially skip the query
+    });
+
+    useEffect(() => {
+        setLoading(true);
+        refetch()
+          .then((result) => {
+            setLoading(false);
+            setAvailableValues(result.data?.compensationPlans?.[0].definitions);
+          })
+          .catch((error) => {
+            setLoading(false);
+            console.error('Refetch error:', error);
+          });
+    }, [wDate]);
+  }
+  
 
   useEffect(() => {
     if (widget && widget.type == WidgetTypes.Earnings) {
@@ -150,6 +188,7 @@ const Widget = ({ widget, customer, compensationPlans, trees, isPreview = false,
   return <div style={{ display: "contents" }} className={widgetId}><div className={`card h-100 ${isPreview ? '' : 'mb-3'}`} style={inlineStyle}>
     {widget.title && <div className="card-header" style={{ backgroundColor: (widget?.headerColor ?? '#ffffff') }}>
       <h3 className={`card-title ${msStyle} ${meStyle}`}>{widget.title}</h3>
+     
       {widget.showDatePicker && widget.type != WidgetTypes.Earnings && <>
         <div className="card-actions">
           <PeriodDatePicker name="date" value={wDate} onChange={handleDateChange} />
@@ -163,11 +202,11 @@ const Widget = ({ widget, customer, compensationPlans, trees, isPreview = false,
 
     </div>}
     <style dangerouslySetInnerHTML={styleTag} />
-    {Content(widget, sCustomer, compensationPlans, trees, isPreview, widgetValues, loading)}
+    {Content(widget, availableValues, sCustomer, compensationPlans, trees, isPreview, widgetValues, loading, handleDateChange)}
   </div></div>
 }
 
-function Content(widget, customer, compensationPlans, trees, isPreview, widgetValues, loading) {
+function Content(widget, availableValues, customer, compensationPlans, trees, isPreview, widgetValues, loading, handleDateChange) {
   const [carouselId] = useState(() => 'carousel_' + + generateUUID());
 
   if (!compensationPlans) {
@@ -182,6 +221,9 @@ function Content(widget, customer, compensationPlans, trees, isPreview, widgetVa
       addresses: [{ type: "Shipping", line1: '', line2: '', line3: '', city: '', stateCode: '', zip: '', countryCode: '' }],
       cards: [{ values: [{ valueName: 'Example', valueId: 'Ex', value: '22' }] }]
     }
+    availableValues?.forEach(val => {
+      customer.cards[0].values.push({valueName: val.name, valueId: val.valueId, value: Math.floor(Math.random() * 50)})
+    });
   }
 
   if (isPreview) {
@@ -193,6 +235,124 @@ function Content(widget, customer, compensationPlans, trees, isPreview, widgetVa
     customer = { ...customer, socialMedia: SocialMediaPlatforms.map((p) => ({ name: p.name, value: 'preview' })) };
   }
 
+  if (widget.type == WidgetTypes.Donut) {
+    let rankAdvance = compensationPlans.flatMap(plan => plan.period || []).find(period => period.rankAdvance?.length > 0)?.rankAdvance || null;
+    let currentRank = customer?.cards?.[0]?.values.find(v => v.valueId.toLowerCase() == 'rank')?.value ?? 0;
+
+    // var showRankId = (widget?.settings?.['showRankId'] ?? false);
+  
+
+    //const valueMap = widget?.panes?.map(p => ({ valueId: p.title, text: p.text, description: p.description }));
+    return <Donut 
+      currentRank={currentRank} 
+      ranks={rankAdvance} 
+      compensationPlans={compensationPlans} 
+      handleDateChange={handleDateChange} 
+      customer={customer} 
+      showPreviousAndNext={widget?.settings?.showPreviousAndNext} 
+      segments={widget?.settings?.segments} 
+      showCurrentAndLast={widget?.settings?.showCurrentAndLast} 
+      dataFields={widget?.settings?.dataFields} 
+      summaryFields={widget?.settings?.summaryFields} 
+      centerField={widget?.settings?.centerField}
+      showItemPercent={itemPercent ? false : true} />
+  }
+
+  if (widget.type == WidgetTypes.ListView) {    
+    const treeId = (widget?.settings?.['treeId'] ?? trees?.[0]?.id ?? 0);
+    let rankAdvance = compensationPlans.flatMap(plan => plan.period || []).find(period => period.rankAdvance?.length > 0)?.rankAdvance || null;
+    let currentRank = customer?.cards?.[0]?.values.find(v => v.valueId.toLowerCase() == 'rank')?.value ?? 0;
+
+    return <ListView 
+      currentRank={currentRank}
+      ranks={rankAdvance}
+      treeId={treeId} 
+      compensationPlans={compensationPlans} 
+      handleDateChange={handleDateChange} 
+      customer={customer} 
+      showPreviousAndNext={widget?.settings?.showPreviousAndNext} 
+      segments={widget?.settings?.segments} 
+      showCurrentAndLast={widget?.settings?.showCurrentAndLast} 
+      dataFields={widget?.settings?.dataFields} 
+      summaryFields={widget?.settings?.summaryFields} 
+      centerField={widget?.settings?.centerField} />
+  }
+
+  if (widget.type == WidgetTypes.BarChart) {
+    let rankAdvance = compensationPlans.flatMap(plan => plan.period || []).find(period => period.rankAdvance?.length > 0)?.rankAdvance || null;
+    let currentRank = customer?.cards?.[0]?.values.find(v => v.valueId.toLowerCase() == 'rank')?.value ?? 0;
+
+    return <Barchart 
+      currentRank={currentRank} 
+      ranks={rankAdvance}
+      compensationPlans={compensationPlans} 
+      handleDateChange={handleDateChange} 
+      customer={customer} 
+      showPreviousAndNext={widget?.settings?.showPreviousAndNext} 
+      showCurrentAndLast={widget?.settings?.showCurrentAndLast} 
+      toggleOrientation={widget?.settings?.toggleOrientation} 
+      dataFields={widget?.settings?.dataFields} 
+      summaryFields={widget?.settings?.summaryFields} />
+  }
+
+  if (widget.type == WidgetTypes.FunnelChart) {
+    let rankAdvance = compensationPlans.flatMap(plan => plan.period || []).find(period => period.rankAdvance?.length > 0)?.rankAdvance || null;
+    let currentRank = customer?.cards?.[0]?.values.find(v => v.valueId.toLowerCase() == 'rank')?.value ?? 0;
+    return <Funnelchart 
+      currentRank={currentRank} 
+      ranks={rankAdvance}
+      compensationPlans={compensationPlans} 
+      handleDateChange={handleDateChange} 
+      customer={customer} 
+      showPreviousAndNext={widget?.settings?.showPreviousAndNext} 
+      showCurrentAndLast={widget?.settings?.showCurrentAndLast} 
+      dataFields={widget?.settings?.dataFields} 
+      summaryFields={widget?.settings?.summaryFields}/>
+  }
+
+  if (widget.type == WidgetTypes.MultiStackChart) {
+    let rankAdvance = compensationPlans.flatMap(plan => plan.period || []).find(period => period.rankAdvance?.length > 0)?.rankAdvance || null;
+    let currentRank = customer?.cards?.[0]?.values.find(v => v.valueId.toLowerCase() == 'rank')?.value ?? 0;
+    return <MultiStackChart 
+      customer={customer} 
+      currentRank={currentRank} 
+      ranks={rankAdvance}
+      handleDateChange={handleDateChange} 
+      showPreviousAndNext={widget?.settings?.showPreviousAndNext} 
+      showCurrentAndLast={widget?.settings?.showCurrentAndLast} 
+      dataFields={widget?.settings?.dataFields} 
+      summaryFields={widget?.settings?.summaryFields}/>
+  }
+
+  if (widget.type == WidgetTypes.StackedBar) {
+    let rankAdvance = compensationPlans.flatMap(plan => plan.period || []).find(period => period.rankAdvance?.length > 0)?.rankAdvance || null;
+    let currentRank = customer?.cards?.[0]?.values.find(v => v.valueId.toLowerCase() == 'rank')?.value ?? 0;
+      return <StackedbarChart 
+        currentRank={currentRank} 
+        ranks={rankAdvance}
+        compensationPlans={compensationPlans}
+        customer={customer}
+        handleDateChange={handleDateChange} 
+        dataFields={widget?.settings?.dataFields}
+        summaryFields={widget?.settings?.summaryFields}
+        showPreviousAndNext={widget?.settings?.showPreviousAndNext} 
+        showCurrentAndLast={widget?.settings?.showCurrentAndLast} />
+  }
+
+  if (widget.type == WidgetTypes.ProgressBar) {
+    let rankAdvance = compensationPlans.flatMap(plan => plan.period || []).find(period => period.rankAdvance?.length > 0)?.rankAdvance || null;
+    let currentRank = customer?.cards?.[0]?.values.find(v => v.valueId.toLowerCase() == 'rank')?.value ?? 0;
+    return <Progressbar
+      currentRank={currentRank} 
+      ranks={rankAdvance}
+      compensationPlans={compensationPlans}
+      customer={customer}
+      handleDateChange={handleDateChange} 
+      dataFields={widget?.settings?.dataFields} 
+      summaryFields={widget?.settings?.summaryFields}
+      showPreviousAndNext={widget?.settings?.showPreviousAndNext} 
+      showCurrentAndLast={widget?.settings?.showCurrentAndLast} />
+  }
 
   if (widget?.type == WidgetTypes.Profile) {
     var pCompact = (widget?.settings?.['compact'] ?? false);
@@ -367,7 +527,6 @@ function Content(widget, customer, compensationPlans, trees, isPreview, widgetVa
       {(widget?.panes?.length ?? 0) == 0 && <>
         <EmptyContent />
       </>}
-
       <div id={carouselId} className="carousel slide" data-bs-ride="carousel">
         <div className="carousel-inner content-bottom">
           {widget.panes && widget.panes.map((p, index) => {

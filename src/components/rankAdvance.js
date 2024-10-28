@@ -35,7 +35,7 @@ const RankAdvance = ({ currentRank, ranks, valueMap, showRankId = false, showIte
       type: 'radialBar',
       offsetY: -20,
       sparkline: {
-        enabled: true
+        enabled: false
       }
     },
     plotOptions: {

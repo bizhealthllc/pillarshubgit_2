@@ -11,6 +11,12 @@ import SocialLinksContent from "./socialLinksContent";
 import HtmlContent from "./htmlContent";
 import EarningsContent from "./earningsContent";
 import RecruiterContent from "./recruiterContent";
+import DonutContent from "./donutContent";
+import BarContent from "./barContent";
+import FunnelContent from "./funnelChartContent";
+import ProgressContent from "./progressBarContent";
+import StackedbarContent from "./stackedBarContent";
+import MultiStackContent from "./multiStackContent";
 
 const WidgetContent = ({ widget, updateWidget, trees, definitions, customerTypes }) => {
 
@@ -35,6 +41,18 @@ const WidgetContent = ({ widget, updateWidget, trees, definitions, customerTypes
       return <EarningsContent widget={widget} updateWidget={updateWidget} />
     case WidgetTypes.Recruiter:
       return <RecruiterContent widget={widget} updateWidget={updateWidget} trees={trees} customerTypes={customerTypes} />;
+    case WidgetTypes.Donut:
+      return <DonutContent widget={widget} updateWidget={updateWidget} definitions={definitions} />
+    case WidgetTypes.BarChart:
+      return <BarContent widget={widget} updateWidget={updateWidget} definitions={definitions} />
+    case WidgetTypes.FunnelChart:
+      return <FunnelContent widget={widget} updateWidget={updateWidget} definitions={definitions} />
+    case WidgetTypes.ProgressBar:
+      return <ProgressContent widget={widget} updateWidget={updateWidget} definitions={definitions} />
+    case WidgetTypes.StackedBar:
+      return <StackedbarContent widget={widget} updateWidget={updateWidget} definitions={definitions}/>
+    case WidgetTypes.MultiStackChart:
+        return <MultiStackContent widget={widget} updateWidget={updateWidget} />
   }
 
   return <></>

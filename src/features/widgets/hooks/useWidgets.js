@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useFetch } from "../../../hooks/useFetch";
 import { SendRequest } from "../../../hooks/usePost";
 
+
 export default function useWidgets() {
   const [widgets, setWidgets] = useState();
   const { data, loading, error, refetch } = useFetch('/api/v1/Widgets');
@@ -53,7 +54,14 @@ const WidgetTypes = {
   SocialLinks: "social",
   Recruiter: "recruiter",
   Earnings: "earnings",
-  Html: "html"
+  Html: "html",
+  Donut: "donut",
+  StackedBar:"StackedBar",
+  BarChart:"BarChart",
+  ProgressBar:"ProgressBar",
+  FunnelChart:"FunnelChart",
+  MultiStackChart:"MultiStackChart",
+  ListView:"ListView"
   //Report: "report"
 }
 
