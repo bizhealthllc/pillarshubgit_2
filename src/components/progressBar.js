@@ -27,7 +27,7 @@ const Progressbar = ({
             const newValue1 = customer.cards[0]?.values.find(x => x.valueId === field.Value1);
             //const newValue2 = customer.cards[0]?.values.find(x => x.valueId === field.Value2);
             const newValue2 = {value:0, valueName:"blah", valueId:"blah123"};
-            populatedDataFields.push({ ...field, Value: [parseInt(newValue1.value), parseInt(newValue2.value)] });
+            populatedDataFields.push({ ...field, Value: [parseInt(newValue1?.value), parseInt(newValue2?.value)] });
             currValues.push(newValue1); 
             maxValues.push(newValue2);
         } else {
@@ -44,7 +44,7 @@ const Progressbar = ({
     });
 
     const calculateProgressPercentage = (actual, desired) => {
-        if(desired===0) return 0;
+        if(desired===0) return 100;
         return (actual-desired)>0? 100:actual*100/desired;
     };
 
@@ -63,24 +63,24 @@ const Progressbar = ({
             {
                 populatedDataFields.map((field, index) => {
                     const progressPercentage = calculateProgressPercentage(
-                        selectedOption === 'current' ? currValues[index].value : lastValues[index].value, 
-                        maxValues[index].value
+                        selectedOption === 'current' ? currValues[index]?.value : lastValues[index]?.value, 
+                        maxValues[index]?.value
                     );
                     return <>
                         <div className="text-center mt-4">
-                            <span><b>{field?.Title} ({field.Value[0]})</b></span>
+                            <span><b>{field?.Title} ({field?.Title.toLowerCase().endsWith("sales") ? `$${new Intl.NumberFormat().format(field.Value[0])}` : field.Value[0]})</b></span>
                         </div>
                 
                         <div className="progress" style={{ width: '70%', height: '40px', margin: '5px auto' }}>
                             <div
                                 className="progress-bar"
                                 role="progressbar"
-                                style={{ width: `${progressPercentage}%` }}
+                                style={{ width: `${progressPercentage}%`, backgroundColor: "#178f5a" }}
                                 aria-valuenow={progressPercentage}
                                 aria-valuemin="0"
                                 aria-valuemax={maxValues[index]}
                             >
-                                {Math.round(progressPercentage)}%
+                                {/* {Math.round(progressPercentage)}% */}
                             </div>
                         </div>
                     </>

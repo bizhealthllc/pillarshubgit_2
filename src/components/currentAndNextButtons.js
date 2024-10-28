@@ -25,6 +25,7 @@ const CurrentAndNextButtons = ({ handleDateChange, showCurrentAndNextButtons=tru
                     <button 
                         onClick={handleCurrent}
                         className={`btn ${selectedOption === 'current' ? 'btn-primary' : 'btn-light'}`}
+                        style={selectedOption === 'current' ? {backgroundColor:"#8c8c8a"} : {backgroundColor:'#dfdfd7'}}
                     >
                         Current
                     </button>

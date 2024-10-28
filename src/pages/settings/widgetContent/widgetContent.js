@@ -17,6 +17,7 @@ import FunnelContent from "./funnelChartContent";
 import ProgressContent from "./progressBarContent";
 import StackedbarContent from "./stackedBarContent";
 import MultiStackContent from "./multiStackContent";
+import ListViewContent from "./listViewContent";
 
 const WidgetContent = ({ widget, updateWidget, trees, definitions, customerTypes }) => {
 
@@ -53,6 +54,8 @@ const WidgetContent = ({ widget, updateWidget, trees, definitions, customerTypes
       return <StackedbarContent widget={widget} updateWidget={updateWidget} definitions={definitions}/>
     case WidgetTypes.MultiStackChart:
         return <MultiStackContent widget={widget} updateWidget={updateWidget} />
+    case WidgetTypes.ListView:
+        return <ListViewContent widget={widget} updateWidget={updateWidget} />
   }
 
   return <></>

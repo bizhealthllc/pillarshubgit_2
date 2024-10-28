@@ -76,7 +76,7 @@ const Donut = ({
         } else {
             chartData.series = [50,50,50];
             chartData.links = populatedDataFields.map(x => x.Link).slice(0, 3);
-            chartData.labels = populatedDataFields.map(x => `${x.Title} - ${x.Value}`).slice(0, 3);
+            chartData.labels = populatedDataFields.map(x => `${x.Title} : ${x.Value}`).slice(0, 3);
         }
         
     }
@@ -85,6 +85,7 @@ const Donut = ({
    const totalValue = chartData.series.reduce((acc, val) => acc + val, 0);
 
     const chartConfig = {
+        colors:['#f2af4d', '#5285a4', '#3d9265'],
         chart: {
             type: 'donut',
             events: {
@@ -103,14 +104,31 @@ const Donut = ({
             pie: {
                 donut: {
                     labels: {
-                        show:true,
+                        show:false,
+                        // name: {
+                        //     show: true,
+                        //     formatter: function (val) {
+                        //       return val
+                        //     }
+                        //   },
                         total: {
                             show: true,
                             showAlways:false,
-                            label: populatedCenterField.length > 0
-                            ? `${populatedCenterField[0].Title}: ${(populatedCenterField[0].Value / totalValue * 100).toFixed(2)}%`
-                            : '100%', 
-                        color: 'black',
+                            // label: populatedCenterField.length > 0
+                            // ? `${populatedCenterField[0].Title}: ${(populatedCenterField[0].Value / totalValue * 100).toFixed(2)}%`
+                            // : '100%', 
+                            color: 'black',
+                            formatter: function () {
+                                console.log(totalValue)
+                                return '';
+                                // w.globals.seriesTotals.reduce((a, b) => {
+                                //   return ``
+                                // }, 0)
+                              }
+                            // custom: function({ series, seriesIndex, dataPointIndex, w}) {
+                            //     console.log(series, dataPointIndex, w ,totalValue);
+                            //     return "<div class='card'><div class='card-body text-dark'>" + chartData.labels[seriesIndex] + "</div></div>";
+                            // },
                         }    
                     }
                 }
@@ -129,26 +147,36 @@ const Donut = ({
         },
         tooltip: {
             enabled: true,
-            y: {
-                formatter: function (val) {
-                    return val;
-                }
+            // y: {
+            //     formatter: function (val) {
+            //         return val + "sdddf";
+            //     },
+            //     title: {
+            //         formatter: function (seriesName) {
+            //           return 'sdssd' +seriesName
+            //         }
+            //       }
+
+            // },
+            custom: function({ series, seriesIndex, dataPointIndex, w}) {
+                console.log(series, dataPointIndex, w);
+                return "<div class='card'><div class='card-body text-dark'>" + chartData.labels[seriesIndex] + "</div></div>";
             },
-            shared: true,
+            shared: false,
             intersect: false,
         },
         labels: chartData.labels,
-        fill: {
-            type: 'gradient',
-            gradient: {
-                shade: 'light',
-                shadeIntensity: 0.4,
-                inverseColors: false,
-                opacityFrom: 1,
-                opacityTo: 1,
-                stops: [0, 50, 53, 91]
-            },
-        },
+        // fill: {
+        //     type: 'gradient',
+        //     gradient: {
+        //         shade: 'light',
+        //         shadeIntensity: 0.4,
+        //         inverseColors: false,
+        //         opacityFrom: 1,
+        //         opacityTo: 1,
+        //         stops: [0, 50, 53, 91]
+        //     },
+        // },
     };
 
     const handleSelectedOption = (option) => {

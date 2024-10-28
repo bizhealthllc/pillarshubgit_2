@@ -27,48 +27,48 @@ var qualifications = [{
     Id:1,
     QA:1,
     ETPLEGS:1,
-    Title: "LEADER 1",
+    Title: "TIER 1",
     NextTier: 2,
     IsQualified: false
 },{
     Id:2,
     QA:1,
     ETPLEGS:2,
-    Title: "LEADER 2",
+    Title: "TIER 2",
     NextTier: 3,
     IsQualified: false
 },{
     Id:3,
     QA:1,
     ETPLEGS:3,
-    Title: "LEADER 3",
+    Title: "TIER 3",
     NextTier: 4,
     IsQualified: false
 },{
     Id:4,
     QA:1,
     ETPLEGS:4,
-    Title: "LEADER 4",
+    Title: "TIER 4",
     NextTier: 5,
     IsQualified: false
 },{
     Id:5,
     QA:1,
     ETPLEGS:5,
-    Title: "LEADER 5",
+    Title: "TIER 5",
     NextTier: 6,
     IsQualified: false
 },{
     Id:6,
     QA:1,
     ETPLEGS:6,
-    Title: "LEADER 6",
+    Title: "TIER 6",
     NextTier: 6,
     IsQualified: false
 }];
 
 
-const ListView = ({ handleDateChange, treeId, customer, showPreviousAndNext=true, showCurrentAndLast=true }) => {
+const ListView = ({ handleDateChange, treeId, customer, showPreviousAndNext=true, showCurrentAndLast=true, viewAllLink="/reports" }) => {
     const [selectedOption, setSelectedOption] = useState('current');
     const [date, setDate] = useState(new Date());
     const qual = qualifications.map(x=>{
@@ -145,17 +145,23 @@ const ListView = ({ handleDateChange, treeId, customer, showPreviousAndNext=true
                 Premier Teams: {customer?.cards?.[0].values.find(x=>x.valueId==='ETPLEGS')?.value}/5
             </div>
             <div className="text-center mb-3">
-                You are qualified to earn commissions through tier {
+                You are {!currentQualification?'not':''} qualified to earn commissions through tier {
                 (parseInt(customer?.cards?.[0].values.find(x=>x.valueId==='ETPLEGS')?.value)+1>6)
                 ?6:
                 parseInt(customer?.cards?.[0].values.find(x=>x.valueId==='ETPLEGS')?.value)+1
                 }
             </div>
             <div className="chart mb-3">
-                <ul className="list-group">
+                <ul className="list-group mx-3">
                     {data?.trees?.[0].nodes?.[0].nodes?.map((node, index) =>
-                        <li className={node?.customer?.values?.some(x=>x.valueId===fieldToHighlight && x.value)?`list-group-item bg-primary text-white py-2`:`list-group-item bg-light py-2`} key={index}>
-                            <Link className={node?.customer?.values?.some(x=>x.valueId===fieldToHighlight && x.value)?`btn-link p-0 m-0 p-md-2 m-md-1 text-white`:`btn-link p-0 m-0 p-md-2 m-md-1 text-dark`} to={`/customers/${node?.customer?.id}/dashboard`}>
+                        <li 
+                            className={node?.customer?.values?.some(x=>x.valueId===fieldToHighlight && x.value)?`list-group-item text-white py-2`:`list-group-item bg-light py-2`} 
+                            style={node?.customer?.values?.some(x=>x.valueId===fieldToHighlight && x.value)?{backgroundColor:"#178f5a"}:{}}
+                            key={index}>
+                            <Link 
+                                className={node?.customer?.values?.some(x=>x.valueId===fieldToHighlight && x.value)?`btn-link p-0 m-0 p-md-2 m-md-1 text-white`:`btn-link p-0 m-0 p-md-2 m-md-1 text-dark`}
+                                style={node?.customer?.values?.some(x=>x.valueId===fieldToHighlight && x.value)?{backgroundColor:"#178f5a"}:{}}
+                                to={`/customers/${node?.customer?.id}/dashboard`}>
                                 {node?.customer?.fullName}
                             </Link>
                         </li>
@@ -164,7 +170,7 @@ const ListView = ({ handleDateChange, treeId, customer, showPreviousAndNext=true
             </div>
             
             <div className="text-center"> 
-                <Link to={`/reports`}>
+                <Link to={`${viewAllLink}`}>
                     <span className="nav-link-title d-none d-md-block">
                         View all
                     </span>
@@ -191,5 +197,6 @@ ListView.propTypes = {
     handleDateChange: PropTypes.object,
     treeId: PropTypes.number,
     ranks: PropTypes.object.isRequired,
-    currentRank: PropTypes.object.isRequired
+    currentRank: PropTypes.object.isRequired,
+    viewAllLink: PropTypes.string.isRequired
 };

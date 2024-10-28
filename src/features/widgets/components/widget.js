@@ -274,7 +274,8 @@ function Content(widget, availableValues, customer, compensationPlans, trees, is
       segments={widget?.settings?.segments} 
       showCurrentAndLast={widget?.settings?.showCurrentAndLast} 
       dataFields={widget?.settings?.dataFields} 
-      summaryFields={widget?.settings?.summaryFields} 
+      summaryFields={widget?.settings?.summaryFields}
+      viewAllLink={widget?.settings?.viewAllLink} 
       centerField={widget?.settings?.centerField} />
   }
 
