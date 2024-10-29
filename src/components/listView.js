@@ -27,42 +27,40 @@ var qualifications = [{
     Id:1,
     QA:1,
     ETPLEGS:1,
-    Title: "TIER 1",
+    Title: "LEADER 1",
+    Tier: "TIER 2",
     NextTier: 2,
     IsQualified: false
 },{
     Id:2,
     QA:1,
     ETPLEGS:2,
-    Title: "TIER 2",
+    Title: "LEADER 2",
+    Tier: "TIER 3",
     NextTier: 3,
     IsQualified: false
 },{
     Id:3,
     QA:1,
     ETPLEGS:3,
-    Title: "TIER 3",
+    Title: "LEADER 3",
+    Tier: "TIER 4",
     NextTier: 4,
     IsQualified: false
 },{
     Id:4,
     QA:1,
     ETPLEGS:4,
-    Title: "TIER 4",
+    Title: "LEADER 4",
+    Tier: "TIER 5",
     NextTier: 5,
     IsQualified: false
 },{
     Id:5,
     QA:1,
     ETPLEGS:5,
-    Title: "TIER 5",
-    NextTier: 6,
-    IsQualified: false
-},{
-    Id:6,
-    QA:1,
-    ETPLEGS:6,
-    Title: "TIER 6",
+    Title: "LEADER 5",
+    Tier: "TIER 6",
     NextTier: 6,
     IsQualified: false
 }];
@@ -142,13 +140,13 @@ const ListView = ({ handleDateChange, treeId, customer, showPreviousAndNext=true
         </>        
         <div className="container px-4">
             <div className="text-center mb-3">
-                Premier Teams: {customer?.cards?.[0].values.find(x=>x.valueId==='ETPLEGS')?.value}/5
+                Premier Teams: {customer?.cards?.[0].values.find(x=>x.valueId==='ETPLEGS')?.value || 0}/5
             </div>
             <div className="text-center mb-3">
                 You are {!currentQualification?'not':''} qualified to earn commissions through tier {
                 (parseInt(customer?.cards?.[0].values.find(x=>x.valueId==='ETPLEGS')?.value)+1>6)
                 ?6:
-                parseInt(customer?.cards?.[0].values.find(x=>x.valueId==='ETPLEGS')?.value)+1
+                parseInt(customer?.cards?.[0].values.find(x=>x.valueId==='ETPLEGS')?.value)+1 || 0
                 }
             </div>
             <div className="chart mb-3">

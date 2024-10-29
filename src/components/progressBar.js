@@ -52,13 +52,43 @@ const Progressbar = ({
         setSelectedOption(option);
     }
 
+    const getEligibleBonus = (customer) => {
+        const map = [
+            {name:"TB5M",value:100000},
+            {name:"TB45M",value:90000},
+            {name:"TB4M",value:80000},
+            {name:"TB35M",value:70000},
+            {name:"TB3M",value:60000},
+            {name:"TB25M",value:50000},
+            {name:"TB2M",value:40000},
+            {name:"TB15M",value:30000},
+            {name:"TB1M",value:25000},
+            {name:"TB750K",value:20000},
+            {name:"TB500K",value:12500},
+            {name:"TB400K",value:10000},
+            {name:"TB300K",value:7500},
+            {name:"TB200K",value:5000},
+            {name:"TB150K",value:2500},
+            {name:"TB100K",value:1500},
+            {name:"TB50K",value:1000},
+            {name:"TB25K",value:500}
+        ];
+
+        map.forEach(val=>{
+            if(customer.cards[0]?.values.filter(x=>x.valueId==val.name)[0].value > 0){
+                return val.value;
+            }
+        });
+        return 0;
+    }
+
     return (
         <>
         <CurrentAndNextArrows currentRank={currentRank} ranks={ranks} customer={customer}  handleDateChange={handleDateChange} showPreviousAndNext={showPreviousAndNext} selectedOption={selectedOption} handleSelectedOption={handleSelectedOption}></CurrentAndNextArrows>
         
         <div className="container px-4">
             <div className="text-center mb-3">
-                ELIGIBLE BONUS: 
+                ELIGIBLE BONUS: ${new Intl.NumberFormat().format(getEligibleBonus(customer))}
             </div>
             {
                 populatedDataFields.map((field, index) => {
@@ -71,7 +101,7 @@ const Progressbar = ({
                             <span><b>{field?.Title} ({field?.Title.toLowerCase().endsWith("sales") ? `$${new Intl.NumberFormat().format(field.Value[0])}` : field.Value[0]})</b></span>
                         </div>
                 
-                        <div className="progress" style={{ width: '70%', height: '40px', margin: '5px auto' }}>
+                        <div className="progress d-none" style={{ width: '70%', height: '40px', margin: '5px auto' }}>
                             <div
                                 className="progress-bar"
                                 role="progressbar"

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import ProgressDataField from "./progressDataField";
 
 const ProgressDataFieldList = ({ onChange, name, count = 5, definitions, settings }) => {
- 
+ console.log(settings, '------------============')
   const [data, setData] = useState(
     Array.from(Array(count).keys()).map(() => ({
       Title: "",

@@ -4,7 +4,8 @@ import TextInput from "./textInput";
 import SelectInput from "./selectInput";
 
 const ProgressDataField= ({ onChange, name, definitions, settings }) => {
-  const [data, setData] = useState(settings || { Type: "Sources" });  
+  const [data, setData] = useState(settings || { Type: "Sources" });
+  console.log(data,'---------------------')
   const handleChange = (k, v) => {
     const newData = {
       ...data,
