@@ -75,8 +75,8 @@ const Progressbar = ({
         ];
 
         map.forEach(val=>{
-            if(customer.cards[0]?.values.filter(x=>x.valueId==val.name)[0].value > 0){
-                return val.value;
+            if(customer.cards[0]?.values.filter(x=>x.valueId==val.name)[0]?.value > 0){
+                return val?.value;
             }
         });
         return 0;

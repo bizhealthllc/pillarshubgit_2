@@ -205,8 +205,8 @@ const Donut = ({
         ];
 
         map.forEach(val=>{
-            if(customer.cards[0]?.values.filter(x=>x.valueId==val.name)[0].value > 0){
-                return `Qualified as ${val.value}`;
+            if(customer.cards[0]?.values.filter(x=>x.valueId==val.name)[0]?.value > 0){
+                return `Qualified as ${val?.value}`;
             }
         });
         return 'Not Qualified';
