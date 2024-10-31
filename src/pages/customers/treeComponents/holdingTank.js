@@ -57,7 +57,7 @@ const HoldingTank = ({ nodeId, treeId, uplineId, uplineLeg, showModal }) => {
         <button type="button" className="btn-close text-reset" onClick={handleClose} ></button>
       </div>
     </div>
-    <div className="">
+    <div className="overflow-y-scroll">
       <p>{error && `Error loading Holding Tank Data. ${error}`}</p>
 
       {/* <p>{uplineId}</p>

@@ -74,7 +74,7 @@ const BannerContent = ({ widget, updateWidget }) => {
   const updateItem = (item) => {
     updateWidget((v) => {
       if (item.index == -1) {
-        if (v.panes === undefined) v.panes = [];
+        if (!v.panes) v.panes = [];
         v.panes.push(item);
       } else {
         v.panes[item.index] = item;

@@ -51,9 +51,9 @@ const CustomerOrders = () => {
   const getUniqueVolumeIds = (orders) => {
     // Step 1: Flatten the nested arrays and filter out null or empty volumes
     const allVolumes = orders.flatMap(order =>
-      order.lineItems.flatMap(lineItem =>
+      order.lineItems?.flatMap(lineItem =>
         lineItem.volume ? lineItem.volume : []
-      )
+      ) ?? []
     );
 
     // Step 2: Extract volumeId from each volume
@@ -62,7 +62,7 @@ const CustomerOrders = () => {
     // Step 3: Get unique volumeIds using Set
     const uniqueVolumeIds = [...new Set(volumeIds)];
 
-    return uniqueVolumeIds;
+    return uniqueVolumeIds ?? [];
   };
 
   const getVolumeForVolumeId = (order, volumeId) => {

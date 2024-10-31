@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Modal from '../../../components/modal';
 import AutoComplete from '../../../components/autocomplete';
+import Switch from '../../../components/switch';
 import { SendRequest } from "../../../hooks/usePost";
 
 const ChangePlacementModal = ({ tree, treeId, placement, refetch }) => {
   const [showModal, setModalShow] = useState();
   const [activeItem, setActiveItem] = useState();
+  const [disclamer, setDisclamer] = useState(false);
 
   const handleClose = () => setModalShow(false);
   const handleChange = (name, value) => {
@@ -18,7 +20,7 @@ const ChangePlacementModal = ({ tree, treeId, placement, refetch }) => {
       if (tree.legNames && !placement.uplineLeg) {
         placement.uplineLeg = tree.legNames[0].toLowerCase()
       }
-
+      setDisclamer(placement?.disclamerId === undefined);
       setActiveItem(placement);
       setModalShow(true);
     } else {
@@ -53,6 +55,10 @@ const ChangePlacementModal = ({ tree, treeId, placement, refetch }) => {
     });
   }
 
+  const handleDisclamer = (name, value) =>{
+    setDisclamer(value);
+  }
+
   var UplineColWidth = tree.legNames ? 8 : 12;
 
   return <Modal showModal={showModal} onHide={handleClose} >
@@ -84,12 +90,15 @@ const ChangePlacementModal = ({ tree, treeId, placement, refetch }) => {
           </div>
         }
       </div>
+      {placement?.disclamerId && <>
+        <Switch onChange={handleDisclamer} value={disclamer} title="I understand the commission disclaimer and that the move is final once completed" />
+      </>}
     </div>
     <div className="modal-footer">
       <a href="#" className="btn btn-link link-secondary" data-bs-dismiss="modal">
         Cancel
       </a>
-      <button type="submit" className="btn btn-primary ms-auto" onClick={handleSubmit}>
+      <button className="btn btn-primary ms-auto" disabled={!disclamer} onClick={handleSubmit}>
         Place Node
       </button>
     </div>

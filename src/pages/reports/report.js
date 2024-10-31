@@ -134,7 +134,8 @@ const Report = () => {
                 <thead>
                   <tr>
                     {data.dataColumns.map((column) => {
-                      return <th key={column.name} className={`w-${column.dataLength}`}>{column.title}</th>;
+                      var textEnd = column.dataType == "Currency";
+                      return <th key={column.name} className={`w-${column.dataLength} ${textEnd ? 'text-end' : ''}`}>{column.title}</th>;
                     })}
                   </tr>
                 </thead>
@@ -142,14 +143,15 @@ const Report = () => {
                   {data.dataRows && data.dataRows.map((row) => {
                     return <tr key={row.rowNumber}>
                       {data.dataColumns.map((column, index) => {
-                        var colValue = row.values[column.name];
-                        return <td key={`${row.rowNumber}_${index}`} style={{ whiteSpace: 'nowrap' }}>
+                        var colValue = row.values[column.name] ?? '';
+                        var textEnd = column.dataType == "Currency";
+                        return <td key={`${row.rowNumber}_${index}`} className={textEnd ? 'text-end' : ''} style={{ whiteSpace: 'nowrap' }}>
                           {column.dataType == "String" && <span>{colValue}</span>}
-                          {column.dataType == "Number" && <span>{colValue}</span>}
+                          {column.dataType == "Number" && <span>{(colValue == '' ? 0 : Number(colValue)).toLocaleString("en-US")}</span>}
                           {column.dataType == "DateTime" && <LocalDate dateString={colValue} hideTime={false} />}
                           {column.dataType == "Date" && <LocalDate dateString={colValue} hideTime={true} />}
                           {column.dataType == "Boolean" && <span>{colValue == "1" ? 'True' : 'False'}</span>}
-                          {column.dataType == "Currency" && <span>{colValue}</span>}
+                          {column.dataType == "Currency" && <span>{(colValue == '' ? 0 : Number(colValue)).toLocaleString("en-US", { style: 'currency', currency: 'USD' })}</span>}
                           {column.dataType == "Percent" && <div className="row align-items-center">
                             <div className="col-12 col-lg-auto" style={{ width: "3rem" }}>{colValue}%</div>
                             <div className="col">

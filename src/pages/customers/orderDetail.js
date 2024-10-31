@@ -74,7 +74,7 @@ const OrderDetail = () => {
   let address = order?.shipAddress;
 
   const groupedVolumes = {};
-  order.lineItems.forEach((item) => {
+  order.lineItems?.forEach((item) => {
     const volumes = item.volume;
     if (volumes && Array.isArray(volumes)) {
       volumes.forEach((volume) => {
@@ -137,6 +137,8 @@ const OrderDetail = () => {
 
                       <dd className="col-6">Status</dd>
                       <dd className="col-6 text-end">{order?.status}</dd>
+                      <dd className="col-6">Tracking</dd>
+                      <dd className="col-6 text-end">{order?.tracking}</dd>
 
                       <dd className="col-6">Notes</dd>
                       <dd className="col-6">{data?.notes}</dd>
@@ -217,23 +219,23 @@ const OrderDetail = () => {
                   </div>
                   <div className="col-6 text-end">
 
-                    <dl className="row">
+                    {/* <dl className="row">
                       <dd className="col-7">Invoice Total</dd>
-                      <dd className="col-5 text-end"><strong>{order?.total?.toLocaleString("en-US", { style: 'currency', currency: order?.priceCurrency ?? 'USD' })}</strong></dd>
+                      <dd className="col-5 text-end"><strong></strong></dd>
 
                       <dd className="col-7">Total Paid</dd>
-                      <dd className="col-5 text-end"><strong>{totalPaid?.toLocaleString("en-US", { style: 'currency', currency: order?.priceCurrency ?? 'USD' })}</strong></dd>
+                      <dd className="col-5 text-end"><strong></strong></dd>
 
                       <dd className="col-7">
                         <strong>Total Due</strong>
                       </dd>
-                      <dd className="col-5 text-end"><strong>{(order?.total - totalPaid)?.toLocaleString("en-US", { style: 'currency', currency: order?.priceCurrency ?? 'USD' })}</strong></dd>
-                    </dl>
+                      <dd className="col-5 text-end"><strong></strong></dd>
+                    </dl> */}
 
                   </div>
-                  <div className="col-12 my-5">
-                    <h1>Invoice ON33U4322</h1>
-                  </div>
+                  {/* <div className="col-12 my-5">
+                    <h1>Order {order?.id}</h1>
+                  </div> */}
                 </div>
                 <table className="table table-transparent table-responsive">
                   <thead>
@@ -265,12 +267,20 @@ const OrderDetail = () => {
                       <td className="text-end">{order?.shipping.toLocaleString("en-US", { style: 'currency', currency: order?.priceCurrency ?? 'USD' })}</td>
                     </tr>
                     <tr>
-                      <td colSpan="3" className="strong text-end">Tax ({order?.taxRate}%)</td>
+                      <td colSpan="3" className="strong text-end">Tax {order?.taxRate > 0 ? `(${order?.taxRate} %)` : ''} </td>
                       <td className="text-end">{order?.tax.toLocaleString("en-US", { style: 'currency', currency: order?.priceCurrency ?? 'USD' })}</td>
                     </tr>
+                    <tr className="table-light">
+                      <td colSpan="3" className="font-weight-bold text-uppercase text-end"><strong>Invoice Total</strong></td>
+                      <td className="font-weight-bold text-end"><strong>{order?.total.toLocaleString("en-US", { style: 'currency', currency: order?.priceCurrency ?? 'USD' })}</strong></td>
+                    </tr>
                     <tr>
-                      <td colSpan="3" className="font-weight-bold text-uppercase text-end">Invoice Total</td>
-                      <td className="font-weight-bold text-end">{order?.total.toLocaleString("en-US", { style: 'currency', currency: order?.priceCurrency ?? 'USD' })}</td>
+                      <td colSpan="3" className="font-weight-bold text-uppercase text-end">Total Paid</td>
+                      <td className="font-weight-bold text-end">{totalPaid?.toLocaleString("en-US", { style: 'currency', currency: order?.priceCurrency ?? 'USD' })}</td>
+                    </tr>
+                    <tr>
+                      <td colSpan="3" className="font-weight-bold text-uppercase text-end">Total Due</td>
+                      <td className="font-weight-bold text-end">{(order?.total - totalPaid)?.toLocaleString("en-US", { style: 'currency', currency: order?.priceCurrency ?? 'USD' })}</td>
                     </tr>
                   </tbody>
                 </table>
