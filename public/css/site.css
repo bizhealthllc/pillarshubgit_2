@@ -12,6 +12,10 @@
   border: 0px;
 }
 
+.tw-pretty {
+  text-wrap: pretty;
+}
+
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

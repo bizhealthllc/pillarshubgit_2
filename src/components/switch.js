@@ -17,7 +17,7 @@ const Switch = ({ name, value = false, onChange, disabled, title }) => {
     {
         return <label className="form-check form-switch">
             <input type="checkbox" className="form-check-input" name={name} checked={value} disabled={disabled} onChange={handleChange} />
-            <span className="form-check-label">{title}</span>
+            <span className="form-check-label tw-pretty">{title}</span>
         </label>
     }
 

@@ -18,7 +18,7 @@ const PeriodDatePicker = ({ className = 'form-control', name, value, onChange, d
   return (
     <>
 
-      <div className="input-icon mb-3" style={{ maxWidth: "150px" }}>
+      <div className="input-icon" style={{ maxWidth: "150px" }}>
         <DatePicker
           selected={value ? new Date(value) : null}
           onChange={handleDateChange}
