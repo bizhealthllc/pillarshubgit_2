@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import useToken from './features/authentication/hooks/useToken';
 import { TokenProvider } from './features/authentication/hooks/useToken';
+import PlacementSuite from "./pages/customers/placementSuite";
 
 const Layout = lazy(() => import("./pages/layout"));
 const Login = lazy(() => import('./pages/account/login'));
@@ -122,6 +123,7 @@ function App() {
               <Route path="customers/:customerId/commissions" element={<CommissionsDetail />} />
               <Route path="customers/:customerId/commissions/:bonusId" element={<CommissionsBonusDetail />} />
               <Route path="customers/:customerId/tree/:treeId" element={<CustomerTree />} />
+              <Route path="customers/:customerId/placements" element={<PlacementSuite /> } />
               <Route path="inventory/stores" element={<Stores />} />
               <Route path="inventory/categories" element={<Categories />} />
               <Route path="inventory/products" element={<Products />} />

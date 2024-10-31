@@ -63,7 +63,7 @@ const Customers = () => {
                 <table className="table card-table table-vcenter text-nowrap datatable">
                   <thead>
                     <tr>
-                      <th className="text-center w-1"><i className="icon-people"></i></th>
+                      <th className="text-center w-1"></th>
                       <th>Customer</th>
                       <th>Handle</th>
                       <th>Customer Type</th>
@@ -95,7 +95,7 @@ const Customers = () => {
                         <td>{item.emailAddress}</td>
                         <td><LocalDate dateString={item.enrollDate} hideTime={true} /></td>
                         <td className="text-center"></td>
-                      </tr>
+                        </tr>
                     })}
                   </tbody>
                 </table>
