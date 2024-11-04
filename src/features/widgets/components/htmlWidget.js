@@ -48,7 +48,7 @@ const HtmlWidget = ({ html, customer, widget }) => {
     } else {
       setData({});
     }
-  }, [query])
+  }, [query, customer])
 
   useEffect(() => {
     if (html) {
