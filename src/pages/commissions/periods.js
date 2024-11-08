@@ -67,10 +67,10 @@ const Periods = () => {
                           <th className="text-center w-1"><i className="icon-people"></i></th>
                           <th>Period</th>
                           <th>Status</th>
-                          <th>Paid Count</th>
+                          <th>Customers</th>
                           <th>Total Volume</th>
-                          <th>Commission Paid</th>
-                          <th className="text-center">Percent Paid</th>
+                          <th>Total Commission</th>
+                          <th className="text-center">Percent</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -90,7 +90,7 @@ const Periods = () => {
                             </td>
                             <td>{period.status}</td>
                             <td>{period.totalCustomersPaid}</td>
-                            <td>{period.totalVolume}</td>
+                            <td>{period.totalVolume.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</td>
                             <td>{period.totalCommissions?.toLocaleString("en-US", { style: 'currency', currency: 'USD' })}</td>
                             <td className="text-center">
                               <div className="row align-items-center">

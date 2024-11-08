@@ -8,9 +8,10 @@ import Pagination from '../../components/pagination';
 var GET_DATA = gql`query ($offset: Int!, $first: Int!) {
   batches (offset: $offset, first: $first) {
     created
-    id,
-    count,
+    id
+    count
     amount
+    status
   }
   totalBatches
 }`
@@ -32,6 +33,7 @@ const PaymentHistory = () => {
               <tr>
                 <th>Batch Id</th>
                 <th>Created</th>
+                <th>Status</th>
                 <th>Released Amount</th>
                 <th>Released Count</th>
               </tr>
@@ -41,8 +43,14 @@ const PaymentHistory = () => {
                 return <tr key={batch.id}  >
                   <td>
                     <a href={`/commissions/paid/${batch.id}`}>Batch {batch.id}</a>
-                    </td>
+                  </td>
                   <td><LocalDate dateString={batch.created} /></td>
+                  <td>
+                    {batch.status != "PROCESSED" && <>
+                      <div className="spinner-border spinner-border-sm me-2" role="status"></div>
+                    </>}
+                    <span className="text-lowercase text-capitalize">{batch.status.toLowerCase()}</span>
+                  </td>
                   <td>{batch.amount.toLocaleString("en-US", { style: 'currency', currency: 'USD' })}</td>
                   <td>{batch.count}</td>
                 </tr>

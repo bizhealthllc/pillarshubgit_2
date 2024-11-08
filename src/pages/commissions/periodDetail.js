@@ -443,7 +443,7 @@ const PeriodDetail = () => {
                 <div className="subheader">Commissions total</div>
               </div>
               <div className="d-flex align-items-baseline">
-                <div className="h1 mb-0 me-2">${Math.round(period.totalCommissions)}</div>
+                <div className="h1 mb-0 me-2">{Math.round(period.totalCommissions ?? 0).toLocaleString("en-US", { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</div>
                 <div className="me-auto">
                   <TrendArrow trend={totalCommissionTrend} />
                 </div>
@@ -460,7 +460,7 @@ const PeriodDetail = () => {
               <div className="d-flex align-items-center">
                 <div className="subheader">Customers Paid</div>
               </div>
-              <div className="h1 mb-3">{period.totalCustomersPaid}</div>
+              <div className="h1 mb-3">{period.totalCustomersPaid.toLocaleString()}</div>
               <div className="d-flex mb-2">
                 <div>Customer earning rate</div>
                 <div className="ms-auto">
@@ -500,7 +500,7 @@ const PeriodDetail = () => {
                 <div className="subheader">Total volume</div>
               </div>
               <div className="d-flex align-items-baseline">
-                <div className="h1 mb-3 me-2">{Math.round(period.totalVolume)}</div>
+                <div className="h1 mb-3 me-2">{Math.round(period.totalVolume).toLocaleString()}</div>
                 <div className="me-auto">
                   <TrendArrow trend={totalVolumeTrend} />
                 </div>

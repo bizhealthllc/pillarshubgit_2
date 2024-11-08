@@ -6,8 +6,9 @@ import PageHeader from '../../components/pageHeader';
 import DataLoading from '../../components/dataLoading';
 import DataError from '../../components/dataError';
 import Avatar from '../../components/avatar';
+import Pagination from '../../components/pagination';
 
-var GET_PERIOD_DETAILS = gql`query ($period: BigInt, $bonudId: String) {
+var GET_PERIOD_DETAILS = gql`query ($period: BigInt, $bonudId: String $offset: Int!, $count: Int!) {
   compensationPlans {
     name
     period: periods(at: $period) {
@@ -15,7 +16,7 @@ var GET_PERIOD_DETAILS = gql`query ($period: BigInt, $bonudId: String) {
       begin
       end
       compensationPlanId
-      bonuses (group: BONUS_TITLE, groupValue: $bonudId) {
+      bonuses (group: BONUS_TITLE, groupValue: $bonudId, offset: $offset, first: $count) {
         bonusId
         bonusTitle
         nodeId
@@ -48,8 +49,8 @@ var GET_PERIOD_DETAILS = gql`query ($period: BigInt, $bonudId: String) {
 
 const BonusDetail = () => {
   let params = useParams();
-  const { loading, error, data, } = useQuery(GET_PERIOD_DETAILS, {
-    variables: { period: parseInt(params.periodId), bonudId: params.bonusId },
+  const { loading, error, data, refetch, variables } = useQuery(GET_PERIOD_DETAILS, {
+    variables: { period: parseInt(params.periodId), bonudId: params.bonusId, offset: 0, count: 50 },
   });
 
   if (loading) return <DataLoading />;
@@ -119,7 +120,7 @@ const BonusDetail = () => {
                         <td></td>
                         <td className="strong">{totalAmount.toLocaleString("en-US", { style: 'currency', currency: period.bonuses[0]?.currency ?? 'USD' })}</td>
                         <td></td>
-                        <td className="strong">{totalVolume}</td>
+                        <td className="strong">{totalVolume.toLocaleString()}</td>
                         <td className="strong">{totalReleased.toLocaleString("en-US", { style: 'currency', currency: period.bonuses[0]?.currency ?? 'USD' })}</td>
                         <td></td>
                       </tr>
@@ -127,6 +128,9 @@ const BonusDetail = () => {
                   })()}
                 </tbody>
               </table>
+            </div>
+            <div className="card-footer d-flex align-items-center">
+              <Pagination variables={variables} refetch={refetch} total={-1} />
             </div>
           </div>
         </div>
