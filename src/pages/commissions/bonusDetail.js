@@ -50,7 +50,7 @@ var GET_PERIOD_DETAILS = gql`query ($period: BigInt, $bonudId: String $offset: I
 const BonusDetail = () => {
   let params = useParams();
   const { loading, error, data, refetch, variables } = useQuery(GET_PERIOD_DETAILS, {
-    variables: { period: parseInt(params.periodId), bonudId: params.bonusId, offset: 0, count: 50 },
+    variables: { period: parseInt(params.periodId), bonudId: params.bonusId, offset: 0, count: 15 },
   });
 
   if (loading) return <DataLoading />;
