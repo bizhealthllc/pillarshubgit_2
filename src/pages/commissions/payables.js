@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PageHeader, { CardHeader } from "../../components/pageHeader";
 import PayablesModal from './payablesModal';
 import AutoComplete from '../../components/autocomplete';
-import DateInput from '../../components/dateInput';
+import DateTimeInput from '../../components/dateTimeInput';
 import AddPayableModal from './payableComponents/addPayableModal';
 import PayableSummaryPanel from './payableComponents/payableSummaryPanel';
 import CustomerPayablePanel from './payableComponents/customerPayablePanel';
@@ -54,7 +54,7 @@ const PaymentHistory = () => {
               <div className="card-body border-bottom py-3">
                 <div className="row g-2 align-items-center">
                   <div className="col-sm-auto">
-                    <DateInput name="currentDate" value={currentDate} onChange={handlePeriodChange} />
+                    <DateTimeInput name="currentDate" value={currentDate} onChange={handlePeriodChange} />
                   </div>
                   <div className="col-sm">
                     <div className="w-100">
